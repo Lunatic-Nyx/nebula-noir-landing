@@ -18,7 +18,7 @@ export function InquiriesManager({ rows }: { rows: Row[] }) {
     <div className="space-y-4">
       {rows.map((row) => (
         <article key={row.id} className="border-2 border-foreground/30 p-6 space-y-3">
-          <p className="uppercase tracking-wider">{row.name} · {row.email}</p>
+          <p className="uppercase tracking-wider break-words">{row.name} · {row.email}</p>
           <p className="text-sm text-foreground/70 font-light whitespace-pre-wrap">{row.message}</p>
           <p className="text-xs text-foreground/50">{new Date(row.created_at).toLocaleString(locale === 'en' ? 'en-GB' : 'de-DE')}</p>
           <div className="flex flex-wrap gap-2">

@@ -24,13 +24,13 @@ export function LegalDocument({ section }: { section: LegalSection }) {
         <div className="container max-w-4xl mx-auto px-4 md:px-6">
           <div className="p-0 bg-background border-2 border-foreground/30 flex flex-col overflow-hidden">
             <div className="p-8 pb-4 border-b border-foreground/20">
-              <h1 className="text-3xl md:text-4xl uppercase tracking-[0.2em] bioshock-glow-animated whitespace-pre-line">
+              <h1 className="text-3xl md:text-4xl uppercase tracking-[0.2em] bioshock-glow-animated whitespace-pre-line break-words">
                 {t(TITLE_KEY[section])}
               </h1>
             </div>
             <div className="px-8 pb-8 pt-6">
               <div
-                className="legal-content prose prose-invert max-w-none"
+                className="legal-content prose prose-invert max-w-none break-words"
                 dangerouslySetInnerHTML={{ __html: content.content }}
               />
             </div>

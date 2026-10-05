@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Eye } from '@phosphor-icons/react'
 import { ArtDecoCorner } from './ArtDecoCorner'
 import { useT } from '@/i18n/context'
+import { IMAGE_FILTER } from '@/lib/design'
 
 interface ProductCardProps {
   product: Product
@@ -25,7 +26,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
       
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
-      <div className="aspect-square overflow-hidden bg-muted relative" style={{ filter: 'contrast(1.1) brightness(0.95)' }}>
+      <div className="aspect-square overflow-hidden bg-muted relative" style={{ filter: IMAGE_FILTER }}>
         <img 
           src={product.image} 
           alt={product.name}

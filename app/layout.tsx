@@ -4,6 +4,7 @@ import { CursorGlow } from '@/components/CursorGlow'
 import { SmoothScroll } from '@/components/SmoothScroll'
 import { LocaleProvider } from '@/i18n/context'
 import type { Locale } from '@/i18n/messages'
+import { SCROLL_OFFSET_VAR } from '@/lib/design'
 import '@/main.css'
 import '@/styles/theme.css'
 import '@/index.css'
@@ -24,7 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale: Locale = cookie === 'en' ? 'en' : 'de'
 
   return (
-    <html lang={locale} style={{ scrollPaddingTop: '7rem' }}>
+    <html lang={locale} style={{ scrollPaddingTop: SCROLL_OFFSET_VAR }}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />

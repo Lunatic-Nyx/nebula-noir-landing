@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { EASE_DECO } from '@/lib/motion'
 const logoSvg = '/images/IMG_0085_(1).svg'
 
 interface LoadingScreenProps {
@@ -47,7 +48,7 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.2, ease: EASE_DECO }}
           className="fixed inset-0 z-[99999] flex items-center justify-center overflow-hidden"
           style={{ background: 'oklch(0.08 0 0)' }}
         >
@@ -283,8 +284,8 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-              className="text-center space-y-12"
+              transition={{ duration: 1, ease: EASE_DECO, delay: 0.3 }}
+              className="text-center space-y-6 sm:space-y-12"
             >
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -295,7 +296,7 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                 <img 
                   src={logoSvg} 
                   alt="Nebula Noir Logo" 
-                  className="w-48 h-48 object-contain spark-theme-logo-glow"
+                  className="w-32 h-32 sm:w-48 sm:h-48 object-contain spark-theme-logo-glow"
                   style={{
                     filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 30px rgba(102, 51, 153, 0.2))'
                   }}
@@ -334,7 +335,7 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                   transition={{ duration: 0.6, delay: 1.4 }}
                   className="space-y-3"
                 >
-                  <div className="relative w-80 h-[3px] bg-border/30 mx-auto overflow-hidden">
+                  <div className="relative w-[min(20rem,80vw)] h-[3px] bg-border/30 mx-auto overflow-hidden">
                     <motion.div
                       className="absolute inset-0 h-full bg-gradient-to-r from-foreground via-primary to-foreground"
                       style={{ 
@@ -358,7 +359,7 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 1.6 }}
-                    className="flex items-center justify-between w-80 mx-auto text-xs tracking-[0.2em] text-muted-foreground"
+                    className="flex items-center justify-between w-[min(20rem,80vw)] mx-auto text-xs tracking-[0.2em] text-muted-foreground"
                   >
                     <span>LOADING</span>
                     <span className="spark-theme-bioshock-glow">{Math.round(progress)}%</span>

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { ArtDecoAnimatedDivider } from './ArtDecoAnimatedDivider'
 import type { EventItem } from '@/lib/types'
 import { useI18n, useT } from '@/i18n/context'
+import { SCROLL_OFFSET_VAR } from '@/lib/design'
+import { EASE_DECO } from '@/lib/motion'
 
 function formatRange(start: string, end: string | null | undefined, locale: string) {
   const tag = locale === 'en' ? 'en-GB' : 'de-DE'
@@ -27,13 +29,13 @@ export function EventsSection({ events }: { events: EventItem[] }) {
   if (!events.length) return null
 
   return (
-    <section id="events" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: '7rem' }}>
+    <section id="events" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: SCROLL_OFFSET_VAR }}>
       <div className="container max-w-6xl mx-auto px-4 md:px-6 relative z-10">
         <motion.div
           className="text-center mb-12 md:mb-20"
           initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, ease: EASE_DECO }}
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line">
             {t('events.title')}
@@ -51,7 +53,7 @@ export function EventsSection({ events }: { events: EventItem[] }) {
               className="text-center space-y-4 md:space-y-6 relative p-6 md:p-8 border-2 border-foreground/30 bg-background/50"
               initial={{ opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
               animate={isVisible ? { opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.2 + index * 0.1, ease: EASE_DECO }}
             >
               <div className="text-5xl md:text-7xl mb-4 bioshock-glow-animated spark-theme-moon-symbol" style={{ textShadow: '0 0 30px rgba(255, 255, 255, 0.5)' }}>☾</div>
               <h3 className="text-xl md:text-2xl lg:text-3xl uppercase tracking-[0.15em] md:tracking-[0.2em]">{event.title}</h3>

@@ -32,6 +32,8 @@
   ---break---
 */
 :root {
+  /* Central fixed-header anchor offset (Navigation.tsx). Single source of truth. */
+  --nn-scroll-offset: 7rem;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -183,4 +185,29 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*
+  Hero height: 100vh fallback, upgraded to 100svh where supported so mobile
+  browser chrome cannot push the hero past the visible viewport.
+*/
+.nn-hero {
+  min-height: 100vh;
+}
+@supports (min-height: 100svh) {
+  .nn-hero {
+    min-height: 100svh;
+  }
+}
+
+/*
+  Legal headings: long German compounds (e.g. "Verbraucherstreitbeilegung")
+  must wrap. This beats the global `h1–h6 { overflow-wrap: normal }` reset in
+  index.css by specificity, so the frozen stylesheet stays untouched.
+*/
+.legal-content h1,
+.legal-content h2,
+.legal-content h3,
+.legal-content h4 {
+  overflow-wrap: break-word;
 }

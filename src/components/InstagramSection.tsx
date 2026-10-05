@@ -5,6 +5,8 @@ import { motion } from 'framer-motion'
 import { ArtDecoCorner } from './ArtDecoCorner'
 import type { InstagramPost } from '@/lib/types'
 import { useT } from '@/i18n/context'
+import { IMAGE_FILTER, SCROLL_OFFSET_VAR } from '@/lib/design'
+import { EASE_DECO } from '@/lib/motion'
 
 export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
   const t = useT()
@@ -12,13 +14,13 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
   if (!posts.length) return null
 
   return (
-    <section id="instagram" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: '7rem' }}>
+    <section id="instagram" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: SCROLL_OFFSET_VAR }}>
       <div className="container max-w-7xl mx-auto px-4 md:px-6 relative z-10">
         <motion.div
           className="text-center mb-12 md:mb-20"
           initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, ease: EASE_DECO }}
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4">
             {t('instagram.title')}
@@ -35,7 +37,7 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
               key={post.id}
               initial={{ opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
               animate={isVisible ? { opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
-              transition={{ duration: 0.6, delay: 0.3 + index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.3 + index * 0.08, ease: EASE_DECO }}
             >
               <a
                 href={post.permalink}
@@ -46,7 +48,7 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
                 <div className="spark-theme-card-corners" />
                 <ArtDecoCorner position="top-left" size={40} delay={0} />
                 <ArtDecoCorner position="bottom-right" size={40} delay={0.1} />
-                <div className="aspect-square overflow-hidden bg-muted relative" style={{ filter: 'contrast(1.1) brightness(0.95)' }}>
+                <div className="aspect-square overflow-hidden bg-muted relative" style={{ filter: IMAGE_FILTER }}>
                   <img
                     src={post.thumbnailUrl || post.mediaUrl}
                     alt={post.caption || 'Instagram'}

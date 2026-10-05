@@ -36,6 +36,23 @@ VIDEO has `thumbnail_url`; CAROUSEL_ALBUM needs `children{media_url,media_type}`
 
 Poiret One + `letter-spacing: 0.2em` + `word-wrap: break-word` splits `MASSANFERTIGUNGEN` after the last letter. Use `word-break: normal`, reduce tracking under 768px, and put `\n` in i18n titles with `whitespace-pre-line`.
 
+## Inherited `overflow-wrap` loses to the global heading reset
+
+`src/index.css` (frozen) sets `h1–h6 { overflow-wrap: normal }`. Adding `break-words` to a **wrapper** does nothing for the heading, because a declaration on the element beats an inherited value. To wrap long German legal compounds, either put the utility **directly on the heading element** (class specificity beats the `h*` type selector) or add a higher-specificity rule like `.legal-content h3 { overflow-wrap: break-word }` in the non-frozen `src/main.css`. Never edit the frozen stylesheet.
+
+## Viewport height: prefer `svh` with an explicit fallback
+
+`min-h-screen` compiles to `100vh`, which is taller than the visible area on iOS Safari/Chrome Android (collapsing URL bar). Use `.nn-hero { min-height: 100vh }` plus `@supports (min-height: 100svh) { min-height: 100svh }`. Do not stack `min-h-screen min-h-[100svh]` — which wins depends on Tailwind's emission order, not the class order.
+
+## Centralize repeated literals as SSOT
+
+Repeated visual values drift when copy-pasted. Move them to `src/lib/design.ts` (image filter, toast chrome, scroll-offset var) and `src/lib/motion.ts` (`EASE_DECO`, the Art-Deco cubic-bezier that was duplicated 27×). Animation `duration`/`delay` values stay local — over-abstracting them hurts readability for no benefit.
+
+## Verify before deleting risk: the dialog width cap
+
+Dialog content must not use an uncapped `max-w-[calc(100vw-…)]`: on ultrawide screens it stretches edge-to-edge. Cap with a real max (`lg:max-w-6xl`). This is a visible layout change, so record it as a product decision.
+
+
 ## Hero video size vs Vercel body limit
 
 Do not POST large MP4s through Next.js on Vercel (≈4.5MB). Presign a 120s R2 PUT and store the public URL in `brand_info.hero_video` (`title` = R2 key for later delete).

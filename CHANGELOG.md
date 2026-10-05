@@ -2,6 +2,22 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.4.1] — 2026-10-05
+
+### Fixed
+
+- Responsive overlaps/clipping found by a full mobile+desktop audit (320–1920, verified in real Chrome):
+  - `#contact` / `#catalog` headings now wrap instead of being clipped on phones (`break-words`).
+  - Legal headings (e.g. "Verbraucherstreitbeilegung") wrap — via a higher-specificity `.legal-content h1–h4` rule, without touching the frozen `index.css`.
+  - Product detail dialog: footer row wraps, the "Anfrage senden" CTA is always fully visible (320–1536), and the dialog is capped at `max-w-6xl` on large screens.
+  - Mobile hamburger sheet scrolls in landscape (`overflow-y-auto`, `overflow-x-hidden`).
+  - Hero uses a deterministic `100svh` height (`@supports` upgrade from `100vh`).
+  - Loading screen scales down on small/flat viewports; admin inquiry email wraps.
+
+### Changed
+
+- Centralized repeated values as SSOT: `src/lib/design.ts` (`IMAGE_FILTER`, `TOAST_STYLE`, `SCROLL_OFFSET_VAR`), `src/lib/motion.ts` (`EASE_DECO`, replacing 27 inline easing arrays), and `--nn-scroll-offset` in `src/main.css` (replacing six hardcoded `7rem`).
+
 ## [0.4.0] — 2026-10-05
 
 ### Added

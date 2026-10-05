@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation'
 import { FooterSection } from '@/components/FooterSection'
 import { ArtDecoFrameAnimation } from '@/components/ArtDecoFrameAnimation'
 import { ArtDecoBackground } from '@/components/ArtDecoBackground'
+import { TOAST_STYLE } from '@/lib/design'
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
@@ -18,13 +19,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         <FooterSection />
         <Toaster
           position="top-center"
-          toastOptions={{
-            style: {
-              background: 'oklch(0.08 0 0)',
-              color: 'oklch(0.99 0 0)',
-              border: '1px solid oklch(0.45 0.15 300)',
-            },
-          }}
+          toastOptions={{ style: TOAST_STYLE }}
         />
       </div>
     </div>

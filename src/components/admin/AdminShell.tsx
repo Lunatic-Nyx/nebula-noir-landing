@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Toaster } from '@/components/ui/sonner'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { useT } from '@/i18n/context'
+import { TOAST_STYLE } from '@/lib/design'
 
 export function AdminShell({
   children,
@@ -78,13 +79,7 @@ export function AdminShell({
         <main className="container max-w-6xl mx-auto px-4 md:px-6 py-12">{children}</main>
         <Toaster
           position="top-center"
-          toastOptions={{
-            style: {
-              background: 'oklch(0.08 0 0)',
-              color: 'oklch(0.99 0 0)',
-              border: '1px solid oklch(0.45 0.15 300)',
-            },
-          }}
+          toastOptions={{ style: TOAST_STYLE }}
         />
       </div>
     </div>

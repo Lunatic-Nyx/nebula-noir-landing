@@ -2,6 +2,7 @@
 
 import { useParallax } from '@/hooks/use-parallax'
 import { motion } from 'framer-motion'
+import { EASE_DECO } from '@/lib/motion'
 
 export function SectionTransition() {
   const { ref, offset } = useParallax(0.3)
@@ -19,7 +20,7 @@ export function SectionTransition() {
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.5, ease: EASE_DECO }}
         className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-foreground to-transparent opacity-30"
       />
 
@@ -27,7 +28,7 @@ export function SectionTransition() {
         initial={{ scale: 0, rotate: -180, opacity: 0 }}
         whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1, delay: 0.5, ease: EASE_DECO }}
         className="relative z-10 bg-background px-6"
       >
         <span className="text-4xl text-foreground spark-theme-bioshock-glow spark-theme-moon-symbol">

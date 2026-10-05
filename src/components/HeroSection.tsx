@@ -6,7 +6,7 @@ import { useT } from '@/i18n/context'
 export function HeroSection({ videoUrl }: { videoUrl?: string }) {
   const t = useT()
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden max-w-full">
+    <section className="relative nn-hero flex items-center justify-center overflow-hidden max-w-full">
       <HeroVideoBackground src={videoUrl} />
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-full h-full opacity-5">

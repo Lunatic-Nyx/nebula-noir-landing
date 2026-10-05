@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { useScrollTrigger } from '@/hooks/use-parallax'
 import { motion } from 'framer-motion'
 import { useT } from '@/i18n/context'
+import { SCROLL_OFFSET_VAR } from '@/lib/design'
+import { EASE_DECO } from '@/lib/motion'
 
 interface CatalogSectionProps {
   products?: Product[]
@@ -31,7 +33,7 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
   }
 
   return (
-    <section id="catalog" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: '7rem' }}>
+    <section id="catalog" className="py-24 md:py-32 relative overflow-hidden max-w-full" ref={ref} style={{ scrollMarginTop: SCROLL_OFFSET_VAR }}>
       <div className="absolute inset-0 opacity-3">
         <svg className="w-full h-full">
           <defs>
@@ -50,9 +52,9 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
           className="text-center mb-12 md:mb-20"
           initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.8, ease: EASE_DECO }}
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line break-words">
             {t('catalog.title')}
           </h2>
           <div className="art-deco-divider max-w-md mx-auto" />
@@ -65,7 +67,7 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
           className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12 md:mb-16 px-4"
           initial={{ opacity: 0, scaleX: 0 }}
           animate={isVisible ? { opacity: 1, scaleX: 1 } : {}}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, delay: 0.2, ease: EASE_DECO }}
         >
           {CATEGORIES.map(category => (
             <Button
@@ -90,7 +92,7 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
               key={product.id}
               initial={{ opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
               animate={isVisible ? { opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
-              transition={{ duration: 0.6, delay: 0.3 + (index * 0.08), ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.3 + (index * 0.08), ease: EASE_DECO }}
             >
               <ProductCard product={product} onViewDetails={handleViewDetails} />
             </motion.div>

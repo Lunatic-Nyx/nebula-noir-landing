@@ -14,6 +14,7 @@ import { ArtDecoBackground } from '@/components/ArtDecoBackground'
 import { EventsSection } from '@/components/EventsSection'
 import { InstagramSection } from '@/components/InstagramSection'
 import LoadingScreen from '@/themes/nebula-noir-theme/LoadingScreen'
+import { TOAST_STYLE } from '@/lib/design'
 import type { BrandInfo, EventItem, InstagramPost, Product } from '@/lib/types'
 
 interface HomePageProps {
@@ -80,13 +81,7 @@ export function HomePage({ products, brandInfo, events, instagram, heroVideoUrl 
 
         <Toaster 
           position="top-center"
-          toastOptions={{
-            style: {
-              background: 'oklch(0.08 0 0)',
-              color: 'oklch(0.99 0 0)',
-              border: '1px solid oklch(0.45 0.15 300)',
-            },
-          }}
+          toastOptions={{ style: TOAST_STYLE }}
         />
       </div>
     </div>

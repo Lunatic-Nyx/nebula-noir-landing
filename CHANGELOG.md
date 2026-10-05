@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.5.0] — 2026-10-05
+
+### Added
+
+- Contact form sends a best-effort notification email via Resend (`RESEND`, server-only; optional `CONTACT_FROM_EMAIL` / `CONTACT_TO_EMAIL`). The inquiry is always stored in Supabase; a mail error/timeout is logged and never fails the form. Implemented with direct `fetch` — no new dependency.
+- Datenschutz §6 names Resend and the possible US transfer; §9 also names Cloudflare R2 as media storage.
+
+### Changed
+
+- Contact heading uses responsive size/tracking so `MASSANFERTIGUNGEN` fits on phones instead of breaking mid-word.
+
 ## [0.4.1] — 2026-10-05
 
 ### Fixed

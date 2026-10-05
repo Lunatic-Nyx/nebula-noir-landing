@@ -16,3 +16,7 @@ export function isR2Configured(): boolean {
 export function isInstagramConfigured(): boolean {
   return Boolean(process.env.INSTAGRAM_ACCESS_TOKEN)
 }
+
+export function isResendConfigured(): boolean {
+  return Boolean(process.env.RESEND)
+}

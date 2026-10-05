@@ -25,6 +25,7 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 - `SUPABASE_SERVICE_ROLE_KEY` — bypasses RLS; cron + admin server actions only
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ENDPOINT`
 - `INSTAGRAM_ACCESS_TOKEN` (Instagram Login user token), `INSTAGRAM_APP_SECRET`
+- `RESEND` (Resend API key; contact-form notification email only)
 - `CRON_SECRET`
 
 `R2_PUBLIC_URL` is not a credential but is server-used when writing object URLs.
@@ -70,6 +71,8 @@ Service role is used only in:
 ## Contact form
 
 Validate name/email/message server-side. Truncate oversized payloads. RLS INSERT is not a substitute for rate limiting (add WAF/Vercel firewall in production).
+
+When `RESEND` is set, a best-effort notification email is sent server-side via `https://api.resend.com` after the inquiry is stored. The API key is server-only, never returned to the client, and is not logged. A mail failure never fails the form and never loses the stored inquiry. Before enabling `RESEND` in production, put an edge/WAF rate limit in front of the public contact action — otherwise anyone can drive outbound email to the operator (inbox spam, Resend quota).
 
 ## Auth
 

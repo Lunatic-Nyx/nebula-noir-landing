@@ -2,7 +2,7 @@
 
 Living snapshot of product status, schema, and services.
 
-**Last reviewed:** 2026-09-10 · How-to: `USER_MANUAL.md` · Env: `.env.example` · License: proprietary.
+**Last reviewed:** 2026-10-05 · How-to: `USER_MANUAL.md` · Env: `.env.example` · License: proprietary.
 
 ## Product status
 
@@ -43,6 +43,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 | Vercel | Next.js host + cron |
 | Supabase | Postgres, Auth, RLS |
 | Cloudflare R2 | Gallery + cached IG media |
+| Resend | Contact-form notification email (`RESEND`, server-only) |
 | Instagram API with Instagram Login (`graph.instagram.com`) | Media read (`instagram_business_basic`) |
 | Etsy | Commerce (`etsy.com/shop/nebulanoirnn`) |
 | Google Fonts | Poiret One, Cinzel, Montserrat |
@@ -53,7 +54,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 2. Demo → fixtures. Prod → Supabase anon client.
 3. Admin upload → auth check → R2 `PutObject` → `gallery_images` insert.
 4. IG cron → Graph API → R2 copy → upsert `instagram_posts`.
-5. Contact → server action → insert `contact_inquiries`.
+5. Contact → server action → insert `contact_inquiries` → best-effort Resend notification (if `RESEND` set).
 
 ## Docs map
 

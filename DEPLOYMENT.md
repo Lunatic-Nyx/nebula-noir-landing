@@ -144,8 +144,17 @@ Signup creates `profiles` with role `user` via trigger. Promote the operator:
 update public.profiles set role = 'admin' where id = '<auth.users uuid>';
 ```
 
-## 5. Hero video
+## 4b. Contact form email (Resend)
 
+The contact form always stores the inquiry in Supabase. To also get a notification email:
+
+1. Create an API key in Resend and set `RESEND` (server-only, never `NEXT_PUBLIC_`).
+2. Verify the sending domain in Resend and set `CONTACT_FROM_EMAIL` to a verified sender (default `contact@nebula-noir.com`).
+3. Optionally set `CONTACT_TO_EMAIL` for the recipient (default `contact@nebula-noir.com`).
+
+Email is best-effort: a Resend error or timeout is logged and does not fail the form; the inquiry remains visible under `/admin/inquiries`.
+
+## 5. Hero video
 Upload in **Admin → Hero-Video** (`/admin/hero`). The file goes to R2 via presigned PUT; the public URL is stored in `brand_info` key `hero_video`.
 
 1. Encode H.264 + AAC, `faststart`, keyframes every 0.5–1s (for scrub).

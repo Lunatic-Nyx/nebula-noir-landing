@@ -41,6 +41,8 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Gallery uses fixture images (`/demo/instagram/*.jpg` via `src/lib/products.ts` / fixtures).
 - [ ] Events, brand copy, and Instagram fixtures render.
 - [ ] Contact submit shows success or demo toast; no crash.
+- [ ] Without `RESEND`, contact submit still succeeds and stores the row (no mail call, warn logged).
+- [ ] With `RESEND`, a notification email is sent to `CONTACT_TO_EMAIL` with reply-to = visitor; an invalid key logs an error but the form still returns success.
 - [ ] Admin mutations show a demo/disabled toast; no R2 upload attempted.
 - [ ] Hero without `NEXT_PUBLIC_HERO_VIDEO_URL` keeps the original SVG pattern background.
 
@@ -97,4 +99,4 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Non-admin authenticated user → 403.
 - [ ] Demo Mode `/admin` is reachable as read-only preview with banner.
 - [ ] `LICENSE` is proprietary (not MIT / not GitHub, Inc.).
-- [ ] `.env.example` lists site, Supabase, R2, Instagram, hero, and cron variables.
+- [ ] `.env.example` lists Supabase, R2, Instagram, Resend, hero, and cron variables.

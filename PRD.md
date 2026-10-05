@@ -22,7 +22,7 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 | Events | Published upcoming stands only |
 | Gallery | Category filters, detail dialog, inquiry CTA — no price, no cart |
 | Instagram | Cached posts from Instagram Login API (`instagram_business_basic`) |
-| Contact | Name, email, message → `contact_inquiries` |
+| Contact | Name, email, message → `contact_inquiries`; best-effort notification email via Resend (`RESEND`) |
 | Legal | Static routes (Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns) |
 | i18n | DE default, EN cookie `nn-locale` |
 | Admin | Auth + `profiles.role = 'admin'`: gallery, events, info, inquiries, IG sync, hero video |

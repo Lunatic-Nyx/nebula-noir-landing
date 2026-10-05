@@ -122,6 +122,7 @@ Felder: Name, E-Mail, Nachricht. Alle Pflicht. Client- und Server-Prüfung (E-Ma
 - Live: Zeile in `contact_inquiries`, Toast **Nachricht ist raus…**
 - Demo: Toast **Demo Mode: Nachricht lokal bestätigt, nicht gespeichert.**
 - Doppelklick während des Sendens sendet nicht zweimal.
+- Ist `RESEND` gesetzt, geht zusätzlich eine Benachrichtigungsmail an `CONTACT_TO_EMAIL` (Standard `contact@nebula-noir.com`); Reply-To ist die Besucher-Adresse. Ein Mailfehler ändert die Erfolgsmeldung nicht — die Anfrage ist gespeichert.
 
 Hinweis: Maßanfertigungen in der Regel 2–4 Wochen.
 

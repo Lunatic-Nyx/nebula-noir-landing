@@ -33,7 +33,7 @@ export function ArtDecoCorner({ position, size = 60, delay = 0 }: ArtDecoCornerP
 
   return (
     <div 
-      className={`absolute ${getPositionClasses()} pointer-events-none corner-accent`}
+      className={`absolute ${getPositionClasses()} m-0! pointer-events-none corner-accent`}
       style={{ 
         width: size, 
         height: size,

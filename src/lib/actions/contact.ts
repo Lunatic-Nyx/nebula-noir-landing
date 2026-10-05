@@ -1,8 +1,10 @@
 'use server'
 
+import { after } from 'next/server'
 import { isDemoMode } from '@/lib/env'
 import { getServerT } from '@/i18n/server'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { sendContactNotification } from '@/lib/email'
 
 export type ContactResult = { ok: true; demo?: boolean } | { ok: false; error: string; demo?: boolean }
 
@@ -39,5 +41,15 @@ export async function submitContact(formData: {
   if (error) {
     return { ok: false, error: t('contact.saveFailed') }
   }
+
+  // Best effort and after the response: the inquiry is already stored, and a
+  // mail failure must neither delay nor fail the form.
+  after(async () => {
+    const notification = await sendContactNotification({ name, email, message })
+    if (!notification.ok) {
+      console.warn('[contact] notification email not sent:', notification.error)
+    }
+  })
+
   return { ok: true }
 }

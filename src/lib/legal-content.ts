@@ -101,6 +101,9 @@ export const LEGAL_CONTENT = {
       <p>
         Die Speicherung erfolgt in unserer Datenbank bei unserem Dienstleister Supabase (Supabase Inc.). Die Daten werden gelöscht, sobald sie für die Bearbeitung der Anfrage nicht mehr erforderlich sind, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Eine Löschung Ihrer Anfrage können Sie jederzeit unter den im Impressum genannten Kontaktdaten verlangen.
       </p>
+      <p>
+        Für die Benachrichtigung über neue Kontaktanfragen nutzen wir den E-Mail-Versanddienst Resend (Resend, Inc., USA). Dabei werden die von Ihnen eingegebenen Daten (Name, E-Mail-Adresse, Nachricht) an Resend übermittelt und dort zum Zweck der Zustellung verarbeitet. Dabei kann eine Übermittlung personenbezogener Daten in die USA erfolgen.
+      </p>
 
       <h3>7. SSL- bzw. TLS-Verschlüsselung</h3>
       <p>
@@ -114,7 +117,7 @@ export const LEGAL_CONTENT = {
 
       <h3>9. Eingebundene externe Dienste</h3>
       <p>
-        Zur Darstellung der Website werden Schriftarten von Google Fonts geladen; dabei wird Ihre IP-Adresse an Google übermittelt. Instagram-Vorschaubilder werden, sofern sie nicht über unseren eigenen Speicher ausgeliefert werden, direkt von Servern von Meta geladen. Dabei kann eine Übermittlung von Nutzungsdaten in die USA erfolgen.
+        Zur Darstellung der Website werden Schriftarten von Google Fonts geladen; dabei wird Ihre IP-Adresse an Google übermittelt. Instagram-Vorschaubilder werden, sofern sie nicht über unseren eigenen Speicher ausgeliefert werden, direkt von Servern von Meta geladen. Medien (Galeriebilder, Hero-Video) werden bei Cloudflare R2 gespeichert und von dort ausgeliefert. Dabei kann eine Übermittlung von Nutzungsdaten in die USA erfolgen.
       </p>
     `
   },

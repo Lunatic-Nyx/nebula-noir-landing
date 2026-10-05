@@ -40,6 +40,11 @@ Poiret One + `letter-spacing: 0.2em` + `word-wrap: break-word` splits `MASSANFER
 
 `src/index.css` (frozen) sets `h1–h6 { overflow-wrap: normal }`. Adding `break-words` to a **wrapper** does nothing for the heading, because a declaration on the element beats an inherited value. To wrap long German legal compounds, either put the utility **directly on the heading element** (class specificity beats the `h*` type selector) or add a higher-specificity rule like `.legal-content h3 { overflow-wrap: break-word }` in the non-frozen `src/main.css`. Never edit the frozen stylesheet.
 
+## `break-words` is a fallback, not a mobile layout fix
+
+On the Contact H2, `break-words` alone split `MASSANFERTIGUNGEN` into `MASSANFERTIGUNGE` + `N`. Prefer responsive type: shrink the font/tracking at the base breakpoint (`text-2xl tracking-normal sm:text-3xl sm:tracking-[0.15em] …`) so the longest word actually fits, and keep `break-words` only as a last-resort guard for pathological widths.
+
+
 ## Viewport height: prefer `svh` with an explicit fallback
 
 `min-h-screen` compiles to `100vh`, which is taller than the visible area on iOS Safari/Chrome Android (collapsing URL bar). Use `.nn-hero { min-height: 100vh }` plus `@supports (min-height: 100svh) { min-height: 100svh }`. Do not stack `min-h-screen min-h-[100svh]` — which wins depends on Tailwind's emission order, not the class order.

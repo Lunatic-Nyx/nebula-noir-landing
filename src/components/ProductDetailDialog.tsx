@@ -14,9 +14,10 @@ interface ProductDetailDialogProps {
   product: Product | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  categoryLabel?: string
 }
 
-export function ProductDetailDialog({ product, open, onOpenChange }: ProductDetailDialogProps) {
+export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel }: ProductDetailDialogProps) {
   const t = useT()
   if (!product) return null
 
@@ -124,7 +125,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
                         <strong className="text-foreground/90">{t('catalog.originLabel')}:</strong> {t('catalog.origin')}
                       </p>
                       <p className="uppercase tracking-wider">
-                        <strong className="text-foreground/90">{t('catalog.categoryLabel')}:</strong> {t(`categories.${product.category}`)}
+                        <strong className="text-foreground/90">{t('catalog.categoryLabel')}:</strong> {categoryLabel ?? t(`categories.${product.category}`)}
                       </p>
                     </motion.div>
                   </div>
@@ -136,7 +137,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
                     transition={{ duration: 0.5, delay: 0.9, ease: EASE_DECO }}
                   >
                     <div className="min-w-0 break-words text-4xl md:text-5xl font-light text-foreground tracking-wider bioshock-glow">
-                      {t(`categories.${product.category}`)}
+                      {categoryLabel ?? t(`categories.${product.category}`)}
                     </div>
                     <Button
                       asChild

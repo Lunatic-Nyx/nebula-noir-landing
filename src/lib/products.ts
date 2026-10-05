@@ -120,11 +120,3 @@ export const PRODUCTS: Product[] = [
   }
 ]
 
-export const CATEGORIES = [
-  { value: 'all', label: 'Alle Stücke' },
-  { value: 'chokers', label: 'Chokers' },
-  { value: 'bracelets', label: 'Armbänder' },
-  { value: 'rings', label: 'Ringe' },
-  { value: 'earrings', label: 'Ohrringe' },
-  { value: 'accessories', label: 'Accessoires' }
-] as const

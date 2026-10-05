@@ -2,23 +2,14 @@
 
 import { revalidatePath } from 'next/cache'
 import { isR2Configured } from '@/lib/env'
-import { getAdminUser } from '@/lib/auth'
-import { getServerT } from '@/i18n/server'
+import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { deleteFromR2, publicObjectUrl } from '@/lib/r2'
 import { syncInstagramPosts } from '@/lib/instagram'
 
-async function requireAdmin() {
-  const t = await getServerT()
-  const session = await getAdminUser()
-  if (session.demo) return { demo: true as const, t }
-  if (!session.isAdmin) return { error: t('admin.notAuthorized'), t }
-  return { demo: false as const, t }
-}
-
 export async function saveBrandInfo(key: string, title: string, body: string) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -40,7 +31,7 @@ export async function saveEvent(input: {
   published: boolean
 }) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -71,7 +62,7 @@ export async function saveEvent(input: {
 
 export async function deleteEvent(id: string) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -83,7 +74,7 @@ export async function deleteEvent(id: string) {
 
 export async function markInquiryRead(id: string, read: boolean) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -95,7 +86,7 @@ export async function markInquiryRead(id: string, read: boolean) {
 
 export async function deleteInquiry(id: string) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -107,7 +98,7 @@ export async function deleteInquiry(id: string) {
 
 export async function deleteGalleryImage(id: string) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -131,29 +122,43 @@ export async function updateGalleryMeta(id: string, input: {
   description: string
   published: boolean
   sortOrder: number
+  category?: string
 }) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
+
+  const payload: Record<string, unknown> = {
+    title: input.title,
+    description: input.description,
+    published: input.published,
+    sort_order: input.sortOrder,
+  }
+  if (input.category) {
+    const { data: category } = await supabase
+      .from('categories')
+      .select('id')
+      .eq('slug', input.category)
+      .maybeSingle()
+    if (!category) return { ok: false as const, error: 'Kategorie unbekannt' }
+    payload.category_id = category.id
+  }
+
   const { error } = await supabase
     .from('gallery_images')
-    .update({
-      title: input.title,
-      description: input.description,
-      published: input.published,
-      sort_order: input.sortOrder,
-    })
+    .update(payload)
     .eq('id', id)
   if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
+  revalidatePath('/admin/gallery')
   return { ok: true as const }
 }
 
 export async function confirmHeroVideo(input: { key: string; publicUrl: string }) {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -189,7 +194,7 @@ export async function confirmHeroVideo(input: { key: string; publicUrl: string }
 
 export async function clearHeroVideo() {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
@@ -212,7 +217,7 @@ export async function clearHeroVideo() {
 
 export async function triggerInstagramSync() {
   const gate = await requireAdmin()
-  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.error) return { ok: false as const, error: gate.error }
   if (gate.demo) return { ok: false as const, error: gate.t('admin.demoSyncDisabled') }
   const result = await syncInstagramPosts()
   if (!result.ok) return { ok: false as const, error: result.error || gate.t('admin.syncFailed') }

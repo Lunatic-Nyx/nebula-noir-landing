@@ -10,6 +10,8 @@ drop table if exists public.brand_info cascade;
 drop table if exists public.events cascade;
 drop table if exists public.instagram_posts cascade;
 drop table if exists public.instagram_auth cascade;
+drop table if exists public.site_config cascade;
+drop table if exists public.api_secrets cascade;
 drop table if exists public.profiles cascade;
 
 create table public.profiles (
@@ -22,6 +24,7 @@ create table public.categories (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   label text not null,
+  label_en text not null default '',
   sort_order int not null default 0
 );
 
@@ -52,6 +55,18 @@ create table public.brand_info (
   key text not null unique,
   title text not null,
   body text not null,
+  updated_at timestamptz not null default now()
+);
+
+create table public.site_config (
+  key text primary key,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create table public.api_secrets (
+  key text primary key,
+  value_encrypted text not null,
   updated_at timestamptz not null default now()
 );
 
@@ -100,6 +115,8 @@ alter table public.brand_info enable row level security;
 alter table public.events enable row level security;
 alter table public.instagram_posts enable row level security;
 alter table public.instagram_auth enable row level security;
+alter table public.site_config enable row level security;
+alter table public.api_secrets enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -198,6 +215,25 @@ create policy "instagram_public_read"
 
 -- instagram_auth: no anon/auth policies; service role only
 
+-- site_config: public read, admin write (never store secrets here)
+create policy "site_config_public_read"
+  on public.site_config for select
+  to anon, authenticated
+  using (true);
+
+create policy "site_config_admin_all"
+  on public.site_config for all
+  to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- api_secrets: admin only; runtime resolution uses the service role
+create policy "api_secrets_admin_all"
+  on public.api_secrets for all
+  to authenticated
+  using (public.is_admin())
+  with check (public.is_admin());
+
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -217,12 +253,12 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
 
-insert into public.categories (slug, label, sort_order) values
-  ('chokers', 'Chokers', 1),
-  ('bracelets', 'Armbänder', 2),
-  ('rings', 'Ringe', 3),
-  ('earrings', 'Ohrringe', 4),
-  ('accessories', 'Accessoires', 5);
+insert into public.categories (slug, label, label_en, sort_order) values
+  ('chokers', 'Chokers', 'Chokers', 1),
+  ('bracelets', 'Armbänder', 'Bracelets', 2),
+  ('rings', 'Ringe', 'Rings', 3),
+  ('earrings', 'Ohrringe', 'Earrings', 4),
+  ('accessories', 'Accessoires', 'Accessories', 5);
 
 insert into public.brand_info (key, title, body) values
   ('mission', 'Mission', 'Lautes Statement für die schwarze Szene, Cosplay und Nerdkultur. Keine Massenware.'),

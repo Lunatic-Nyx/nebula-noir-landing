@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { InstagramLogo, List } from '@phosphor-icons/react'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useSiteConfig } from '@/components/SiteConfigProvider'
 import { useT } from '@/i18n/context'
 
 interface NavigationProps {
@@ -26,6 +27,7 @@ export function Navigation({ homeHref = '/', showEvents = true, showInstagram = 
   }, [])
 
   const t = useT()
+  const siteConfig = useSiteConfig()
   const navLinks = [
     { href: '/#catalog', label: t('nav.collection') },
     { href: '/#about', label: t('nav.philosophy') },
@@ -78,7 +80,7 @@ export function Navigation({ homeHref = '/', showEvents = true, showInstagram = 
               className="relative metallic-border hover:bg-foreground hover:text-background transition-all duration-500"
             >
               <a
-                href="https://www.instagram.com/nebula_noir.official"
+                href={siteConfig.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"

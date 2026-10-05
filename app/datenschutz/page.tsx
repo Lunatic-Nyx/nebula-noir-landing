@@ -1,7 +1,10 @@
-import { LegalDocument } from '@/components/LegalDocument'
+import type { Metadata } from 'next'
+import { LegalPage, legalPageMetadata } from '@/components/LegalPage'
 
-export const metadata = { title: 'Datenschutz | Nebula Noir' }
+export function generateMetadata(): Promise<Metadata> {
+  return legalPageMetadata('datenschutz')
+}
 
 export default function Page() {
-  return <LegalDocument section="datenschutz" />
+  return <LegalPage section="datenschutz" />
 }

@@ -1,28 +1,36 @@
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
 import { CursorGlow } from '@/components/CursorGlow'
 import { SmoothScroll } from '@/components/SmoothScroll'
+import { SiteConfigProvider } from '@/components/SiteConfigProvider'
 import { LocaleProvider } from '@/i18n/context'
-import type { Locale } from '@/i18n/messages'
+import { getServerLocale } from '@/i18n/server'
+import { getTranslationOverrides } from '@/i18n/overrides'
+import { translate } from '@/i18n/translate'
+import { getPublicSiteConfig } from '@/lib/site-config'
 import { SCROLL_OFFSET_VAR } from '@/lib/design'
 import '@/main.css'
 import '@/styles/theme.css'
 import '@/index.css'
 import '@/themes/nebula-noir-theme/styles.css'
 
-export const metadata: Metadata = {
-  title: 'NEBULA NOIR | Cybergoth Industrial',
-  description:
-    'Statement jewelry for the black scene. Faux leather, PVC, chains, rivets, neon. Made in Germany.',
-  icons: {
-    icon: '/favicon.svg',
-    apple: '/favicon.svg',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const [locale, overrides] = await Promise.all([getServerLocale(), getTranslationOverrides()])
+  return {
+    title: translate(locale, 'meta.title', undefined, overrides),
+    description: translate(locale, 'meta.description', undefined, overrides),
+    icons: {
+      icon: '/favicon.svg',
+      apple: '/favicon.svg',
+    },
+  }
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookie = (await cookies()).get('nn-locale')?.value
-  const locale: Locale = cookie === 'en' ? 'en' : 'de'
+  const [locale, overrides, siteConfig] = await Promise.all([
+    getServerLocale(),
+    getTranslationOverrides(),
+    getPublicSiteConfig(),
+  ])
 
   return (
     <html lang={locale} style={{ scrollPaddingTop: SCROLL_OFFSET_VAR }}>
@@ -36,10 +44,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
-        <LocaleProvider initialLocale={locale}>
-          <SmoothScroll />
-          <CursorGlow />
-          {children}
+        <LocaleProvider initialLocale={locale} overrides={overrides}>
+          <SiteConfigProvider value={siteConfig}>
+            <SmoothScroll />
+            <CursorGlow />
+            {children}
+          </SiteConfigProvider>
         </LocaleProvider>
       </body>
     </html>

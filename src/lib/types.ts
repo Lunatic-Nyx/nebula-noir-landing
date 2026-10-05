@@ -1,4 +1,12 @@
-export type JewelryCategory = 'chokers' | 'bracelets' | 'rings' | 'earrings' | 'accessories'
+export type JewelryCategory = string
+
+export interface Category {
+  id?: string
+  slug: string
+  label: string
+  labelEn?: string
+  sortOrder?: number
+}
 
 export interface Product {
   id: string

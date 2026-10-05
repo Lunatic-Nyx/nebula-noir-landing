@@ -2,12 +2,14 @@
 
 import { LegalSection } from '@/lib/legal-content'
 import { useT } from '@/i18n/context'
+import { useSiteConfig } from '@/components/SiteConfigProvider'
 
 const legalLinkClass =
   'text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider text-left'
 
 export function FooterSection() {
   const t = useT()
+  const siteConfig = useSiteConfig()
   const currentYear = new Date().getFullYear()
 
   const legalHref = (section: LegalSection) => {
@@ -98,7 +100,7 @@ export function FooterSection() {
               </li>
               <li>
                 <a 
-                  href="https://www.etsy.com/shop/nebulanoirnn"
+                  href={siteConfig.etsyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider"

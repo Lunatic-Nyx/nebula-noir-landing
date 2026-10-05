@@ -1,27 +1,44 @@
 'use client'
 
 import { useState } from 'react'
-import { Product } from '@/lib/types'
-import { PRODUCTS, CATEGORIES } from '@/lib/products'
+import { Category, Product } from '@/lib/types'
 import { ProductCard } from './ProductCard'
 import { ProductDetailDialog } from './ProductDetailDialog'
 import { Button } from '@/components/ui/button'
 import { useScrollTrigger } from '@/hooks/use-parallax'
 import { motion } from 'framer-motion'
-import { useT } from '@/i18n/context'
+import { useI18n } from '@/i18n/context'
+import { resolveCategoryLabel } from '@/lib/categories'
 import { SCROLL_OFFSET_VAR } from '@/lib/design'
 import { EASE_DECO } from '@/lib/motion'
 
 interface CatalogSectionProps {
   products?: Product[]
+  categories?: Category[]
 }
 
-export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
-  const t = useT()
+export function CatalogSection({ products = [], categories = [] }: CatalogSectionProps) {
+  const { locale, t } = useI18n()
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const { ref, isVisible } = useScrollTrigger(0.1)
+
+  const categoryLabel = (slug: string) => {
+    const category = categories.find((item) => item.slug === slug)
+    if (category) return resolveCategoryLabel(t, locale, category)
+    const key = `categories.${slug}`
+    const translated = t(key)
+    return translated === key ? slug : translated
+  }
+
+  const filters = [
+    { slug: 'all', label: t('categories.all') },
+    ...categories.map((category) => ({
+      slug: category.slug,
+      label: resolveCategoryLabel(t, locale, category),
+    })),
+  ]
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
@@ -69,19 +86,19 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
           animate={isVisible ? { opacity: 1, scaleX: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.2, ease: EASE_DECO }}
         >
-          {CATEGORIES.map(category => (
+          {filters.map(category => (
             <Button
-                key={category.value}
+                key={category.slug}
                 type="button"
-                onClick={() => setSelectedCategory(category.value)}
-              variant={selectedCategory === category.value ? 'default' : 'outline'}
+                onClick={() => setSelectedCategory(category.slug)}
+              variant={selectedCategory === category.slug ? 'default' : 'outline'}
               className={`uppercase tracking-[0.15em] md:tracking-[0.2em] transition-all duration-500 px-4 md:px-8 py-2 md:py-3 text-xs md:text-sm font-semibold ${
-                selectedCategory === category.value 
+                selectedCategory === category.slug 
                   ? 'bg-foreground text-background border-2 border-foreground bioshock-glow-animated' 
                   : 'border-2 border-foreground/50 bg-transparent text-foreground hover:border-foreground hover:bg-foreground/10'
               }`}
             >
-              {t(`categories.${category.value}`)}
+              {category.label}
             </Button>
           ))}
         </motion.div>
@@ -94,7 +111,7 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
               animate={isVisible ? { opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
               transition={{ duration: 0.6, delay: 0.3 + (index * 0.08), ease: EASE_DECO }}
             >
-              <ProductCard product={product} onViewDetails={handleViewDetails} />
+              <ProductCard product={product} onViewDetails={handleViewDetails} categoryLabel={categoryLabel(product.category)} />
             </motion.div>
           ))}
         </div>
@@ -108,6 +125,7 @@ export function CatalogSection({ products = PRODUCTS }: CatalogSectionProps) {
 
       <ProductDetailDialog 
         product={selectedProduct}
+        categoryLabel={selectedProduct ? categoryLabel(selectedProduct.category) : undefined}
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
       />

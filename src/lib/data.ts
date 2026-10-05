@@ -4,10 +4,10 @@ import {
   fixtureEvents,
   fixtureGallery,
   fixtureInstagram,
-  isJewelryCategory,
 } from '@/lib/fixtures'
+import { fixtureCategories } from '@/lib/categories'
 import { createServerSupabase } from '@/lib/supabase/server'
-import type { BrandInfo, EventItem, GalleryItem, InstagramPost, JewelryCategory } from '@/lib/types'
+import type { BrandInfo, Category, EventItem, GalleryItem, InstagramPost, JewelryCategory } from '@/lib/types'
 
 export async function getGallery(): Promise<GalleryItem[]> {
   if (isDemoMode()) return fixtureGallery
@@ -23,7 +23,7 @@ export async function getGallery(): Promise<GalleryItem[]> {
   for (const row of data) {
     const related = row.categories as { slug: string } | { slug: string }[] | null
     const slug = Array.isArray(related) ? related[0]?.slug : related?.slug
-    if (!slug || !isJewelryCategory(slug)) continue
+    if (!slug) continue
     items.push({
       id: row.id as string,
       name: row.title as string,
@@ -112,6 +112,24 @@ export function galleryAsProducts(items: GalleryItem[]): import('@/lib/types').P
 
 export function brandMap(items: BrandInfo[]): Record<string, BrandInfo> {
   return Object.fromEntries(items.filter((item) => item.key !== 'hero_video').map((item) => [item.key, item]))
+}
+
+export async function getCategories(): Promise<Category[]> {
+  if (isDemoMode()) return fixtureCategories
+  const supabase = await createServerSupabase()
+  if (!supabase) return fixtureCategories
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, slug, label, label_en, sort_order')
+    .order('sort_order', { ascending: true })
+  if (error || !data) return fixtureCategories
+  return data.map((row) => ({
+    id: row.id as string,
+    slug: row.slug as string,
+    label: row.label as string,
+    labelEn: (row.label_en as string) || '',
+    sortOrder: (row.sort_order as number) ?? 0,
+  }))
 }
 
 export async function getHeroVideoUrl(): Promise<string | undefined> {

@@ -229,10 +229,10 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
             </g>
 
             <g className="loading-moon-accents">
-              <g transform="rotate(-90 60 75)">
+              <g transform="rotate(-90 95 95)">
                 <motion.text
-                  x="60"
-                  y="75"
+                  x="95"
+                  y="95"
                   className="moon-symbol-loading"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 0.7, scale: 1 }}
@@ -241,10 +241,10 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                   ☾
                 </motion.text>
               </g>
-              <g transform={`rotate(-90 ${viewport.w - 80} 75)`}>
+              <g transform={`rotate(-90 ${viewport.w - 95} 95)`}>
                 <motion.text
-                  x={viewport.w - 80}
-                  y="75"
+                  x={viewport.w - 95}
+                  y="95"
                   className="moon-symbol-loading"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 0.7, scale: 1 }}
@@ -253,10 +253,10 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                   ☾
                 </motion.text>
               </g>
-              <g transform={`rotate(-90 ${viewport.w - 80} ${viewport.h - 55})`}>
+              <g transform={`rotate(-90 ${viewport.w - 95} ${viewport.h - 95})`}>
                 <motion.text
-                  x={viewport.w - 80}
-                  y={viewport.h - 55}
+                  x={viewport.w - 95}
+                  y={viewport.h - 95}
                   className="moon-symbol-loading"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 0.7, scale: 1 }}
@@ -265,10 +265,10 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                   ☾
                 </motion.text>
               </g>
-              <g transform={`rotate(-90 60 ${viewport.h - 55})`}>
+              <g transform={`rotate(-90 95 ${viewport.h - 95})`}>
                 <motion.text
-                  x="60"
-                  y={viewport.h - 55}
+                  x="95"
+                  y={viewport.h - 95}
                   className="moon-symbol-loading"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 0.7, scale: 1 }}

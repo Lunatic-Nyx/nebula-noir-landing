@@ -102,6 +102,15 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Contact form: the 6th request within 10 minutes (same IP+email) returns the rate-limit message; other visitors are unaffected.
 - [ ] `Content-Security-Policy` header present; the site, admin, Supabase calls and R2 media still work.
 
+## UI consistency & footer
+
+- [ ] `.art-deco-divider` under Catalog/Instagram is horizontally centered (`element center == parent center`).
+- [ ] Loading-screen moon accents do not intersect the corner bracket lines.
+- [ ] Product cards in a row share the same height; the category + Details footer lines up.
+- [ ] Every legal/info page shows a working **Zurück** button (falls back to `/` without history).
+- [ ] Admin → Texte & Übersetzungen → Footer: rename a link (e.g. "Über Uns" → "Über mich"), change the Etsy URL, reorder links/columns, add/remove a link; the public footer reflects it after reload.
+- [ ] Empty footer link URLs are discarded on save; `javascript:`/`//host` hrefs are rejected.
+
 ## Admin auth
 
 - [ ] `/admin` unauthenticated → `/login`.

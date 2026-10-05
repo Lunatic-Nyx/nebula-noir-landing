@@ -74,7 +74,7 @@ export function CatalogSection({ products = [], categories = [] }: CatalogSectio
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line break-words">
             {t('catalog.title')}
           </h2>
-          <div className="art-deco-divider max-w-md mx-auto" />
+          <div className="art-deco-divider max-w-md mx-auto!" />
           <p className="text-sm md:text-base lg:text-lg text-foreground/70 mt-6 md:mt-10 max-w-2xl mx-auto font-light leading-relaxed px-4">
             {t('catalog.subtitle')}
           </p>
@@ -107,6 +107,7 @@ export function CatalogSection({ products = [], categories = [] }: CatalogSectio
           {filteredProducts.map((product, index) => (
             <motion.div 
               key={product.id}
+              className="h-full"
               initial={{ opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)' }}
               animate={isVisible ? { opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)' } : {}}
               transition={{ duration: 0.6, delay: 0.3 + (index * 0.08), ease: EASE_DECO }}

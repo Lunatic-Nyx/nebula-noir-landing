@@ -130,7 +130,7 @@ Hinweis: Maßanfertigungen in der Regel 2–4 Wochen.
 
 Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab. Im Footer unten: **Cookie-Einstellungen** (öffnet den Cookie-Hinweis erneut).
 
-Statische Routen (Site-Chrome, keine Dialoge):
+Statische Routen (Site-Chrome, keine Dialoge). Jede Rechtsseite hat oben einen **Zurück**-Button.
 
 | Pfad | Inhalt |
 |---|---|
@@ -287,11 +287,12 @@ Große Dateien **nicht** durch die Next.js-Funktion posten (Vercel-Body-Limit ~4
 
 ### 4.10 Texte & Übersetzungen — `/admin/content`
 
-Drei Reiter:
+Vier Reiter:
 
 1. **Website**: Etsy-URL, Instagram-URL, Kontakt-E-Mail. Leere Felder fallen auf den Standard zurück (die Kontakt-E-Mail ist zugleich Fallback-Empfänger der Kontakt-Benachrichtigung).
 2. **Übersetzungen**: alle UI-Strings DE/EN. Leer = Standardtext (Platzhalter zeigt ihn). Unbekannte Pfade werden beim Speichern verworfen. Betrifft die öffentliche Website, nicht den Admin.
 3. **Rechtstexte**: Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns — Titel + HTML-Inhalt je Sprache. **Leer = Code-Standard**, dadurch wird keine Pflichtseite leer. Aktives HTML wird beim Speichern entfernt (Scripts, iframes, Event-Handler, `javascript:`).
+4. **Footer**: Spalten, Links (Label DE/EN, URL, extern), Reihenfolge (↑/↓), Hinzufügen/Entfernen, Marken-Blurb, Copyright und „Made in". Defaults entsprechen dem bisherigen Footer; z. B. lässt sich „Über Uns" in „Über mich" umbenennen oder der Etsy-Link durch einen anderen Shop ersetzen.
 
 ### 4.11 Kategorien — `/admin/categories`
 

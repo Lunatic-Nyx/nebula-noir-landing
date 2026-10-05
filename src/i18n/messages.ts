@@ -4,6 +4,7 @@ export const messages = {
   de: {
     common: {
       close: 'Schließen',
+      back: 'Zurück',
     },
     consent: {
       title: 'Cookies & externe Inhalte',
@@ -212,6 +213,7 @@ export const messages = {
   en: {
     common: {
       close: 'Close',
+      back: 'Back',
     },
     consent: {
       title: 'Cookies & external content',

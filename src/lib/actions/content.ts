@@ -5,6 +5,7 @@ import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { parseTranslationOverrides } from '@/i18n/paths'
 import { parseLegalConfig, parsePublicSiteConfig } from '@/lib/site-config'
+import { parseFooterConfig } from '@/lib/footer-config'
 
 export type ContentSaveResult = { ok: true } | { ok: false; error: string }
 
@@ -33,4 +34,8 @@ export async function saveTranslations(input: unknown): Promise<ContentSaveResul
 
 export async function saveLegalConfig(input: unknown): Promise<ContentSaveResult> {
   return upsertConfig('legal', parseLegalConfig(input))
+}
+
+export async function saveFooterConfig(input: unknown): Promise<ContentSaveResult> {
+  return upsertConfig('footer', parseFooterConfig(input))
 }

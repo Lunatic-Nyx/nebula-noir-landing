@@ -182,5 +182,14 @@ The consent choice lives in the `nn-consent` cookie, so the root layout can deci
 
 Operator identity (name, address, VAT) cannot be invented. Mark required gaps as `[[…]]`, keep the defaults in `legal-content.ts`, and let the admin legal editor warn while any `[[` remains. Legal bases use the standard dual phrasing (Art. 6(1)(b) for contract-related, (f) otherwise); processor guarantees stay a bracketed operator confirmation until contracts exist.
 
+## Unlayered CSS beats Tailwind utilities
+
+`src/index.css` is frozen and its rules are unlayered, while Tailwind v4 emits utilities in `@layer utilities`. Unlayered declarations win regardless of specificity, so `.art-deco-divider { margin: 4rem 0 }` silently overrode `mx-auto` and left-aligned the divider. When a utility "does nothing" on a frozen class, use the important modifier (`mx-auto!`) instead of editing the frozen file.
+
+## Equalize card heights with flex, not fixed sizes
+
+Grid rows stretch to the tallest item; give the card `flex h-full flex-col`, the content `flex-1`, and the footer `mt-auto`. The wrapper `motion.div` needs `h-full` too, otherwise the card cannot fill the stretched grid cell. Do not set fixed pixel heights — long German titles would clip.
+
+
 
 

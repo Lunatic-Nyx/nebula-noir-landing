@@ -27,7 +27,7 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
           <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4">
             {t('instagram.title')}
           </h2>
-          <div className="art-deco-divider max-w-md mx-auto" />
+          <div className="art-deco-divider max-w-md mx-auto!" />
           <p className="text-sm md:text-base lg:text-lg text-foreground/70 mt-6 md:mt-10 max-w-2xl mx-auto font-light leading-relaxed px-4">
             {t('instagram.subtitle')}
           </p>

@@ -19,6 +19,18 @@ export async function saveBrandInfo(key: string, title: string, body: string) {
   return { ok: true as const }
 }
 
+export async function deleteBrandInfo(key: string) {
+  const gate = await requireAdmin()
+  if (gate.error) return { ok: false as const, error: gate.error }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
+  const supabase = await createServerSupabase()
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
+  const { error } = await supabase.from('brand_info').delete().eq('key', key)
+  if (error) return { ok: false as const, error: error.message }
+  revalidatePath('/')
+  return { ok: true as const }
+}
+
 export async function saveEvent(input: {
   id?: string
   title: string

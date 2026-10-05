@@ -1,4 +1,4 @@
-import { isResendConfigured } from '@/lib/env'
+import { loadSecrets } from '@/lib/secrets/store'
 
 // Server-only module. Do NOT add a 'use server' directive: that would expose
 // every exported async function as a public RPC endpoint.
@@ -8,6 +8,7 @@ const DEFAULT_TO = 'contact@nebula-noir.com'
 const SEND_TIMEOUT_MS = 8000
 
 type SendEmailInput = {
+  apiKey: string
   to: string
   subject: string
   text: string
@@ -18,14 +19,11 @@ type SendEmailInput = {
 export type SendEmailResult = { ok: true } | { ok: false; error: string }
 
 async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
-  const apiKey = process.env.RESEND
-  if (!apiKey) return { ok: false, error: 'RESEND is not configured' }
-
   const replyTo =
     input.replyTo && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.replyTo) ? input.replyTo : undefined
 
   const payload: Record<string, unknown> = {
-    from: input.from || process.env.CONTACT_FROM_EMAIL || DEFAULT_FROM,
+    from: input.from || DEFAULT_FROM,
     to: [input.to],
     subject: input.subject.replace(/\s+/g, ' ').slice(0, 200),
     text: input.text,
@@ -36,7 +34,7 @@ async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
     const res = await fetch(RESEND_ENDPOINT, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${input.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -58,13 +56,16 @@ async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
 /**
  * Best-effort notification email for a new contact inquiry. Never throws.
  * Callers must treat a failure as non-fatal: the inquiry is already persisted.
+ * The API key and addresses resolve from the encrypted store, then env fallback.
  */
 export async function sendContactNotification(input: {
   name: string
   email: string
   message: string
 }): Promise<SendEmailResult> {
-  if (!isResendConfigured()) return { ok: false, error: 'RESEND is not configured' }
+  const { values } = await loadSecrets()
+  const apiKey = values.resend_api_key
+  if (!apiKey) return { ok: false, error: 'RESEND is not configured' }
 
   const text = [
     'Neue Kontaktanfrage über die Website nebula-noir.com.',
@@ -78,7 +79,9 @@ export async function sendContactNotification(input: {
   ].join('\n')
 
   return sendEmail({
-    to: process.env.CONTACT_TO_EMAIL || DEFAULT_TO,
+    apiKey,
+    from: values.contact_from_email || DEFAULT_FROM,
+    to: values.contact_to_email || DEFAULT_TO,
     subject: `Neue Anfrage über nebula-noir.com – ${input.name}`,
     text,
     replyTo: input.email,

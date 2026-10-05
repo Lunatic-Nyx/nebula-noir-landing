@@ -3,6 +3,7 @@
 import { LegalSection } from '@/lib/legal-content'
 import { useT } from '@/i18n/context'
 import { useSiteConfig } from '@/components/SiteConfigProvider'
+import { ConsentSettingsLink } from '@/components/ConsentSettingsLink'
 
 const legalLinkClass =
   'text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider text-left'
@@ -158,6 +159,7 @@ export function FooterSection() {
             <p className="text-foreground/50 text-xs tracking-wider">
               {t('footer.madeIn')}
             </p>
+            <ConsentSettingsLink />
           </div>
         </div>
       </div>

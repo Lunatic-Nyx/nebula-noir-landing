@@ -128,21 +128,33 @@ Hinweis: Maßanfertigungen in der Regel 2–4 Wochen.
 
 ### 3.10 Footer und Rechtliches
 
-Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab.
+Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab. Im Footer unten: **Cookie-Einstellungen** (öffnet den Cookie-Hinweis erneut).
 
 Statische Routen (Site-Chrome, keine Dialoge):
 
 | Pfad | Inhalt |
 |---|---|
-| `/impressum` | Impressum (§ 5 TMG) — Platzhalter für Name/Adresse ersetzen |
-| `/datenschutz` | Datenschutzerklärung |
+| `/impressum` | Impressum (§ 5 DDG) — `[[…]]`-Pflichtfelder für Betreibername/Anschrift im Admin ergänzen |
+| `/datenschutz` | Datenschutzerklärung (Hosting, Kontakt/Resend, Cookies/Consent, R2, Google, Meta, Etsy, Rechte) |
 | `/agb` | AGB |
 | `/widerruf` | Widerruf |
 | `/versand` | Versand |
 | `/custom-orders` | Custom Orders |
 | `/ueber-uns` | Über uns |
 
-### 3.11 Darstellung und Bewegung
+### 3.11 Cookies und Einwilligung
+
+Beim ersten Besuch erscheint ein Cookie-Hinweis:
+
+- **Alle akzeptieren** → lädt externe Inhalte (Google Fonts) und setzt `nn-consent` (1 Jahr).
+- **Nur notwendige** → es werden nur technisch notwendige Cookies gesetzt (`nn-locale`, `nn-consent`); Google Fonts wird nicht geladen, die Seite nutzt Systemschriftarten.
+- **Datenschutz** öffnet die Datenschutzerklärung.
+
+Die Entscheidung lässt sich jederzeit über **Cookie-Einstellungen** im Footer zurücksetzen. Ohne Einwilligung findet keine Übermittlung an Google statt.
+
+Das Kontaktformular ist auf **5 Anfragen pro 10 Minuten** (pro gehashter IP + E-Mail) begrenzt; darüber erscheint ein Hinweis „Zu viele Anfragen".
+
+### 3.12 Darstellung und Bewegung
 
 - Custom Cursor-Glow nur bei feinem Pointer; Touch behält den Systemcursor.
 - CRT-Scanline und geometrische Hintergründe sind Teil des Looks (Design Freeze).

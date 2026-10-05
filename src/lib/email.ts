@@ -1,3 +1,4 @@
+import 'server-only'
 import { loadSecrets } from '@/lib/secrets/store'
 import { getPublicSiteConfig } from '@/lib/site-config'
 

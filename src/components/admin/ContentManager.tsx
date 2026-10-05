@@ -59,6 +59,11 @@ export function ContentManager({
     return Array.from(map.entries())
   }, [])
 
+  const legalPlaceholders = useMemo(() => {
+    const text = JSON.stringify(legal)
+    return text.includes('[[')
+  }, [legal])
+
   async function saveSite() {
     setBusy(true)
     const result = await saveSiteConfig(site)
@@ -174,6 +179,13 @@ export function ContentManager({
           <p className="text-sm text-foreground/70">
             Inhalte der Rechtsseiten. HTML erlaubt. Leere Felder fallen auf den Standard zurück.
           </p>
+          {legalPlaceholders ? (
+            <div className="border border-foreground/40 bg-primary/10 p-4 text-sm text-foreground/80">
+              <strong>Pflichtangaben fehlen:</strong> Die Rechtstexte enthalten noch mit{' '}
+              <code>[[…]]</code> markierte Platzhalter (u. a. Betreibername und Anschrift). Diese
+              müssen vor dem Livegang eingetragen werden.
+            </div>
+          ) : null}
           {(Object.keys(SECTION_LABELS) as LegalSection[]).map((section) => (
             <details key={section} className="border-2 border-foreground/30 bg-background/50">
               <summary className="cursor-pointer px-4 py-3 text-sm uppercase tracking-[0.2em]">{SECTION_LABELS[section]}</summary>

@@ -71,7 +71,7 @@ export function CatalogSection({ products = [], categories = [] }: CatalogSectio
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
           transition={{ duration: 0.8, ease: EASE_DECO }}
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line break-words">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line break-words">
             {t('catalog.title')}
           </h2>
           <div className="art-deco-divider max-w-md mx-auto" />

@@ -12,6 +12,7 @@ drop table if exists public.instagram_posts cascade;
 drop table if exists public.instagram_auth cascade;
 drop table if exists public.site_config cascade;
 drop table if exists public.api_secrets cascade;
+drop table if exists public.rate_limits cascade;
 drop table if exists public.profiles cascade;
 
 create table public.profiles (
@@ -70,6 +71,13 @@ create table public.api_secrets (
   updated_at timestamptz not null default now()
 );
 
+-- Deny-all RLS: only the SECURITY DEFINER function and service role touch this.
+create table public.rate_limits (
+  key text primary key,
+  count int not null default 0,
+  reset_at timestamptz not null
+);
+
 create table public.events (
   id uuid primary key default gen_random_uuid(),
   title text not null,
@@ -117,6 +125,7 @@ alter table public.instagram_posts enable row level security;
 alter table public.instagram_auth enable row level security;
 alter table public.site_config enable row level security;
 alter table public.api_secrets enable row level security;
+alter table public.rate_limits enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -130,6 +139,47 @@ as $$
     where id = auth.uid() and role = 'admin'
   );
 $$;
+
+-- Atomic rate limiter. Keys are hashed identifiers supplied by the server.
+create or replace function public.consume_rate_limit(p_key text, p_limit int, p_window_seconds int)
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_count int;
+begin
+  -- Hard bounds so an abusive caller cannot poison buckets or flood the table.
+  if p_key is null or length(p_key) = 0 or length(p_key) > 200
+     or p_limit < 1 or p_limit > 1000
+     or p_window_seconds < 1 or p_window_seconds > 86400 then
+    return false;
+  end if;
+
+  -- Opportunistic cleanup of expired windows (bounded growth without a cron).
+  if random() < 0.02 then
+    delete from public.rate_limits where reset_at < now() - interval '1 day';
+  end if;
+
+  insert into public.rate_limits (key, count, reset_at)
+  values (p_key, 1, now() + make_interval(secs => p_window_seconds))
+  on conflict (key) do update
+    set count = case
+          when public.rate_limits.reset_at < now() then 1
+          else public.rate_limits.count + 1
+        end,
+        reset_at = case
+          when public.rate_limits.reset_at < now() then now() + make_interval(secs => p_window_seconds)
+          else public.rate_limits.reset_at
+        end
+  returning count into v_count;
+  return v_count <= p_limit;
+end;
+$$;
+
+revoke execute on function public.consume_rate_limit(text, int, int) from public, anon, authenticated;
+grant execute on function public.consume_rate_limit(text, int, int) to service_role;
 
 -- profiles
 create policy "profiles_select_own"
@@ -274,18 +324,18 @@ insert into public.gallery_images (title, description, public_url, category_id, 
 select v.title, v.description, v.public_url, c.id, v.sort_order
 from (
   values
-    ('Void Serpent Choker', 'PVC-Choker, Kunstleder, schwere Kette, große Ringe.', 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80', 'chokers', 1),
-    ('Neon Resin Ring', 'PVC/Resin-Ring mit fluoreszierendem Neon.', 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80', 'rings', 2),
-    ('Chain Ring Earrings', 'Metallringe an Kette. Industrial-Hardware.', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80', 'earrings', 3),
-    ('Rivet Chain Bracelet', 'Kette, Nieten, große Ringe. Kunstleder-Details.', 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&q=80', 'bracelets', 4),
-    ('Cyber Hex Choker', 'Kunstleder/PVC-Choker, Neon-Hex, Metall-Hardware.', 'https://images.unsplash.com/photo-1610217438102-c550ab935b72?w=800&q=80', 'chokers', 5),
-    ('Neon Resin Bangle', 'Breiter PVC/Resin-Reif, fluoreszierendes Neon.', 'https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=800&q=80', 'bracelets', 6),
-    ('Industrial Steel Ring', 'Schwerer Metallring, von Hand graviert.', 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800&q=80', 'rings', 7),
-    ('Neon Studs', 'Metallstecker, fluoreszierendes Neon.', 'https://images.unsplash.com/photo-1589128777073-263566ae5e4d?w=800&q=80', 'earrings', 8),
-    ('Ring Chain Belt', 'Kettengürtel, große Ringe, Nieten.', 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&q=80', 'accessories', 9),
-    ('Chain Collar', 'Kragen aus schweren Ketten und großen Ringen.', 'https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=800&q=80', 'chokers', 10),
-    ('Black Resin Ring', 'Schwarzer PVC/Resin-Ring, Metallkern.', 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&q=80', 'rings', 11),
-    ('Drop Chain Earrings', 'Lange Kettenohrringe, Ringe, Nieten.', 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800&q=80', 'earrings', 12)
+    ('Void Serpent Choker', 'PVC-Choker, Kunstleder, schwere Kette, große Ringe.', '/demo/instagram/01.jpg', 'chokers', 1),
+    ('Neon Resin Ring', 'PVC/Resin-Ring mit fluoreszierendem Neon.', '/demo/instagram/02.jpg', 'rings', 2),
+    ('Chain Ring Earrings', 'Metallringe an Kette. Industrial-Hardware.', '/demo/instagram/03.jpg', 'earrings', 3),
+    ('Rivet Chain Bracelet', 'Kette, Nieten, große Ringe. Kunstleder-Details.', '/demo/instagram/04.jpg', 'bracelets', 4),
+    ('Cyber Hex Choker', 'Kunstleder/PVC-Choker, Neon-Hex, Metall-Hardware.', '/demo/instagram/05.jpg', 'chokers', 5),
+    ('Neon Resin Bangle', 'Breiter PVC/Resin-Reif, fluoreszierendes Neon.', '/demo/instagram/06.jpg', 'bracelets', 6),
+    ('Industrial Steel Ring', 'Schwerer Metallring, von Hand graviert.', '/demo/instagram/07.jpg', 'rings', 7),
+    ('Neon Studs', 'Metallstecker, fluoreszierendes Neon.', '/demo/instagram/08.jpg', 'earrings', 8),
+    ('Ring Chain Belt', 'Kettengürtel, große Ringe, Nieten.', '/demo/instagram/09.jpg', 'accessories', 9),
+    ('Chain Collar', 'Kragen aus schweren Ketten und großen Ringen.', '/demo/instagram/10.jpg', 'chokers', 10),
+    ('Black Resin Ring', 'Schwarzer PVC/Resin-Ring, Metallkern.', '/demo/instagram/07.jpg', 'rings', 11),
+    ('Drop Chain Earrings', 'Lange Kettenohrringe, Ringe, Nieten.', '/demo/instagram/08.jpg', 'earrings', 12)
 ) as v(title, description, public_url, slug, sort_order)
 join public.categories c on c.slug = v.slug;
 

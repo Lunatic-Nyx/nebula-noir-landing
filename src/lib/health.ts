@@ -1,3 +1,4 @@
+import 'server-only'
 import { ListObjectsV2Command } from '@aws-sdk/client-s3'
 import { isDemoMode, isR2Configured } from '@/lib/env'
 import { getR2Client } from '@/lib/r2'

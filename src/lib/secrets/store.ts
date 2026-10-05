@@ -1,3 +1,4 @@
+import 'server-only'
 import { createServiceSupabase } from '@/lib/supabase/service'
 import { decryptSecret, encryptSecret, isEncryptionConfigured } from '@/lib/secrets/crypto'
 import {

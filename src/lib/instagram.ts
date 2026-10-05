@@ -1,3 +1,4 @@
+import 'server-only'
 import { isR2Configured } from '@/lib/env'
 import { createServiceSupabase } from '@/lib/supabase/service'
 import { extensionForMime, isAllowedImageType, uploadToR2 } from '@/lib/r2'

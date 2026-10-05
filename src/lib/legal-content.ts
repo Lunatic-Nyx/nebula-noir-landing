@@ -5,48 +5,54 @@ export const LEGAL_CONTENT = {
       <h3>Angaben gemäß § 5 DDG</h3>
       <p>
         Nebula Noir<br />
-        Inhaberin: [Name der Betreiberin]<br />
-        [Straße und Hausnummer]<br />
-        [PLZ und Ort]<br />
+        [[Vor- und Nachname der Betreiberin / des Betreibers]]<br />
+        [[Straße und Hausnummer]]<br />
+        [[PLZ und Ort]]<br />
         Deutschland
       </p>
 
       <h3>Kontakt</h3>
       <p>
         E-Mail: contact@nebula-noir.com<br />
-        Etsy Shop: www.etsy.com/shop/nebulanoirnn
+        Telefon: [[Telefonnummer, optional – sonst Zeile entfernen]]<br />
+        Etsy-Shop: <a href="https://www.etsy.com/shop/nebulanoirnn" target="_blank" rel="noopener">www.etsy.com/shop/nebulanoirnn</a><br />
+        Instagram: <a href="https://www.instagram.com/nebula_noir.official" target="_blank" rel="noopener">@nebula_noir.official</a>
       </p>
 
-      <h3>Umsatzsteuer-ID</h3>
+      <h3>Vertreten durch</h3>
+      <p>[[Vor- und Nachname wie oben]]</p>
+
+      <h3>Umsatzsteuer-Identifikationsnummer</h3>
       <p>
-        Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br />
-        [USt-IdNr. falls vorhanden]
+        Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:
+        [[USt-IdNr. eintragen, falls vorhanden – sonst diesen Abschnitt entfernen]]
       </p>
 
-      <h3>Plattform der EU-Kommission zur Online-Streitbeilegung</h3>
-      <p>
-        Die Europäische Kommission stellt eine Plattform für die außergerichtliche Online-Streitbeilegung (OS-Plattform) bereit, aufrufbar unter <a href="https://ec.europa.eu/odr" target="_blank" rel="noopener">https://ec.europa.eu/odr</a>.
-      </p>
+      <h3>Redaktionell verantwortlich gemäß § 18 Abs. 2 MStV</h3>
+      <p>[[Vor- und Nachname]], [[Anschrift wie oben]]</p>
 
-      <h3>Verbraucherstreitbeilegung</h3>
+      <h3>Verbraucherstreitbeilegung / Universalschlichtungsstelle</h3>
       <p>
-        Wir sind zur Teilnahme an einem Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle weder verpflichtet noch bereit.
+        Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
+      </p>
+      <p>
+        Hinweis: Die von der EU-Kommission bereitgestellte Plattform zur Online-Streitbeilegung (OS-Plattform) wurde zum 20. Juli 2025 eingestellt. Ein Verweis auf diese Plattform ist daher nicht mehr erforderlich.
       </p>
 
       <h3>Haftungsausschluss</h3>
       <h4>Haftung für Inhalte</h4>
       <p>
-        Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen.
+        Die Inhalte unserer Seiten wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
       </p>
 
       <h4>Haftung für Links</h4>
       <p>
-        Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen.
+        Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft; rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar.
       </p>
 
       <h3>Urheberrecht</h3>
       <p>
-        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+        Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet.
       </p>
     `
   },
@@ -54,70 +60,109 @@ export const LEGAL_CONTENT = {
   datenschutz: {
     title: 'Datenschutzerklärung',
     content: `
-      <h3>1. Datenschutz auf einen Blick</h3>
-      <h4>Allgemeine Hinweise</h4>
+      <h3>1. Verantwortlicher</h3>
+      <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</p>
       <p>
-        Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
+        Nebula Noir<br />
+        [[Vor- und Nachname der Betreiberin / des Betreibers]]<br />
+        [[Straße und Hausnummer]]<br />
+        [[PLZ und Ort]]<br />
+        Deutschland<br />
+        E-Mail: contact@nebula-noir.com
       </p>
+      <p>Weitere Angaben finden Sie im <a href="/impressum">Impressum</a>.</p>
 
-      <h3>2. Datenerfassung auf dieser Website</h3>
-      <h4>Wer ist verantwortlich für die Datenerfassung auf dieser Website?</h4>
+      <h3>2. Überblick und Rechtsgrundlagen</h3>
       <p>
-        Die Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.
-      </p>
-
-      <h4>Wie erfassen wir Ihre Daten?</h4>
-      <p>
-        Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie in ein Kontaktformular eingeben.
+        Diese Website ist eine Galerie-, Marken- und Kontaktseite. Es gibt keinen eigenen Shop, keinen Warenkorb und keine Besucherkonten. Wir verarbeiten personenbezogene Daten nur, soweit dies für die Bereitstellung der Website, die Beantwortung von Anfragen und – nach Ihrer Einwilligung – das Laden externer Inhalte erforderlich ist.
       </p>
       <p>
-        Andere Daten werden automatisch beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs). Diese Daten werden ausschließlich zur fehlerfreien Bereitstellung der Website verwendet.
-      </p>
-
-      <h4>Wofür nutzen wir Ihre Daten?</h4>
-      <p>
-        Die Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Eine Analyse des Nutzerverhaltens findet nicht statt.
+        Rechtsgrundlagen sind je nach Verarbeitung Art. 6 Abs. 1 lit. a (Einwilligung), lit. b (Vertrag/vorvertragliche Maßnahmen) und lit. f (berechtigtes Interesse) DSGVO sowie § 25 Abs. 2 TDDDG für technisch notwendige Speicherungen. Eine automatisierte Entscheidungsfindung oder ein Profiling findet nicht statt.
       </p>
 
       <h3>3. Hosting</h3>
       <p>
-        Diese Website wird bei einem externen Dienstleister (Vercel Inc.) gehostet. Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert.
+        Diese Website wird bei unserem Dienstleister Vercel Inc. (USA) gehostet. Beim Aufruf werden technisch erforderliche Verbindungsdaten verarbeitet. Rechtsgrundlage ist unser berechtigtes Interesse an einer sicheren und stabilen Bereitstellung (Art. 6 Abs. 1 lit. f DSGVO). Eine Übermittlung in die USA kann erfolgen.
       </p>
 
-      <h3>4. Bestellungen</h3>
+      <h3>4. Server-Logfiles</h3>
+      <p>
+        Der Hostinganbieter erhebt und speichert Informationen in Server-Logfiles, die Ihr Browser automatisch übermittelt (z. B. IP-Adresse, Zeitpunkt, abgerufene Ressource, Browsertyp). Diese Daten werden nicht mit anderen Datenquellen zusammengeführt und dienen Fehleranalyse, Sicherheit und Stabilität. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Logs werden gelöscht, sobald sie für den Zweck nicht mehr erforderlich sind.
+      </p>
+
+      <h3>5. Kontaktformular und Kontaktaufnahme</h3>
+      <p>
+        Wenn Sie uns über das Kontaktformular eine Anfrage senden, verarbeiten wir die von Ihnen angegebenen Daten (Name, E-Mail-Adresse, Nachricht) zur Bearbeitung der Anfrage und für Anschlussfragen.
+      </p>
+      <p>
+        Die Speicherung erfolgt in unserer Datenbank bei unserem Dienstleister Supabase (Supabase Inc.). Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO, soweit die Anfrage auf einen Vertrag oder vorvertragliche Maßnahmen gerichtet ist, im Übrigen Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Beantwortung von Anfragen).
+      </p>
+      <p>
+        Zur Benachrichtigung über neue Anfragen nutzen wir den E-Mail-Versanddienst Resend (Resend, Inc., USA). Dabei werden Name, E-Mail-Adresse und Nachricht an Resend übermittelt und dort zum Zweck der Zustellung verarbeitet. Es kann eine Übermittlung in die USA erfolgen.
+      </p>
+      <p>
+        Zur Abwehr von Missbrauch speichern wir eine gekürzte, gehashte Kennung Ihrer Anfrage (Rate-Limit) ohne Klartext-IP-Adresse. Die Daten werden gelöscht, sobald sie für die Bearbeitung nicht mehr erforderlich sind, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Eine Löschung können Sie jederzeit unter den im Impressum genannten Kontaktdaten verlangen.
+      </p>
+
+      <h3>6. Cookies und Einwilligung</h3>
+      <p>Wir setzen technisch notwendige Cookies ein:</p>
+      <ul>
+        <li><code>nn-locale</code> – speichert Ihre Spracheinstellung (Laufzeit: 1 Jahr).</li>
+        <li><code>nn-consent</code> – speichert Ihre Einwilligungsentscheidung (Laufzeit: 1 Jahr).</li>
+        <li>Session-Cookies von Supabase – nur im Admin-Bereich nach dem Login.</li>
+      </ul>
+      <p>
+        Technisch notwendige Cookies werden auf Grundlage von § 25 Abs. 2 TDDDG ohne Einwilligung gespeichert. Ihre Einwilligung für externe Inhalte verwalten Sie über den Cookie-Hinweis; Sie können sie jederzeit über „Cookie-Einstellungen" im Footer mit Wirkung für die Zukunft ändern oder widerrufen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG).
+      </p>
+
+      <h3>7. Externe Schriftarten (Google Fonts)</h3>
+      <p>
+        Zur einheitlichen Darstellung verwenden wir Schriftarten von Google Fonts (Google Ireland Limited). Diese werden erst geladen, nachdem Sie dem Laden externer Inhalte zugestimmt haben. Ohne Einwilligung verwenden wir Systemschriftarten; es findet dann keine Übermittlung an Google statt. Nach Einwilligung wird beim Laden Ihre IP-Adresse an Google übermittelt; eine Übermittlung in die USA kann erfolgen. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
+      </p>
+
+      <h3>8. Instagram und Meta</h3>
+      <p>
+        Wir verlinken auf unser Instagram-Profil (@nebula_noir.official). Beim Anklicken gelten die Datenschutzbestimmungen von Meta. Instagram-Vorschaubilder werden auf unserer Website aus unserem eigenen Speicher (Cloudflare R2) ausgeliefert; nur wenn dieser nicht konfiguriert ist, können Bilder direkt von Servern von Meta geladen werden. Dabei kann eine Übermittlung von Nutzungsdaten in die USA erfolgen.
+      </p>
+
+      <h3>9. Cloudflare R2 (Medienspeicher)</h3>
+      <p>
+        Galeriebilder und das Hero-Video werden bei Cloudflare R2 gespeichert und von dort ausgeliefert. Beim Abruf verarbeitet Cloudflare technisch erforderliche Verbindungsdaten (u. a. IP-Adresse). Eine Übermittlung in die USA kann erfolgen. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer performanten Auslieferung).
+      </p>
+
+      <h3>10. Bestellungen über Etsy</h3>
       <p>
         Diese Website bietet keinen eigenen Warenkorb und keinen eigenen Checkout. Käufe erfolgen ausschließlich über unseren Etsy-Shop (www.etsy.com/shop/nebulanoirnn). Bei einer Bestellung über Etsy gelten die Datenschutzbestimmungen von Etsy; wir erhalten von Etsy die zur Bearbeitung und Versendung der Bestellung erforderlichen Daten.
       </p>
 
-      <h3>5. Ihre Rechte</h3>
+      <h3>11. Speicherdauer</h3>
       <p>
-        Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten. Sie haben außerdem ein Recht auf Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie ein Widerspruchsrecht gegen die Verarbeitung. Erteilte Einwilligungen können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Außerdem steht Ihnen ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu.
+        Wir speichern personenbezogene Daten nur so lange, wie es für die genannten Zwecke erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen. Kontaktanfragen werden nach Abschluss der Bearbeitung gelöscht, sofern keine Aufbewahrungspflichten entgegenstehen. Die konkrete Aufbewahrungsfrist legt der Betreiber fest; eine Löschung kann jederzeit verlangt werden.
       </p>
 
-      <h3>6. Kontaktformular</h3>
+      <h3>12. Ihre Rechte</h3>
       <p>
-        Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert.
-      </p>
-      <p>
-        Die Speicherung erfolgt in unserer Datenbank bei unserem Dienstleister Supabase (Supabase Inc.). Die Daten werden gelöscht, sobald sie für die Bearbeitung der Anfrage nicht mehr erforderlich sind, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Eine Löschung Ihrer Anfrage können Sie jederzeit unter den im Impressum genannten Kontaktdaten verlangen.
-      </p>
-      <p>
-        Für die Benachrichtigung über neue Kontaktanfragen nutzen wir den E-Mail-Versanddienst Resend (Resend, Inc., USA). Dabei werden die von Ihnen eingegebenen Daten (Name, E-Mail-Adresse, Nachricht) an Resend übermittelt und dort zum Zweck der Zustellung verarbeitet. Dabei kann eine Übermittlung personenbezogener Daten in die USA erfolgen.
+        Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16 DSGVO), Löschung (Art. 17 DSGVO), Einschränkung der Verarbeitung (Art. 18 DSGVO), Datenübertragbarkeit (Art. 20 DSGVO) sowie Widerspruch gegen die Verarbeitung (Art. 21 DSGVO). Erteilte Einwilligungen können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Außerdem steht Ihnen ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu.
       </p>
 
-      <h3>7. SSL- bzw. TLS-Verschlüsselung</h3>
+      <h3>13. Übermittlung in Drittländer</h3>
+      <p>
+        Einige der genannten Dienstleister (Vercel, Supabase, Resend, Cloudflare, Google, Meta) können Daten in den USA verarbeiten. Die Übermittlung erfolgt auf Grundlage der jeweils geltenden Garantien (z. B. Standardvertragsklauseln oder Angemessenheitsbeschluss), soweit diese vorliegen. [[Vom Betreiber zu bestätigen: AVV/DPA und Garantieart je Dienstleister.]]
+      </p>
+
+      <h3>14. SSL- bzw. TLS-Verschlüsselung</h3>
       <p>
         Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL- bzw. TLS-Verschlüsselung.
       </p>
 
-      <h3>8. Cookies</h3>
+      <h3>15. Keine Analyse, kein Tracking</h3>
       <p>
-        Diese Website setzt ausschließlich technisch erforderliche Cookies ein. Das Cookie <code>nn-locale</code> speichert die von Ihnen gewählte Spracheinstellung (Laufzeit ein Jahr). Für den Admin-Bereich werden nach dem Login zusätzlich Session-Cookies gesetzt. Für diese funktionalen Cookies ist keine Einwilligung erforderlich.
+        Wir setzen keine Analyse- oder Marketing-Tools ein und erstellen keine Nutzerprofile. Es findet kein Tracking Ihres Nutzerverhaltens statt.
       </p>
 
-      <h3>9. Eingebundene externe Dienste</h3>
+      <h3>16. Änderungen</h3>
       <p>
-        Zur Darstellung der Website werden Schriftarten von Google Fonts geladen; dabei wird Ihre IP-Adresse an Google übermittelt. Instagram-Vorschaubilder werden, sofern sie nicht über unseren eigenen Speicher ausgeliefert werden, direkt von Servern von Meta geladen. Medien (Galeriebilder, Hero-Video) werden bei Cloudflare R2 gespeichert und von dort ausgeliefert. Dabei kann eine Übermittlung von Nutzungsdaten in die USA erfolgen.
+        Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich die Rechtslage oder unsere Verarbeitung ändert. Es gilt die jeweils auf dieser Seite veröffentlichte Fassung.
       </p>
     `
   },
@@ -192,7 +237,7 @@ export const LEGAL_CONTENT = {
 
       <h3>11. Streitbeilegung</h3>
       <p>
-        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/odr" target="_blank" rel="noopener">https://ec.europa.eu/odr</a>
+        Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. Die von der EU-Kommission bereitgestellte Plattform zur Online-Streitbeilegung (OS-Plattform) wurde zum 20. Juli 2025 eingestellt; ein Verweis darauf ist daher nicht mehr erforderlich.
       </p>
     `
   },
@@ -243,7 +288,7 @@ export const LEGAL_CONTENT = {
         Wenn Sie den Vertrag widerrufen wollen, können Sie dieses Formular verwenden:
       </p>
       <div style="border: 1px solid #666; padding: 20px; margin: 20px 0;">
-        <p>An Nebula Noir, [Adresse], [E-Mail]:</p>
+        <p>An Nebula Noir, [[Anschrift wie im Impressum]], contact@nebula-noir.com:</p>
         <p>
           Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)/die Erbringung der folgenden Dienstleistung (*)
         </p>

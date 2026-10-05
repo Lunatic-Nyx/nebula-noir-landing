@@ -45,6 +45,7 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 | `contact_inquiries` | INSERT | SELECT, UPDATE, DELETE |
 | `site_config` | SELECT | ALL — public read; never store secrets here |
 | `api_secrets` | none | ALL (runtime reads use the service role) |
+| `rate_limits` | none | Deny-all; only `consume_rate_limit()` (SECURITY DEFINER) and the service role |
 | `profiles` | none | SELECT own row; admin role set only via SQL/service |
 
 Admin check: JWT user id exists in `profiles` with `role = 'admin'`.
@@ -78,7 +79,15 @@ Service role is used only in:
 
 ## HTTP security headers
 
-`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, and HSTS for all routes.
+`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, HSTS and a Content-Security-Policy (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, inline scripts/styles for Next/Tailwind, fonts from `fonts.gstatic.com`, images/media over HTTPS, `connect-src` to Supabase).
+
+## Rate limiting
+
+The contact action enforces 5 requests / 10 minutes per hashed IP+email via `public.consume_rate_limit()` (table `rate_limits`, deny-all RLS, `SECURITY DEFINER`, execute revoked from `public`/`anon`/`authenticated`, granted to `service_role` only). The function rejects out-of-range parameters and opportunistically deletes expired rows, so an abusive caller cannot poison buckets or grow the table unbounded. The hashed key is stored, never the raw IP. The limiter fails open when Supabase/service role is missing so a misconfiguration cannot block the form. This complements — but does not replace — an edge/WAF limit before enabling `RESEND`.
+
+## Server-only modules
+
+`src/lib/secrets/**`, `src/lib/email.ts`, `src/lib/site-config.ts`, `src/lib/admin-gate.ts`, `src/lib/health.ts`, `src/lib/instagram.ts`, `src/lib/r2.ts` and the Supabase clients import `server-only`, so a client import fails the build. None of them may carry a `'use server'` directive.
 
 ## Contact form
 

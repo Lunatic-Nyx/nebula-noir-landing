@@ -1,3 +1,4 @@
+import 'server-only'
 import { getAdminUser } from '@/lib/auth'
 import { getAdminT } from '@/i18n/server'
 

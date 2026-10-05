@@ -93,6 +93,15 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Hero video, when URL is set, sits behind existing content, muted, no player chrome.
 - [ ] Scroll through hero scrubs `currentTime`; `prefers-reduced-motion` freezes on frame 0.
 
+## Consent & legal
+
+- [ ] First visit shows the cookie banner; "Nur notwendige" stores `nn-consent` and no request to `fonts.googleapis.com` / `fonts.gstatic.com` occurs (system fonts are used).
+- [ ] "Alle akzeptieren" stores `nn-consent` and loads Google Fonts (Poiret One active).
+- [ ] Footer "Cookie-Einstellungen" resets the choice and the banner reappears.
+- [ ] `/impressum` and `/datenschutz` contain no `[[…]]` placeholders before go-live; the admin legal editor warns while any remain.
+- [ ] Contact form: the 6th request within 10 minutes (same IP+email) returns the rate-limit message; other visitors are unaffected.
+- [ ] `Content-Security-Policy` header present; the site, admin, Supabase calls and R2 media still work.
+
 ## Admin auth
 
 - [ ] `/admin` unauthenticated → `/login`.

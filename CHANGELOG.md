@@ -2,6 +2,31 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.1] — 2026-10-05
+
+### Added
+
+- Cookie/consent banner (`nn-consent`) with "accept all" / "necessary only" and a footer "Cookie-Einstellungen" link. Google Fonts (and its preconnects) load only after consent; without consent system fonts are used.
+- Complete Impressum and Datenschutzerklärung templates covering all processors (Vercel, Supabase, Resend, Cloudflare R2, Google, Meta, Etsy), legal bases, cookies/consent, retention and rights. Operator identity fields are marked `[[…]]`; the admin warns while placeholders remain.
+- Contact-form rate limit (5 requests / 10 min per hashed IP+email) via `consume_rate_limit` (Deny-all table, SECURITY DEFINER, service role only) with fail-open when Supabase is unconfigured.
+- `server-only` guards on all server modules; Content-Security-Policy added to the security headers.
+
+### Changed
+
+- Datenschutz reflects the consent-gated fonts and the EU ODR platform being discontinued (Impressum no longer links `ec.europa.eu/odr`).
+
+### Fixed
+
+- `consume_rate_limit` now revokes `EXECUTE` from `public` as well (Postgres grants it to PUBLIC by default), rejects out-of-range parameters, and cleans expired rows.
+- Consent cookie sets `Secure` on HTTPS.
+- AGB §11 no longer links the discontinued EU ODR platform.
+- Gallery seed uses local `/demo/instagram/*.jpg` instead of `images.unsplash.com` (no undeclared third-party requests).
+- Internal maintenance notes removed from the public legal texts.
+- Production CSP no longer allows `'unsafe-eval'`.
+- Restored UTF-8 German strings in `email.ts`, `health.ts` and `secrets/store.ts` (mojibake from an encoding round-trip) and stripped BOMs from the server-only modules.
+- Contact/Catalog headings use a smaller base size/tracking so the system-font fallback (no font consent) cannot break words at 320px.
+- `useScrollTrigger` clamps its intersection threshold to a reachable ratio, so very tall sections (catalog at 320px) reveal on scroll instead of staying invisible.
+
 ## [0.6.0] — 2026-10-05
 
 ### Added

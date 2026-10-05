@@ -44,24 +44,38 @@ export function useScrollTrigger(threshold: number = 0.2) {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold }
-    )
-
     const currentRef = ref.current
-    if (currentRef) {
-      observer.observe(currentRef)
+    if (!currentRef) return
+
+    // A section taller than the viewport can never reach a ratio threshold of
+    // `threshold` (e.g. 6075px section in a 568px viewport → max ratio 0.093).
+    // Clamp to a reachable ratio so tall sections still reveal on scroll, while
+    // short sections keep their original timing.
+    const observerFor = (element: Element) => {
+      const height = (element as HTMLElement).offsetHeight || 1
+      const reachable = Math.min(1, window.innerHeight / height)
+      const safeThreshold = Math.min(threshold, Math.max(0.01, reachable * 0.9))
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) setIsVisible(true)
+        },
+        { threshold: safeThreshold }
+      )
+      observer.observe(element)
+      return observer
     }
 
+    let observer = observerFor(currentRef)
+
+    const onResize = () => {
+      observer.disconnect()
+      observer = observerFor(currentRef)
+    }
+    window.addEventListener('resize', onResize)
+
     return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef)
-      }
+      window.removeEventListener('resize', onResize)
+      observer.disconnect()
     }
   }, [threshold])
 

@@ -174,4 +174,13 @@ The admin layout nests `LocaleProvider initialLocale="de"`, but server component
 
 `loadSecrets()` caches for 60s per instance. Invalidate on write (`invalidateSecretsCache()`), and remember a concurrent in-flight read can repopulate the cache with a stale snapshot; treat 60s staleness as the bound. `SECRETS_ENCRYPTION_KEY` loss makes stored values unreadable — env fallbacks are the escape hatch.
 
+## Gate external fonts behind consent server-side
+
+The consent choice lives in the `nn-consent` cookie, so the root layout can decide in the first HTML render whether to emit the Google Fonts `<link>` (and its preconnects). No client component swap, no FOUC, and revoking consent on the next request simply omits the request. Because fonts are gated, the design freeze's "keep the existing Google Fonts URL" holds — the URL is unchanged; only when it is requested changes. Without consent system fonts render; do not silently fall back to a different webfont.
+
+## Legal templates need machine-checkable placeholders
+
+Operator identity (name, address, VAT) cannot be invented. Mark required gaps as `[[…]]`, keep the defaults in `legal-content.ts`, and let the admin legal editor warn while any `[[` remains. Legal bases use the standard dual phrasing (Art. 6(1)(b) for contract-related, (f) otherwise); processor guarantees stay a bracketed operator confirmation until contracts exist.
+
+
 

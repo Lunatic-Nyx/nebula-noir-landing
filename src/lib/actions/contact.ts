@@ -1,10 +1,44 @@
 'use server'
 
+import { createHash } from 'node:crypto'
 import { after } from 'next/server'
+import { headers } from 'next/headers'
 import { isDemoMode } from '@/lib/env'
 import { getServerT } from '@/i18n/server'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { createServiceSupabase } from '@/lib/supabase/service'
 import { sendContactNotification } from '@/lib/email'
+
+const CONTACT_LIMIT = 5
+const CONTACT_WINDOW_SECONDS = 600
+
+/**
+ * Atomic per-IP+email rate limit. Fail-open when Supabase/service role is not
+ * configured so a missing limiter never blocks legitimate visitors.
+ */
+async function isRateLimited(email: string): Promise<boolean> {
+  const service = createServiceSupabase()
+  if (!service) return false
+  try {
+    const headerList = await headers()
+    const forwarded = headerList.get('x-forwarded-for')?.split(',')[0]?.trim()
+    const ip = forwarded || headerList.get('x-real-ip')?.trim() || 'unknown'
+    const key = `contact:${createHash('sha256').update(`${ip}|${email}`).digest('hex').slice(0, 32)}`
+    const { data, error } = await service.rpc('consume_rate_limit', {
+      p_key: key,
+      p_limit: CONTACT_LIMIT,
+      p_window_seconds: CONTACT_WINDOW_SECONDS,
+    })
+    if (error) {
+      console.warn('[contact] rate limit check failed:', error.message)
+      return false
+    }
+    return data === false
+  } catch (error) {
+    console.warn('[contact] rate limit check threw:', error instanceof Error ? error.message : error)
+    return false
+  }
+}
 
 export type ContactResult = { ok: true; demo?: boolean } | { ok: false; error: string; demo?: boolean }
 
@@ -30,6 +64,10 @@ export async function submitContact(formData: {
 
   if (isDemoMode()) {
     return { ok: true, demo: true }
+  }
+
+  if (await isRateLimited(email)) {
+    return { ok: false, error: t('contact.rateLimited') }
   }
 
   const supabase = await createServerSupabase()

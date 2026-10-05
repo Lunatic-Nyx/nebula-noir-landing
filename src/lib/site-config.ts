@@ -1,3 +1,4 @@
+import 'server-only'
 import { cache } from 'react'
 import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'

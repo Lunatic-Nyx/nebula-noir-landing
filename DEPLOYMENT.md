@@ -96,6 +96,37 @@ create policy "api_secrets_admin_all" on public.api_secrets for all to authentic
 
 -- optional: allows the encrypted refresh token to blank the legacy column
 alter table public.instagram_auth alter column access_token set default '';
+
+create table if not exists public.rate_limits (
+  key text primary key,
+  count int not null default 0,
+  reset_at timestamptz not null
+);
+alter table public.rate_limits enable row level security;
+
+create or replace function public.consume_rate_limit(p_key text, p_limit int, p_window_seconds int)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare v_count int;
+begin
+  if p_key is null or length(p_key) = 0 or length(p_key) > 200
+     or p_limit < 1 or p_limit > 1000
+     or p_window_seconds < 1 or p_window_seconds > 86400 then
+    return false;
+  end if;
+  if random() < 0.02 then
+    delete from public.rate_limits where reset_at < now() - interval '1 day';
+  end if;
+  insert into public.rate_limits (key, count, reset_at)
+  values (p_key, 1, now() + make_interval(secs => p_window_seconds))
+  on conflict (key) do update
+    set count = case when public.rate_limits.reset_at < now() then 1 else public.rate_limits.count + 1 end,
+        reset_at = case when public.rate_limits.reset_at < now() then now() + make_interval(secs => p_window_seconds) else public.rate_limits.reset_at end
+  returning count into v_count;
+  return v_count <= p_limit;
+end;
+$$;
+revoke execute on function public.consume_rate_limit(text, int, int) from public, anon, authenticated;
+grant execute on function public.consume_rate_limit(text, int, int) to service_role;
 ```
 
 Set `SECRETS_ENCRYPTION_KEY` (64 hex chars) to enable the Admin → API-Keys editor:
@@ -105,6 +136,8 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 Smoke test after deploy: `/admin` (dashboard), `/admin/content` (save a translation), `/admin/categories` (create + delete a test category), `/admin/secrets` (save/clear with the key set), `/admin/health` (all checks green), and the public legal pages.
+
+Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-party image host). Existing installs that still point at `images.unsplash.com` should replace those rows in Admin → Galerie so the privacy policy stays accurate.
 
 ## 3. Cloudflare R2
 

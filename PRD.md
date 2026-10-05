@@ -25,6 +25,7 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 | Contact | Name, email, message → `contact_inquiries`; best-effort notification email via Resend (`RESEND`) |
 | Legal | Routes with `site_config.legal` overrides, fallback to code defaults; editable in admin |
 | i18n | DE default, EN cookie `nn-locale`; `site_config.translations` overrides editable in admin |
+| Consent | `nn-consent` gates external content (Google Fonts); reset via footer |
 | Admin | Auth + `profiles.role = 'admin'`: dashboard, gallery, events, brand texts, categories, site/i18n/legal content, inquiries, IG sync, hero video, encrypted API keys, health |
 | Demo Mode | Missing Supabase public env → fixtures, mutation toasts |
 

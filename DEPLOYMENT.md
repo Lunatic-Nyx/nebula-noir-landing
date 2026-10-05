@@ -145,12 +145,16 @@ Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-pa
 2. Manage API tokens → S3-compatible access key.
 3. Optional: custom domain or `r2.dev` public development URL → `R2_PUBLIC_URL` (no trailing slash).
 4. Endpoint: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
-5. CORS (bucket settings) for the Vercel origin:
+5. CORS (bucket settings) for the site origins:
 
 ```json
 [
   {
-    "AllowedOrigins": ["https://your-domain.vercel.app", "http://localhost:3000"],
+    "AllowedOrigins": [
+      "https://nebula-noir.com",
+      "https://www.nebula-noir.com",
+      "http://localhost:3000"
+    ],
     "AllowedMethods": ["GET", "HEAD", "PUT"],
     "AllowedHeaders": ["*"],
     "ExposeHeaders": ["ETag"],
@@ -159,7 +163,16 @@ Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-pa
 ]
 ```
 
-Gallery still images upload through the Next.js server. Hero video uses a short-lived R2 PUT presign, so CORS must allow PUT from the site origin. Public `R2_PUBLIC_URL` is used for `<img>` and `<video>`.
+Why exactly this:
+
+- **PUT** is required for the hero video: the browser uploads straight to `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` with a short-lived presigned URL, so the bucket must answer the CORS preflight for `PUT` from `https://nebula-noir.com` (and `www` if used).
+- **`AllowedHeaders: ["*"]`** (or at least `["content-type"]`): the presign binds the content type, and the browser sends it on the PUT; a missing header in the policy makes the preflight fail. `ETag` is exposed so any future multipart/complete flow can read it.
+- **GET/HEAD** are optional for plain `<img>`/`<video>` display (they do not send an `Origin`), but keep them so images can be fetched/processed via JavaScript later.
+- **Gallery uploads need no CORS**: they go through the Next.js server (`/api/gallery/upload` → S3 API call), not the browser.
+- **Vercel previews** (optional): add `"https://*.vercel.app"` if you want to upload the hero video from preview deployments. It allows any Vercel subdomain, but the route still requires an admin session.
+- Custom public domain for `R2_PUBLIC_URL` (e.g. `media.nebula-noir.com`) serves plain media without CORS; no extra origin is needed for display.
+
+After saving the policy, verify from the production origin: Admin → Hero-Video upload must complete; a missing rule shows `blocked by CORS policy` / no `Access-Control-Allow-Origin` in the browser console.
 
 ## 4. Instagram (`@nebula_noir.official`) — Instagram Login only
 

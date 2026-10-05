@@ -16,12 +16,3 @@ export function isR2Configured(): boolean {
 export function isInstagramConfigured(): boolean {
   return Boolean(process.env.INSTAGRAM_ACCESS_TOKEN)
 }
-
-export function getHeroVideoUrl(): string | undefined {
-  const url = process.env.NEXT_PUBLIC_HERO_VIDEO_URL
-  return url && url.length > 0 ? url : undefined
-}
-
-export function getSiteUrl(): string {
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-}

@@ -1,6 +1,6 @@
 # Theme kit vs live UI
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-10-05
 
 The folder `src/themes/nebula-noir-theme/` is a visual kit from the Spark-era theme package. **GitHub Spark is gone.** Class prefix `spark-theme-*` is CSS namespacing, not an SDK.
 
@@ -20,14 +20,9 @@ Fonts: Poiret One, Cinzel, Montserrat via the Google Fonts `<link>` in `app/layo
 
 ## What is not live
 
-These kit files exist for reference. They are **not** the production sections. Do not wire them in as replacements:
+The unused Spark-era kit slots — `Hero.tsx`, `Navigation.tsx`, `Card.tsx`, `BackgroundEffects.tsx` (canvas lines; live uses `ArtDecoBackground`), theme `SectionDivider.tsx`, `ThemeDemo.tsx` — plus the `index.ts` / `sparkTheme` registry were removed as dead code. The kit folder now contains only `styles.css` and `LoadingScreen.tsx`, the two live assets.
 
-- `Hero.tsx`, `Navigation.tsx`, `Card.tsx` (theme slot)
-- `BackgroundEffects.tsx` (canvas lines; live uses `ArtDecoBackground`)
-- `ThemeDemo.tsx`
-- Theme `SectionDivider.tsx` (live uses `SectionTransition` / existing dividers)
-
-`sparkTheme` in `index.ts` is a registry leftover. Copy there may still say “Cosmic Art Deco Goth”. **Do not use that copy on the site.** Brand words live in `src/i18n/messages.ts` and `brand_info`.
+The theme `SectionDivider` was never live; the site uses `SectionTransition` / existing dividers.
 
 ## Classes you may reuse on new UI
 

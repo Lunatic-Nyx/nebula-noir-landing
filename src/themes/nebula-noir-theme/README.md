@@ -12,18 +12,14 @@ Use semantic Tailwind tokens (`bg-background`, `text-foreground`, `bg-primary`).
 
 Fonts on the live site: Poiret One, Cinzel, Montserrat (Google Fonts URL in `app/layout.tsx`).
 
-## Slots (kit only)
+## Files
 
 | File | Live? |
 |---|---|
 | `LoadingScreen.tsx` | Yes — `HomePage` |
 | `styles.css` | Yes — `app/layout.tsx` |
-| `Hero.tsx` | No |
-| `Navigation.tsx` | No |
-| `Card.tsx` | No |
-| `BackgroundEffects.tsx` | No |
-| `SectionDivider.tsx` | No |
-| `ThemeDemo.tsx` | No |
+
+The unused Spark-era slots (`Hero.tsx`, `Navigation.tsx`, `Card.tsx`, `BackgroundEffects.tsx`, `SectionDivider.tsx`, `ThemeDemo.tsx`) and the `index.ts` / `sparkTheme` registry were removed as dead code.
 
 ## Moon
 

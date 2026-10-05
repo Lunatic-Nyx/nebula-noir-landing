@@ -34,6 +34,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
             >
               <button
                 onClick={() => onOpenChange(false)}
+                aria-label={t('common.close')}
                 className="absolute top-4 right-4 z-50 p-2 bg-background/80 backdrop-blur-sm border border-foreground/30 hover:bg-foreground hover:text-background transition-all duration-300"
               >
                 <X size={24} weight="bold" />
@@ -54,7 +55,7 @@ export function ProductDetailDialog({ product, open, onOpenChange }: ProductDeta
                   />
                   {product.madeToOrder && (
                     <Badge className="absolute top-6 left-6 bg-primary/90 text-primary-foreground uppercase tracking-[0.15em] text-sm nebula-glow px-4 py-2">
-                      Made to Order
+                      {t('catalog.madeToOrder')}
                     </Badge>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />

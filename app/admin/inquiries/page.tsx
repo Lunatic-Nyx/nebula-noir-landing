@@ -1,8 +1,10 @@
 import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { InquiriesManager } from '@/components/admin/InquiriesManager'
+import { getServerT } from '@/i18n/server'
 
 export default async function AdminInquiriesPage() {
+  const t = await getServerT()
   const demo = isDemoMode()
   let rows: { id: string; name: string; email: string; message: string; read: boolean; created_at: string }[] = []
   if (!demo) {
@@ -18,9 +20,9 @@ export default async function AdminInquiriesPage() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl uppercase tracking-[0.2em] bioshock-glow-animated">Anfragen</h2>
+      <h2 className="text-3xl uppercase tracking-[0.2em] bioshock-glow-animated">{t('admin.inquiries')}</h2>
       {demo ? (
-        <p className="text-foreground/70 font-light">Demo Mode — keine gespeicherten Anfragen.</p>
+        <p className="text-foreground/70 font-light">{t('admin.inquiriesDemoEmpty')}</p>
       ) : (
         <InquiriesManager rows={rows} />
       )}

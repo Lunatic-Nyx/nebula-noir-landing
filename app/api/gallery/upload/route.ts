@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
 import { isDemoMode, isR2Configured } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
-import { extensionForMime, isAllowedImageType, R2_MAX_BYTES, uploadToR2 } from '@/lib/r2'
+import { extensionForMime, isAllowedImageType, R2_MAX_BYTES, deleteFromR2, uploadToR2 } from '@/lib/r2'
 
 export async function POST(request: Request) {
   if (isDemoMode()) {
@@ -65,6 +65,8 @@ export async function POST(request: Request) {
     published: true,
   })
   if (error) {
+    // Roll back the uploaded object so a failed insert does not orphan it in R2.
+    await deleteFromR2(key).catch(() => {})
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 

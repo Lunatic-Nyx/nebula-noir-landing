@@ -161,6 +161,11 @@ create policy "contact_admin_update"
   using (public.is_admin())
   with check (public.is_admin());
 
+create policy "contact_admin_delete"
+  on public.contact_inquiries for delete
+  to authenticated
+  using (public.is_admin());
+
 -- brand_info
 create policy "brand_info_public_read"
   on public.brand_info for select

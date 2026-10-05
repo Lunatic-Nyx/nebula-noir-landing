@@ -34,7 +34,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
         />
         {product.madeToOrder && (
           <Badge className="absolute top-4 right-4 bg-primary/90 text-primary-foreground uppercase tracking-[0.15em] text-xs nebula-glow">
-            Made to Order
+            {t('catalog.madeToOrder')}
           </Badge>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
@@ -56,7 +56,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
 
         {product.madeToOrder && product.estimatedDays && (
           <p className="text-xs text-foreground/50 italic uppercase tracking-wider">
-            ⧗ {product.estimatedDays} Tage
+            ⧗ {t('catalog.days', { days: product.estimatedDays })}
           </p>
         )}
 

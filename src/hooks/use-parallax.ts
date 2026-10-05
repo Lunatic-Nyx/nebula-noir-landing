@@ -5,24 +5,35 @@ export function useParallax(speed: number = 0.5) {
   const [offset, setOffset] = useState(0)
 
   useEffect(() => {
-    const handleScroll = () => {
+    let frame = 0
+
+    const update = () => {
+      frame = 0
       if (!ref.current) return
       const rect = ref.current.getBoundingClientRect()
       const scrolled = window.scrollY
       const elementTop = rect.top + scrolled
       const elementHeight = rect.height
       const windowHeight = window.innerHeight
-      
+
       if (scrolled + windowHeight > elementTop && scrolled < elementTop + elementHeight) {
         const relativeScroll = scrolled - elementTop + windowHeight
         setOffset(relativeScroll * speed)
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
-    handleScroll()
-    
-    return () => window.removeEventListener('scroll', handleScroll)
+    const handleScroll = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(update)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    update()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      if (frame) window.cancelAnimationFrame(frame)
+    }
   }, [speed])
 
   return { ref, offset }

@@ -8,9 +8,6 @@ import {
 } from '@/lib/fixtures'
 import { createServerSupabase } from '@/lib/supabase/server'
 import type { BrandInfo, EventItem, GalleryItem, InstagramPost, JewelryCategory } from '@/lib/types'
-import { CATEGORIES } from '@/lib/products'
-
-export { CATEGORIES }
 
 export async function getGallery(): Promise<GalleryItem[]> {
   if (isDemoMode()) return fixtureGallery
@@ -44,7 +41,7 @@ export async function getBrandInfo(): Promise<BrandInfo[]> {
   const supabase = await createServerSupabase()
   if (!supabase) return fixtureBrandInfo
   const { data, error } = await supabase.from('brand_info').select('key, title, body')
-  if (error || !data || data.length === 0) return fixtureBrandInfo
+  if (error || !data) return []
   return data as BrandInfo[]
 }
 

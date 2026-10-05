@@ -1,6 +1,6 @@
 # Security
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-10-05
 
 The repository is proprietary (`LICENSE`). Do not publish exploits, dump env files, or file public GitHub issues for vulnerabilities. Email the site operator (see Impressum / `contact@nebula-noir.com`).
 
@@ -14,7 +14,6 @@ Do not file public GitHub issues for vulnerabilities. Email the site operator (s
 
 Safe to ship to the browser:
 
-- `NEXT_PUBLIC_SITE_URL`
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (RLS-enforced)
 - `NEXT_PUBLIC_HERO_VIDEO_URL`
@@ -42,7 +41,7 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 | `brand_info` | SELECT | ALL |
 | `instagram_posts` | SELECT | SELECT (writes via service role) |
 | `instagram_auth` | none | none (service role only) |
-| `contact_inquiries` | INSERT | SELECT, UPDATE |
+| `contact_inquiries` | INSERT | SELECT, UPDATE, DELETE |
 | `profiles` | none | SELECT own row; admin role set only via SQL/service |
 
 Admin check: JWT user id exists in `profiles` with `role = 'admin'`.
@@ -55,14 +54,18 @@ Service role is used only in:
 
 ## R2 upload limits
 
-- Images: max 10 MB; JPEG/PNG/WebP/GIF/SVG; `gallery/{uuid}.{ext}`
+- Images: max 10 MB; JPEG/PNG/WebP/GIF (SVG intentionally rejected); `gallery/{uuid}.{ext}`
 - Hero video: max 80 MB; MP4/WebM/MOV; `hero/{uuid}.{ext}` via 120s presigned PUT (admin only)
 - Auth: admin session required for all uploads
 - No public write on the bucket; Next.js server uses S3-compatible credentials
 
 ## Cron
 
-`/api/cron/instagram` requires `Authorization: Bearer $CRON_SECRET` (or Vercel Cron header).
+`/api/cron/instagram` requires `Authorization: Bearer $CRON_SECRET` (constant-time compare). Vercel Cron sends this header automatically when the `CRON_SECRET` env var is set. If the variable is missing or the header does not match, the route returns 401. The spoofable `x-vercel-cron` header is not trusted.
+
+## HTTP security headers
+
+`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, and HSTS for all routes.
 
 ## Contact form
 

@@ -7,8 +7,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { saveBrandInfo } from '@/lib/actions/admin'
 import type { BrandInfo } from '@/lib/types'
+import { useT } from '@/i18n/context'
 
 export function InfoManager({ items, demo }: { items: BrandInfo[]; demo?: boolean }) {
+  const t = useT()
   return (
     <div className="space-y-8">
       {items.map((item) => (
@@ -20,7 +22,7 @@ export function InfoManager({ items, demo }: { items: BrandInfo[]; demo?: boolea
             const data = new FormData(e.currentTarget)
             const result = await saveBrandInfo(item.key, String(data.get('title') || ''), String(data.get('body') || ''))
             if (!result.ok) toast.error(result.error)
-            else toast.success('Gespeichert')
+            else toast.success(t('admin.saved'))
           }}
         >
           <p className="text-xs uppercase tracking-wider text-foreground/50">{item.key}</p>
@@ -31,7 +33,7 @@ export function InfoManager({ items, demo }: { items: BrandInfo[]; demo?: boolea
             disabled={demo}
             className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-[0.2em] text-xs px-6 py-3"
           >
-            Speichern
+            {t('admin.save')}
           </Button>
         </form>
       ))}

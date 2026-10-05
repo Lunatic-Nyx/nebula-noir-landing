@@ -1,7 +1,5 @@
-import { PRODUCTS, CATEGORIES } from '@/lib/products'
+import { PRODUCTS } from '@/lib/products'
 import type { BrandInfo, EventItem, GalleryItem, InstagramPost, JewelryCategory, Product } from '@/lib/types'
-
-export const fixtureCategories = CATEGORIES.filter((c) => c.value !== 'all')
 
 export function productsToGallery(products: Product[]): GalleryItem[] {
   return products.map((p) => ({

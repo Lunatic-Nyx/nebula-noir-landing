@@ -1,6 +1,6 @@
 # Benutzerhandbuch — Nebula Noir
 
-**Stand:** 2026-09-10 · **Produkt:** Galerie- und Marken-Website (kein Shop)
+**Stand:** 2026-10-05 · **Produkt:** Galerie- und Marken-Website (kein Shop)
 
 Dieses Handbuch gilt für Besucher der öffentlichen Site und für Betreiberinnen im Admin. Technische Einrichtung steht in `README.md` und `DEPLOYMENT.md`.
 
@@ -191,7 +191,7 @@ Nav: Übersicht, Galerie, Events, Info, Anfragen, Instagram, Hero-Video, Site (`
 
 **Upload**
 
-1. Datei: JPEG, PNG, WebP, GIF, SVG, max. **10 MB**
+1. Datei: JPEG, PNG, WebP, GIF, max. **10 MB** (SVG wird aus Sicherheitsgründen abgelehnt)
 2. Titel (Pflicht), Beschreibung, Kategorie
 3. **Hochladen** → Server schreibt nach R2 `gallery/{uuid}.{ext}` und eine Zeile `gallery_images` (`published: true`)
 4. Startseite und Admin-Galerie werden revalidiert
@@ -235,7 +235,7 @@ Titel + Body speichern. Copy-Regeln: Cybergoth / Industrial / Cyberpunk / Dark A
 Kontaktformular-Eingänge: Name, E-Mail, Nachricht, Zeit.
 
 - **Gelesen** / **Ungelesen** toggelt `read`
-- Kein Löschen in der UI
+- **Löschen** entfernt die Anfrage (DSGVO-Löschung; braucht die `contact_admin_delete`-Policy aus `reset.sql`)
 - Anon darf INSERT, nicht SELECT — nur Admins sehen die Liste
 
 Antworten: per eigener Mail an die angegebene Adresse (kein In-App-Mailer).
@@ -302,7 +302,7 @@ Große Dateien **nicht** durch die Next.js-Funktion posten (Vercel-Body-Limit ~4
 | `POST /api/gallery/upload` | Admin | Bild → R2 + DB |
 | `POST /api/hero/presign` | Admin | Signierte R2-PUT-URL |
 | `POST /api/instagram/sync` | Admin | Manueller Sync |
-| `GET /api/cron/instagram` | Bearer `CRON_SECRET` oder Vercel-Cron | Täglicher Sync |
+| `GET /api/cron/instagram` | Bearer `CRON_SECRET` (Vercel sendet ihn automatisch) | Täglicher Sync |
 
 ---
 

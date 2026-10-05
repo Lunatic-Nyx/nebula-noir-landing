@@ -128,13 +128,15 @@ Do **not** put the token in `NEXT_PUBLIC_*`.
 
 ### Sync
 
-- Daily: Vercel Cron `GET /api/cron/instagram` (`vercel.json`), header `Authorization: Bearer $CRON_SECRET` or Vercel Cron.
+- Daily: Vercel Cron `GET /api/cron/instagram` (`vercel.json`). The route accepts only `Authorization: Bearer $CRON_SECRET`; Vercel sends that header automatically when `CRON_SECRET` is set. Missing/mismatched secret → 401.
 - Manual: `/admin/instagram` or `POST /api/instagram/sync` (admin session).
 - Still images are copied to R2 when R2 is configured (CDN URLs expire). Videos/carousels use thumbnail or first image.
 - Demo Mode (no Supabase public keys): fixture posts. Live Supabase with empty `instagram_posts`: section hidden (no Unsplash fake-feed).
 - Without `INSTAGRAM_ACCESS_TOKEN`, cron/admin sync does not call Graph.
 
 Cron/admin sync refreshes the long-lived token and stores it in `instagram_auth` (service role only). Env `INSTAGRAM_ACCESS_TOKEN` is the bootstrap if that table is empty. Re-run `reset.sql` (or add the `instagram_auth` table) if an older schema is already applied.
+
+Existing databases: re-run `reset.sql` (or add the `contact_admin_delete` policy manually) so admins can delete contact inquiries — the new delete action in `/admin/inquiries` needs that RLS policy.
 
 Signup creates `profiles` with role `user` via trigger. Promote the operator:
 

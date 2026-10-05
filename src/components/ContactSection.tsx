@@ -130,6 +130,12 @@ export function ContactSection() {
           >
             {t('contact.send')}
           </Button>
+
+          <p className="text-center text-xs">
+            <a href="/datenschutz" className="text-foreground/50 hover:text-foreground transition-colors underline">
+              {t('footer.privacy')}
+            </a>
+          </p>
         </motion.form>
 
         <div className="mt-8 md:mt-12 text-center space-y-3 px-4">

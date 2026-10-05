@@ -103,3 +103,28 @@ Poiret One + `tracking-[0.2em]` + five uppercase links overflows before `xl`. Sh
 ## RLS vs. contact form
 
 Public INSERT on `contact_inquiries` without SELECT keeps spam readable only by admins. Do not enable anon SELECT.
+
+## Never trust client-controlled auth headers
+
+Vercel Cron can be authenticated with `Authorization: Bearer $CRON_SECRET`; Vercel sends it automatically when the env var is set. Treating any request that carries `x-vercel-cron` as authorized is an auth bypass — headers are client-controlled. Compare the bearer token in constant time and fail closed when the secret is unset.
+
+## Delete external storage only after the DB write succeeds
+
+For hero video replace/clear and gallery upload, write the database row first (or roll it back) and only then delete the old/just-uploaded R2 object. Reversing that order leaks orphan objects or destroys media on a failed DB write.
+
+## Localize server actions from the locale cookie
+
+Server actions and server components cannot use the client `useT()` hook. Keep one `translate()` helper and read `nn-locale` server-side (`src/i18n/server.ts`). Returning hardcoded German strings from actions re-introduces German toasts under English.
+
+## Dead Spark-era kit is not branding
+
+`spark-theme-*` class names stay; the unused kit slot components, `sparkTheme` registry, `ThemeDemo`, `theme.json`, and `.spark-initial-sha` do not. They contained removed cart/price/"Art Deco" copy and mislead agents. Delete dead kit files when unused rather than leaving them to be re-wired.
+
+## `src/main.css` import order is load-bearing
+
+`src/main.css` defines a light `:root`; the dark tokens live in `src/index.css`. The dark theme only wins because `app/layout.tsx` imports `index.css` after `main.css`. Do not "simplify" the duplicate imports without a visual diff — the page would flip to light.
+
+## Upload/confirm keys are server-issued
+
+`/api/gallery/upload` and `/api/hero/presign` generate the `{uuid}` key server-side. `confirmHeroVideo` must reject keys outside the `hero/` prefix and derive the public URL from `R2_PUBLIC_URL` instead of storing a client-supplied URL.
+

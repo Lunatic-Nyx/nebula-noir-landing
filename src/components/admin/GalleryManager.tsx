@@ -9,17 +9,19 @@ import { toast } from 'sonner'
 import { deleteGalleryImage, updateGalleryMeta } from '@/lib/actions/admin'
 import { CATEGORIES } from '@/lib/products'
 import type { GalleryItem } from '@/lib/types'
+import { useT } from '@/i18n/context'
 
 type Row = GalleryItem & { published?: boolean; sortOrder?: number }
 
 export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }) {
+  const t = useT()
   const [busy, setBusy] = useState(false)
   const router = useRouter()
 
   const onUpload = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (demo) {
-      toast.error('Demo Mode: Upload deaktiviert')
+      toast.error(t('admin.uploadDisabled'))
       return
     }
     const form = e.currentTarget
@@ -29,10 +31,10 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
     const json = await res.json()
     setBusy(false)
     if (!res.ok) {
-      toast.error(json.error || 'Upload fehlgeschlagen')
+      toast.error(json.error || t('admin.uploadFailed'))
       return
     }
-    toast.success('Bild gespeichert')
+    toast.success(t('admin.uploadOk'))
     form.reset()
     router.refresh()
   }
@@ -40,21 +42,21 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
   return (
     <div className="space-y-12">
       <form onSubmit={onUpload} className="relative p-6 md:p-10 space-y-6 border-2 border-foreground/30 bg-background/50">
-        <h3 className="text-xl uppercase tracking-[0.2em] bioshock-glow-animated">Upload</h3>
+        <h3 className="text-xl uppercase tracking-[0.2em] bioshock-glow-animated">{t('admin.upload')}</h3>
         <div className="space-y-3">
-          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Datei</Label>
+          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">{t('admin.file')}</Label>
           <Input name="file" type="file" accept="image/*" required className="bg-background border-2 border-foreground/30 rounded-none" />
         </div>
         <div className="space-y-3">
-          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Titel</Label>
+          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">{t('admin.titleLabel')}</Label>
           <Input name="title" required className="bg-background border-0 border-b-2 border-foreground/30 focus:border-foreground rounded-none px-0" />
         </div>
         <div className="space-y-3">
-          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Beschreibung</Label>
+          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">{t('admin.descriptionLabel')}</Label>
           <Input name="description" className="bg-background border-0 border-b-2 border-foreground/30 focus:border-foreground rounded-none px-0" />
         </div>
         <div className="space-y-3">
-          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Kategorie</Label>
+          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">{t('admin.categoryLabel')}</Label>
           <select
             name="category"
             className="w-full bg-background border-2 border-foreground/30 text-foreground px-3 py-2 uppercase tracking-wider text-sm"
@@ -62,7 +64,7 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
           >
             {CATEGORIES.filter((c) => c.value !== 'all').map((c) => (
               <option key={c.value} value={c.value}>
-                {c.label}
+                {t(`categories.${c.value}`)}
               </option>
             ))}
           </select>
@@ -72,7 +74,7 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
           disabled={busy}
           className="w-full bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-[0.2em] font-semibold py-4 text-sm transition-all duration-500"
         >
-          {busy ? 'Lädt…' : 'Hochladen'}
+          {busy ? t('admin.uploading') : t('admin.uploadAction')}
         </Button>
       </form>
 
@@ -87,7 +89,7 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
                 type="button"
                 className="flex-1 bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-[0.15em] text-xs"
                 onClick={async () => {
-                  const title = window.prompt('Titel', item.name)
+                  const title = window.prompt(t('admin.titleLabel'), item.name)
                   if (!title) return
                   const result = await updateGalleryMeta(item.id, {
                     title,
@@ -99,7 +101,7 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
                   else router.refresh()
                 }}
               >
-                Edit
+                {t('admin.edit')}
               </Button>
               <Button
                 type="button"
@@ -110,7 +112,7 @@ export function GalleryManager({ items, demo }: { items: Row[]; demo?: boolean }
                   else router.refresh()
                 }}
               >
-                Delete
+                {t('admin.delete')}
               </Button>
             </div>
           </article>

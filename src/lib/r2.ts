@@ -7,7 +7,6 @@ const ALLOWED_TYPES = new Set([
   'image/png',
   'image/webp',
   'image/gif',
-  'image/svg+xml',
 ])
 
 const ALLOWED_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime'])
@@ -75,8 +74,6 @@ export function extensionForMime(mime: string): string {
       return 'webp'
     case 'image/gif':
       return 'gif'
-    case 'image/svg+xml':
-      return 'svg'
     case 'video/mp4':
       return 'mp4'
     case 'video/webm':

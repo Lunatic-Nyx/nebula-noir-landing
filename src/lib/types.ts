@@ -46,18 +46,3 @@ export interface BrandInfo {
   title: string
   body: string
 }
-
-export interface ContactInquiry {
-  id?: string
-  name: string
-  email: string
-  message: string
-  read?: boolean
-  createdAt?: string
-}
-
-export interface CategoryItem {
-  id?: string
-  value: string
-  label: string
-}

@@ -2,7 +2,7 @@
 
 Use this as a testable pass/fail list. Demo Mode means Supabase public keys are unset. Operator steps: `USER_MANUAL.md`.
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-10-05
 
 ## UI parity (design freeze)
 
@@ -57,6 +57,7 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 ## Instagram
 
 - [ ] Cron `GET /api/cron/instagram` without `Authorization: Bearer $CRON_SECRET` returns 401.
+- [ ] A cron request carrying only `x-vercel-cron` also returns 401 (header is not trusted).
 - [ ] Sync talks to `graph.instagram.com` (Instagram Login), never `graph.facebook.com`.
 - [ ] IMAGE, VIDEO (thumbnail), and CAROUSEL_ALBUM (first still) upsert into `instagram_posts`.
 - [ ] Landing `#instagram` grid uses existing card language; permalinks open Instagram.
@@ -67,7 +68,9 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] With Supabase configured and empty `instagram_posts`, the Instagram section is hidden (no fixture fake-posts).
 - [ ] Empty events list does not add a second divider between About and Gallery.
 - [ ] Hash nav (`/#catalog`, `/#contact`) is not hidden under the fixed header.
-- [ ] DE/EN toggle switches nav, hero, about, catalog, contact, footer, login, admin chrome.
+- [ ] DE/EN toggle switches nav, hero, about, catalog, contact, footer, login, admin chrome (nav, headings, forms, toasts).
+- [ ] Admin `/admin/inquiries` can delete an inquiry (needs the `contact_admin_delete` policy).
+- [ ] Product detail dialog shows exactly one close control.
 - [ ] Contact heading does not split `MASSANFERTIGUNGEN` mid-word on a 375px viewport.
 - [ ] Favicon is the Nebula Noir logo.
 - [ ] Demo Instagram/gallery images load from `/demo/instagram/*.jpg`.

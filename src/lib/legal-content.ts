@@ -2,7 +2,7 @@ export const LEGAL_CONTENT = {
   impressum: {
     title: 'Impressum',
     content: `
-      <h3>Angaben gemäß § 5 TMG</h3>
+      <h3>Angaben gemäß § 5 DDG</h3>
       <p>
         Nebula Noir<br />
         Inhaberin: [Name der Betreiberin]<br />
@@ -71,37 +71,50 @@ export const LEGAL_CONTENT = {
         Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie in ein Kontaktformular eingeben.
       </p>
       <p>
-        Andere Daten werden automatisch oder nach Ihrer Einwilligung beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs).
+        Andere Daten werden automatisch beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs). Diese Daten werden ausschließlich zur fehlerfreien Bereitstellung der Website verwendet.
       </p>
 
       <h4>Wofür nutzen wir Ihre Daten?</h4>
       <p>
-        Ein Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten können zur Analyse Ihres Nutzerverhaltens verwendet werden.
+        Die Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Eine Analyse des Nutzerverhaltens findet nicht statt.
       </p>
 
       <h3>3. Hosting</h3>
       <p>
-        Diese Website wird extern gehostet. Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert.
+        Diese Website wird bei einem externen Dienstleister (Vercel Inc.) gehostet. Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert.
       </p>
 
-      <h3>4. Warenkorb und Bestelldaten</h3>
+      <h3>4. Bestellungen</h3>
       <p>
-        Die Warenkorbdaten werden lokal in Ihrem Browser gespeichert (LocalStorage) und enthalten keine personenbezogenen Daten. Bei einer Bestellung über Etsy gelten die Datenschutzbestimmungen von Etsy.
+        Diese Website bietet keinen eigenen Warenkorb und keinen eigenen Checkout. Käufe erfolgen ausschließlich über unseren Etsy-Shop (www.etsy.com/shop/nebulanoirnn). Bei einer Bestellung über Etsy gelten die Datenschutzbestimmungen von Etsy; wir erhalten von Etsy die zur Bearbeitung und Versendung der Bestellung erforderlichen Daten.
       </p>
 
       <h3>5. Ihre Rechte</h3>
       <p>
-        Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten. Sie haben außerdem ein Recht, die Berichtigung oder Löschung dieser Daten zu verlangen.
+        Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten. Sie haben außerdem ein Recht auf Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit sowie ein Widerspruchsrecht gegen die Verarbeitung. Erteilte Einwilligungen können Sie jederzeit mit Wirkung für die Zukunft widerrufen. Außerdem steht Ihnen ein Beschwerderecht bei einer Datenschutz-Aufsichtsbehörde zu.
       </p>
 
       <h3>6. Kontaktformular</h3>
       <p>
         Wenn Sie uns per Kontaktformular Anfragen zukommen lassen, werden Ihre Angaben aus dem Anfrageformular inklusive der von Ihnen dort angegebenen Kontaktdaten zwecks Bearbeitung der Anfrage und für den Fall von Anschlussfragen bei uns gespeichert.
       </p>
+      <p>
+        Die Speicherung erfolgt in unserer Datenbank bei unserem Dienstleister Supabase (Supabase Inc.). Die Daten werden gelöscht, sobald sie für die Bearbeitung der Anfrage nicht mehr erforderlich sind, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Eine Löschung Ihrer Anfrage können Sie jederzeit unter den im Impressum genannten Kontaktdaten verlangen.
+      </p>
 
       <h3>7. SSL- bzw. TLS-Verschlüsselung</h3>
       <p>
         Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL- bzw. TLS-Verschlüsselung.
+      </p>
+
+      <h3>8. Cookies</h3>
+      <p>
+        Diese Website setzt ausschließlich technisch erforderliche Cookies ein. Das Cookie <code>nn-locale</code> speichert die von Ihnen gewählte Spracheinstellung (Laufzeit ein Jahr). Für den Admin-Bereich werden nach dem Login zusätzlich Session-Cookies gesetzt. Für diese funktionalen Cookies ist keine Einwilligung erforderlich.
+      </p>
+
+      <h3>9. Eingebundene externe Dienste</h3>
+      <p>
+        Zur Darstellung der Website werden Schriftarten von Google Fonts geladen; dabei wird Ihre IP-Adresse an Google übermittelt. Instagram-Vorschaubilder werden, sofern sie nicht über unseren eigenen Speicher ausgeliefert werden, direkt von Servern von Meta geladen. Dabei kann eine Übermittlung von Nutzungsdaten in die USA erfolgen.
       </p>
     `
   },
@@ -111,15 +124,15 @@ export const LEGAL_CONTENT = {
     content: `
       <h3>1. Geltungsbereich</h3>
       <p>
-        Für alle Bestellungen über unseren Online-Shop gelten die nachfolgenden AGB. Mit der Bestellung erkennen Sie diese Bedingungen an.
+        Für alle Bestellungen über unseren Etsy-Shop (www.etsy.com/shop/nebulanoirnn) gelten die nachfolgenden Bedingungen, soweit sie nicht durch die Bedingungen von Etsy verdrängt werden. Mit der Bestellung erkennen Sie diese Bedingungen an.
       </p>
 
       <h3>2. Vertragspartner, Vertragsschluss</h3>
       <p>
-        Der Kaufvertrag kommt zustande mit Nebula Noir (Angaben siehe Impressum).
+        Der Kaufvertrag kommt zustande mit Nebula Noir (Angaben siehe Impressum), vermittelt über den Etsy-Shop.
       </p>
       <p>
-        Die Präsentation der Waren auf unserer Website stellt kein bindendes Angebot dar. Durch das Absenden der Bestellung geben Sie ein verbindliches Angebot zum Kauf der im Warenkorb befindlichen Waren ab.
+        Die Präsentation der Waren auf unserer Website stellt kein bindendes Angebot dar. Der Vertragsschluss erfolgt ausschließlich über den Etsy-Shop nach den dort geltenden Bedingungen.
       </p>
 
       <h3>3. Handgefertigte Produkte - Unikate</h3>
@@ -134,10 +147,10 @@ export const LEGAL_CONTENT = {
 
       <h3>5. Preise und Zahlungsbedingungen</h3>
       <p>
-        Alle Preise sind Endpreise und enthalten die gesetzliche Mehrwertsteuer. Zusätzlich fallen Versandkosten an, die vor Abschluss der Bestellung angezeigt werden.
+        Die Preise werden im Etsy-Shop ausgewiesen. Alle Preise sind Endpreise und enthalten die gesetzliche Mehrwertsteuer. Zusätzlich fallen Versandkosten an, die vor Abschluss der Bestellung angezeigt werden.
       </p>
       <p>
-        Die Zahlung erfolgt über die Zahlungsmethoden, die auf der Plattform (z.B. Etsy) zur Verfügung stehen.
+        Die Zahlung erfolgt über die im Etsy-Shop angebotenen Zahlungsmethoden.
       </p>
 
       <h3>6. Lieferung</h3>

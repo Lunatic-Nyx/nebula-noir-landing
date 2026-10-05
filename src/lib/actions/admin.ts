@@ -3,23 +3,25 @@
 import { revalidatePath } from 'next/cache'
 import { isR2Configured } from '@/lib/env'
 import { getAdminUser } from '@/lib/auth'
+import { getServerT } from '@/i18n/server'
 import { createServerSupabase } from '@/lib/supabase/server'
-import { deleteFromR2 } from '@/lib/r2'
+import { deleteFromR2, publicObjectUrl } from '@/lib/r2'
 import { syncInstagramPosts } from '@/lib/instagram'
 
 async function requireAdmin() {
+  const t = await getServerT()
   const session = await getAdminUser()
-  if (session.demo) return { demo: true as const }
-  if (!session.isAdmin) return { error: 'Nicht autorisiert' as const }
-  return { demo: false as const }
+  if (session.demo) return { demo: true as const, t }
+  if (!session.isAdmin) return { error: t('admin.notAuthorized'), t }
+  return { demo: false as const, t }
 }
 
 export async function saveBrandInfo(key: string, title: string, body: string) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { error } = await supabase.from('brand_info').upsert({ key, title, body, updated_at: new Date().toISOString() }, { onConflict: 'key' })
   if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
@@ -39,9 +41,9 @@ export async function saveEvent(input: {
 }) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const toIso = (value: string) => {
     if (!value) return null
     const date = new Date(value)
@@ -70,9 +72,9 @@ export async function saveEvent(input: {
 export async function deleteEvent(id: string) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { error } = await supabase.from('events').delete().eq('id', id)
   if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
@@ -82,10 +84,22 @@ export async function deleteEvent(id: string) {
 export async function markInquiryRead(id: string, read: boolean) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { error } = await supabase.from('contact_inquiries').update({ read }).eq('id', id)
+  if (error) return { ok: false as const, error: error.message }
+  revalidatePath('/admin/inquiries')
+  return { ok: true as const }
+}
+
+export async function deleteInquiry(id: string) {
+  const gate = await requireAdmin()
+  if ('error' in gate) return { ok: false as const, error: gate.error }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
+  const supabase = await createServerSupabase()
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
+  const { error } = await supabase.from('contact_inquiries').delete().eq('id', id)
   if (error) return { ok: false as const, error: error.message }
   revalidatePath('/admin/inquiries')
   return { ok: true as const }
@@ -94,9 +108,9 @@ export async function markInquiryRead(id: string, read: boolean) {
 export async function deleteGalleryImage(id: string) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { data } = await supabase.from('gallery_images').select('r2_key').eq('id', id).maybeSingle()
   if (data?.r2_key && isR2Configured()) {
     try {
@@ -120,9 +134,9 @@ export async function updateGalleryMeta(id: string, input: {
 }) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { error } = await supabase
     .from('gallery_images')
     .update({
@@ -140,11 +154,27 @@ export async function updateGalleryMeta(id: string, input: {
 export async function confirmHeroVideo(input: { key: string; publicUrl: string }) {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
+  // Only accept keys issued by the server presign route; never trust a client URL.
+  if (!input.key.startsWith('hero/')) {
+    return { ok: false as const, error: gate.t('admin.uploadFailed') }
+  }
+  const publicUrl = isR2Configured() ? publicObjectUrl(input.key) : input.publicUrl
   const { data: existing } = await supabase.from('brand_info').select('title').eq('key', 'hero_video').maybeSingle()
   const previousKey = existing?.title as string | undefined
+  const { error } = await supabase.from('brand_info').upsert(
+    {
+      key: 'hero_video',
+      title: input.key,
+      body: publicUrl,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'key' }
+  )
+  if (error) return { ok: false as const, error: error.message }
+  // Only remove the previous object once the new reference is persisted.
   if (previousKey && previousKey !== input.key && isR2Configured()) {
     try {
       await deleteFromR2(previousKey)
@@ -152,16 +182,6 @@ export async function confirmHeroVideo(input: { key: string; publicUrl: string }
       // keep going
     }
   }
-  const { error } = await supabase.from('brand_info').upsert(
-    {
-      key: 'hero_video',
-      title: input.key,
-      body: input.publicUrl,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: 'key' }
-  )
-  if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
   revalidatePath('/admin/hero')
   return { ok: true as const }
@@ -170,11 +190,14 @@ export async function confirmHeroVideo(input: { key: string; publicUrl: string }
 export async function clearHeroVideo() {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Speichern deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoWriteDisabled') }
   const supabase = await createServerSupabase()
-  if (!supabase) return { ok: false as const, error: 'Supabase fehlt' }
+  if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { data: existing } = await supabase.from('brand_info').select('title').eq('key', 'hero_video').maybeSingle()
   const previousKey = existing?.title as string | undefined
+  const { error } = await supabase.from('brand_info').delete().eq('key', 'hero_video')
+  if (error) return { ok: false as const, error: error.message }
+  // Only remove the object once the reference is gone from the database.
   if (previousKey && isR2Configured()) {
     try {
       await deleteFromR2(previousKey)
@@ -182,8 +205,6 @@ export async function clearHeroVideo() {
       // keep going
     }
   }
-  const { error } = await supabase.from('brand_info').delete().eq('key', 'hero_video')
-  if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
   revalidatePath('/admin/hero')
   return { ok: true as const }
@@ -192,9 +213,9 @@ export async function clearHeroVideo() {
 export async function triggerInstagramSync() {
   const gate = await requireAdmin()
   if ('error' in gate) return { ok: false as const, error: gate.error }
-  if (gate.demo) return { ok: false as const, error: 'Demo Mode: Sync deaktiviert' }
+  if (gate.demo) return { ok: false as const, error: gate.t('admin.demoSyncDisabled') }
   const result = await syncInstagramPosts()
-  if (!result.ok) return { ok: false as const, error: result.error || 'Sync fehlgeschlagen' }
+  if (!result.ok) return { ok: false as const, error: result.error || gate.t('admin.syncFailed') }
   revalidatePath('/')
   return { ok: true as const, count: result.count }
 }

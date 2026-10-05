@@ -68,7 +68,8 @@ async function copyStillToR2(url: string, id: string): Promise<string> {
     const mime = res.headers.get('content-type')?.split(';')[0] || 'image/jpeg'
     if (!isAllowedImageType(mime)) return url
     const buffer = Buffer.from(await res.arrayBuffer())
-    const ext = extensionForMime(mime) === 'bin' ? 'jpg' : extensionForMime(mime)
+    const mapped = extensionForMime(mime)
+    const ext = mapped === 'bin' ? 'jpg' : mapped
     return await uploadToR2(`instagram/${id}.${ext}`, buffer, mime)
   } catch {
     return url
@@ -100,19 +101,23 @@ async function saveAuth(
   supabase: NonNullable<ReturnType<typeof createServiceSupabase>>,
   input: { token: string; userId?: string; username?: string; expiresIn?: number }
 ) {
+  const row: Record<string, unknown> = {
+    id: true,
+    access_token: input.token,
+    user_id: input.userId ?? null,
+    username: input.username ?? null,
+    updated_at: new Date().toISOString(),
+  }
+  // Only touch expires_at when the refresh actually returned a new lifetime.
+  // Otherwise a failed refresh would wipe a previously stored expiry.
+  if (input.expiresIn) {
+    row.expires_at = new Date(Date.now() + input.expiresIn * 1000).toISOString()
+  }
   try {
-    await supabase.from('instagram_auth').upsert({
-      id: true,
-      access_token: input.token,
-      user_id: input.userId ?? null,
-      username: input.username ?? null,
-      expires_at: input.expiresIn
-        ? new Date(Date.now() + input.expiresIn * 1000).toISOString()
-        : null,
-      updated_at: new Date().toISOString(),
-    })
-  } catch {
+    await supabase.from('instagram_auth').upsert(row)
+  } catch (error) {
     // Table may be missing until reset.sql is re-run.
+    console.error('[instagram] failed to persist auth token', error)
   }
 }
 

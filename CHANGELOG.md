@@ -2,6 +2,33 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.4.0] — 2026-10-05
+
+### Added
+
+- `src/i18n/translate.ts` + `src/i18n/server.ts`; admin UI, contact errors, `ProductCard` and the product dialog now localize via `t()` so the DE/EN toggle reaches admin chrome.
+- Admin delete for contact inquiries (`deleteInquiry`) plus the `contact_admin_delete` RLS policy (right to erasure in practice).
+- HTTP security headers (`nosniff`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, HSTS) in `next.config.ts`.
+
+### Changed
+
+- `/api/cron/instagram` accepts only `Authorization: Bearer $CRON_SECRET` with a constant-time compare; removed the spoofable `x-vercel-cron` trust.
+- Hero video: the previous R2 object is deleted only after a successful DB write; `confirmHeroVideo` validates the `hero/` key and derives the public URL server-side.
+- Gallery upload removes the R2 object when the database insert fails.
+- `getBrandInfo` no longer falls back to fixtures when Supabase is configured.
+- Instagram sync: single `extensionForMime` call; a failed token refresh no longer wipes the stored `expires_at`.
+- `useParallax` coalesces scroll work through `requestAnimationFrame`.
+- Datenschutz/AGB text aligned with the Etsy-only, no-cart product (LocalStorage cart removed, false analytics/consent claims corrected, `nn-locale` declared); Impressum reference TMG → DDG.
+
+### Fixed
+
+- Duplicate close button in the product detail dialog.
+
+### Removed
+
+- Unused Spark-era theme-kit slots and `sparkTheme` registry, 38 unused `src/components/ui/*` components, `use-mobile`, `theme.json`, `.spark-initial-sha`, the duplicate `src/assets` logo, unused exports/types, and unused `next.config` image patterns.
+- `image/svg+xml` from the allowed gallery upload types.
+
 ## [0.3.4] — 2026-09-10
 
 ### Changed

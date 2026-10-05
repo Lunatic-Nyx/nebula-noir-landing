@@ -4,8 +4,10 @@ import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { isJewelryCategory } from '@/lib/fixtures'
 import type { GalleryItem } from '@/lib/types'
+import { getServerT } from '@/i18n/server'
 
 export default async function AdminGalleryPage() {
+  const t = await getServerT()
   const demo = isDemoMode()
   let items: GalleryItem[] = await getGallery()
   if (!demo) {
@@ -37,7 +39,7 @@ export default async function AdminGalleryPage() {
 
   return (
     <div className="space-y-8">
-      <h2 className="text-3xl uppercase tracking-[0.2em] bioshock-glow-animated">Galerie</h2>
+      <h2 className="text-3xl uppercase tracking-[0.2em] bioshock-glow-animated">{t('admin.gallery')}</h2>
       <GalleryManager items={items} demo={demo} />
     </div>
   )

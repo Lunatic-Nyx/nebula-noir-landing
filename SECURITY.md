@@ -43,6 +43,8 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 | `instagram_posts` | SELECT | SELECT (writes via service role) |
 | `instagram_auth` | none | none (service role only) |
 | `contact_inquiries` | INSERT | SELECT, UPDATE, DELETE |
+| `site_config` | SELECT | ALL — public read; never store secrets here |
+| `api_secrets` | none | ALL (runtime reads use the service role) |
 | `profiles` | none | SELECT own row; admin role set only via SQL/service |
 
 Admin check: JWT user id exists in `profiles` with `role = 'admin'`.
@@ -59,6 +61,16 @@ Service role is used only in:
 - Hero video: max 80 MB; MP4/WebM/MOV; `hero/{uuid}.{ext}` via 120s presigned PUT (admin only)
 - Auth: admin session required for all uploads
 - No public write on the bucket; Next.js server uses S3-compatible credentials
+
+## Secret store (admin-editable keys)
+
+`RESEND`, Instagram and contact addresses can be stored encrypted in `api_secrets` and edited under **Admin → API-Keys**:
+
+- AES-256-GCM (`src/lib/secrets/crypto.ts`), key from `SECRETS_ENCRYPTION_KEY` (64 hex chars), format `enc:v1:<iv>:<tag>:<cipher>`, AAD = logical key name.
+- Writes go through admin-gated server actions + service role; the client only ever sees `db`/`env`/`missing` status, never a value or ciphertext.
+- Runtime resolution is DB (decrypted) → environment fallback. `site_config` is public-read and must never contain secrets.
+- Losing or rotating `SECRETS_ENCRYPTION_KEY` makes stored values unreadable (env fallbacks keep working); encrypted entries must be re-entered.
+- Legal HTML written through the admin editor is sanitized on write (scripts/iframes/event handlers/`javascript:` URLs stripped) as defense in depth; admin-only RLS remains the primary trust boundary.
 
 ## Cron
 

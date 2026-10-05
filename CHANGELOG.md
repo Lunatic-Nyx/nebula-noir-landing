@@ -2,6 +2,29 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.0] — 2026-10-05
+
+### Added
+
+- Admin backoffice: grouped sidebar nav with mobile drawer (German-only), dashboard with counts/status, and new pages `/admin/content`, `/admin/categories`, `/admin/secrets`, `/admin/health`.
+- Site config (`site_config`): public links editable, full DE/EN i18n overrides, and legal texts (Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns) editable with code fallbacks.
+- Data-driven categories: DB CRUD with reassign-on-delete; the public catalog consumes DB categories.
+- Encrypted secret store (`api_secrets`, AES-256-GCM via `SECRETS_ENCRYPTION_KEY`) with env fallback and a write-only admin UI for Resend/Instagram/contact keys.
+- Health checks (Supabase, R2, Resend, Instagram, config) with latency and status.
+- Full editors: gallery (title/description/category/published/sort), events (incl. unpublished + edit), and brand_info keys (create/delete).
+
+### Changed
+
+- Admin is German-only; the public DE/EN switch no longer affects admin pages.
+- `getCategories` returns `[]` on DB errors (fixtures only in Demo Mode); category labels come from the DB first.
+- Instagram sync stores refreshed tokens encrypted when possible and blanks the legacy plaintext column.
+- Legal HTML is sanitized on write (defense in depth).
+- `ArtDecoCorner` resets margins (`m-0!`) so `space-y` cannot displace the absolute corner decoration.
+
+### Fixed
+
+- Event editor timezone shift on save; admin gallery edit no longer resets `published`/`sort_order`; admin headings no longer flip to English with `nn-locale=en`; legal pages never render blank after clearing a field.
+
 ## [0.5.0] — 2026-10-05
 
 ### Added

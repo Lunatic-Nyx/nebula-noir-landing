@@ -100,10 +100,9 @@ export async function setApiSecret(key: ApiSecretKey, plaintext: string): Promis
 
   if (key === 'instagram_access_token') {
     // A rotated DB token must win over the old instagram_auth row.
-    try {
-      await supabase.from('instagram_auth').delete().eq('id', true)
-    } catch {
-      // table may be missing
+    const { error: deleteError } = await supabase.from('instagram_auth').delete().eq('id', true)
+    if (deleteError) {
+      return { ok: false, error: `Token gespeichert, aber instagram_auth konnte nicht geleert werden: ${deleteError.message}` }
     }
   }
   return { ok: true }
@@ -114,6 +113,11 @@ export async function clearApiSecret(key: ApiSecretKey): Promise<SecretMutationR
   if (!supabase) return { ok: false, error: 'Supabase Service Role ist nicht konfiguriert' }
   const { error } = await supabase.from('api_secrets').delete().eq('key', key)
   if (error) return { ok: false, error: error.message }
+  if (key === 'instagram_access_token') {
+    // Also drop the legacy plaintext refresh row so the fallback takes over.
+    const { error: deleteError } = await supabase.from('instagram_auth').delete().eq('id', true)
+    if (deleteError) return { ok: false, error: deleteError.message }
+  }
   invalidateSecretsCache()
   return { ok: true }
 }

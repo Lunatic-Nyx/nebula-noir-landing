@@ -117,12 +117,12 @@ export function brandMap(items: BrandInfo[]): Record<string, BrandInfo> {
 export async function getCategories(): Promise<Category[]> {
   if (isDemoMode()) return fixtureCategories
   const supabase = await createServerSupabase()
-  if (!supabase) return fixtureCategories
+  if (!supabase) return []
   const { data, error } = await supabase
     .from('categories')
     .select('id, slug, label, label_en, sort_order')
     .order('sort_order', { ascending: true })
-  if (error || !data) return fixtureCategories
+  if (error || !data) return []
   return data.map((row) => ({
     id: row.id as string,
     slug: row.slug as string,

@@ -13,3 +13,10 @@ export async function getServerT() {
   return (path: string, vars?: Record<string, string | number>) =>
     translate(locale, path, vars, overrides)
 }
+
+/** German-bound translator for the admin surface (product decision). */
+export async function getAdminT() {
+  const overrides = await getTranslationOverrides()
+  return (path: string, vars?: Record<string, string | number>) =>
+    translate('de', path, vars, overrides)
+}

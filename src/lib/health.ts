@@ -21,11 +21,12 @@ export interface HealthCheck {
 async function runCheck(
   id: string,
   label: string,
-  fn: () => Promise<{ status: CheckStatus; detail?: string }>
+  fn: () => Promise<{ status: CheckStatus; detail?: string }>,
+  timeoutMs = 6000
 ): Promise<HealthCheck> {
   const start = Date.now()
   try {
-    const result = await fn()
+    const result = await withTimeout(fn(), timeoutMs)
     return { id, label, latencyMs: Date.now() - start, ...result }
   } catch (error) {
     return {
@@ -33,8 +34,26 @@ async function runCheck(
       label,
       status: 'error',
       latencyMs: Date.now() - start,
-      detail: error instanceof Error ? error.message : 'Fehler',
+      detail: safeDetail(error instanceof Error ? error.message : 'Fehler'),
     }
+  }
+}
+
+function safeDetail(value: string): string {
+  return value.replace(/\s+/g, ' ').slice(0, 200)
+}
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(`Timeout nach ${ms} ms`)), ms)
+      }),
+    ])
+  } finally {
+    if (timer) clearTimeout(timer)
   }
 }
 
@@ -73,7 +92,23 @@ async function checkResend() {
 
 async function checkInstagram() {
   const { values } = await loadSecrets()
-  const token = values.instagram_access_token
+  let token = values.instagram_access_token
+  if (!token) {
+    // Mirror the sync priority: legacy refreshed row counts as configured.
+    try {
+      const service = createServiceSupabase()
+      if (service) {
+        const { data } = await service
+          .from('instagram_auth')
+          .select('access_token')
+          .eq('id', true)
+          .maybeSingle()
+        token = (data?.access_token as string | undefined) || undefined
+      }
+    } catch {
+      // metadata lookup is best effort
+    }
+  }
   if (!token) return { status: 'not_configured' as const, detail: 'kein Token' }
 
   const version = process.env.INSTAGRAM_GRAPH_VERSION || 'v22.0'

@@ -13,13 +13,13 @@ Living snapshot of product status, schema, and services.
 | Events | `events` | New section, existing card language; landing shows upcoming only (LOYG 2026-09-12) |
 | Gallery | `gallery_images` + R2 / fixtures | Existing catalog chrome, no prices/cart |
 | Instagram | `instagram_posts` / fixtures | Instagram Login API, `@nebula_noir.official` |
-| i18n | `src/i18n/messages.ts` | DE default, EN cookie `nn-locale`; Cybergoth Industrial copy |
+| i18n | `src/i18n/messages.ts` + `site_config.translations` | DE default, EN cookie `nn-locale`; overrides editable in admin |
 | Hero video | `brand_info.hero_video` + R2 `hero/` | Admin `/admin/hero`, scroll-scrub |
 | Scroll | Lenis | Public pages, reduced-motion safe |
-| Contact | `contact_inquiries` | Existing form |
-| Legal | `src/lib/legal-content.ts` | Static routes |
-| Shop | Etsy | Footer + detail CTA |
-| Admin | Supabase Auth | `/login`, `/admin` |
+| Contact | `contact_inquiries` | Existing form + Resend notification |
+| Legal | `site_config.legal` → fallback `src/lib/legal-content.ts` | Editable in `/admin/content`, static routes |
+| Shop | Etsy (`site_config.site.etsyUrl`) | Footer + detail CTA |
+| Admin | Supabase Auth | `/login`, `/admin` (German-only backoffice) |
 
 ## Demo Mode
 
@@ -29,11 +29,13 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 
 - UUIDs for app rows; Instagram media id is text PK.
 - `published` gates public SELECT on gallery and events.
-- `categories.slug` matches gallery filter values: `chokers`, `bracelets`, `rings`, `earrings`, `accessories`.
+- `categories` is the source for gallery filters; admin CRUD + `label_en`; `on delete restrict` blocks deleting a category that still has images (admin offers reassign).
 - `profiles.role` is `'admin'` or `'user'`.
 - Contact: insert-only for anon.
 - Instagram writes: service role only.
-- `instagram_auth`: single-row token store, service role only.
+- `instagram_auth`: single-row token metadata (`user_id`, `username`, `expires_at`); access token now lives encrypted in `api_secrets`.
+- `site_config`: public-read key/value JSONB (`site`, `legal`, `translations`); never store secrets here.
+- `api_secrets`: admin-only RLS, AES-256-GCM (`SECRETS_ENCRYPTION_KEY`), runtime reads via service role.
 - New auth users get `profiles.role = 'user'` via trigger.
 
 ## External services

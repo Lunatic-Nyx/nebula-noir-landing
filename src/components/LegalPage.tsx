@@ -12,6 +12,10 @@ export async function legalPageMetadata(section: LegalSection): Promise<Metadata
 
 export async function LegalPage({ section }: { section: LegalSection }) {
   const [config, locale] = await Promise.all([getLegalConfig(), getServerLocale()])
-  const { title, content } = resolveLegalSection(config, section, locale)
-  return <LegalDocument section={section} title={title} content={content} />
+  const { content } = resolveLegalSection(config, section, locale)
+  const { title: titleDe } = resolveLegalSection(config, section, 'de')
+  const { title: titleEn } = resolveLegalSection(config, section, 'en')
+  return (
+    <LegalDocument section={section} titleDe={titleDe} titleEn={titleEn} content={content} />
+  )
 }

@@ -2,7 +2,7 @@
 
 import { LEGAL_CONTENT, LegalSection } from '@/lib/legal-content'
 import { SiteChrome } from '@/components/SiteChrome'
-import { useT } from '@/i18n/context'
+import { useI18n, useT } from '@/i18n/context'
 
 const TITLE_KEY: Record<LegalSection, string> = {
   impressum: 'footer.impressum',
@@ -17,14 +17,20 @@ const TITLE_KEY: Record<LegalSection, string> = {
 export function LegalDocument({
   section,
   title,
+  titleDe,
+  titleEn,
   content,
 }: {
   section: LegalSection
   title?: string
+  titleDe?: string
+  titleEn?: string
   content?: string
 }) {
   const t = useT()
-  const resolvedTitle = title ?? t(TITLE_KEY[section])
+  const { locale } = useI18n()
+  const localizedTitle = locale === 'en' ? titleEn : titleDe
+  const resolvedTitle = localizedTitle || title || t(TITLE_KEY[section])
   const html = content ?? LEGAL_CONTENT[section].content
 
   return (

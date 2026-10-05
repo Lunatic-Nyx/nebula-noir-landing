@@ -3,6 +3,7 @@ import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { LEGAL_CONTENT, type LegalSection } from '@/lib/legal-content'
 import { messages, type Locale } from '@/i18n/messages'
+import { sanitizeHtml } from '@/lib/sanitize'
 import type { PublicSiteConfig } from '@/lib/site-config.types'
 import type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
 
@@ -92,13 +93,16 @@ const DEFAULT_LEGAL_TITLE: Record<LegalSection, LocalizedText> = {
   about: { de: messages.de.footer.about, en: messages.en.footer.about },
 }
 
-function localized(value: unknown, fallback: LocalizedText): LocalizedText {
+function localized(value: unknown, fallback: LocalizedText, sanitize = false): LocalizedText {
   const result: LocalizedText = { ...fallback }
   if (!value || typeof value !== 'object') return result
   const record = value as Record<string, unknown>
   for (const locale of ['de', 'en'] as const) {
     const raw = record[locale]
-    if (typeof raw === 'string') result[locale] = raw
+    // Empty/whitespace means "use the default", never a blank page.
+    if (typeof raw === 'string' && raw.trim().length > 0) {
+      result[locale] = sanitize ? sanitizeHtml(raw) : raw
+    }
   }
   return result
 }
@@ -123,7 +127,7 @@ export function parseLegalConfig(raw: unknown): LegalConfig {
     const record = entry as Record<string, unknown>
     result[section] = {
       title: localized(record.title, result[section].title),
-      content: localized(record.content, result[section].content),
+      content: localized(record.content, result[section].content, true),
     }
   }
   return result
@@ -141,6 +145,9 @@ export function resolveLegalSection(
   const entry = config[section]
   return {
     title: entry.title[locale] || entry.title.de || DEFAULT_LEGAL_TITLE[section].de || section,
-    content: entry.content[locale] || entry.content.de || '',
+    content:
+      entry.content[locale] ||
+      entry.content.de ||
+      LEGAL_CONTENT[section].content,
   }
 }

@@ -150,3 +150,28 @@ Server actions and server components cannot use the client `useT()` hook. Keep o
 
 `/api/gallery/upload` and `/api/hero/presign` generate the `{uuid}` key server-side. `confirmHeroVideo` must reject keys outside the `hero/` prefix and derive the public URL from `R2_PUBLIC_URL` instead of storing a client-supplied URL.
 
+## `datetime-local` is wall-clock time — convert on the client
+
+A `datetime-local` input yields `2026-05-21T10:00` without a zone. Parsing that on the server (Vercel = UTC) shifts every event by the offset. Convert to ISO in the browser (`new Date(value).toISOString()`) before calling the action, and `suppressHydrationWarning` on the rendered default value because server and browser timezones differ.
+
+## `site_config` is public — code defaults are the safety net
+
+`site_config` is anon-readable by design. Store only public content (`site`, `legal`, `translations`); secrets belong in `api_secrets` (AES-256-GCM, admin-only). Every reader must fall back to code defaults on empty/error/timeout, and an empty legal field must mean "use the default", never a blank page. Admin-authored legal HTML is sanitized on write as defense in depth.
+
+## Admin-editable labels beat i18n keys
+
+`resolveCategoryLabel` prefers DB labels over `messages.categories.*`, otherwise renaming "Ringe" in the admin would be a no-op while showing success. The i18n key remains only as the Demo/legacy fallback.
+
+## `space-y-*` displaces absolutely positioned decorations
+
+Tailwind's `space-y-*` sets both `margin-block-start` and `margin-block-end` on non-last children. An `absolute bottom-0` corner with a `space-y` parent gets pushed up by ~24px. Reset with `m-0!` on the decoration itself; padding-based offsets cannot fix it.
+
+## Admin is German-only and server pages must not follow the public cookie
+
+The admin layout nests `LocaleProvider initialLocale="de"`, but server components that call `getServerT()` still read `nn-locale` from the cookie. Use `getAdminT()` in admin pages and actions so headings/toasts stay German when a visitor has English selected. The public locale switch does not re-render admin server pages.
+
+## Secret caches in serverless
+
+`loadSecrets()` caches for 60s per instance. Invalidate on write (`invalidateSecretsCache()`), and remember a concurrent in-flight read can repopulate the cache with a stale snapshot; treat 60s staleness as the bound. `SECRETS_ENCRYPTION_KEY` loss makes stored values unreadable — env fallbacks are the escape hatch.
+
+

@@ -63,6 +63,49 @@ where not exists (
 );
 ```
 
+### Upgrade an existing database (admin backoffice)
+
+Do not re-run `reset.sql` on a live database. Apply this additive, idempotent block instead:
+
+```sql
+alter table public.categories add column if not exists label_en text not null default '';
+
+create table if not exists public.site_config (
+  key text primary key,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.api_secrets (
+  key text primary key,
+  value_encrypted text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_config enable row level security;
+alter table public.api_secrets enable row level security;
+
+drop policy if exists "site_config_public_read" on public.site_config;
+create policy "site_config_public_read" on public.site_config for select to anon, authenticated using (true);
+drop policy if exists "site_config_admin_all" on public.site_config;
+create policy "site_config_admin_all" on public.site_config for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "api_secrets_admin_all" on public.api_secrets;
+create policy "api_secrets_admin_all" on public.api_secrets for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- optional: allows the encrypted refresh token to blank the legacy column
+alter table public.instagram_auth alter column access_token set default '';
+```
+
+Set `SECRETS_ENCRYPTION_KEY` (64 hex chars) to enable the Admin → API-Keys editor:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Smoke test after deploy: `/admin` (dashboard), `/admin/content` (save a translation), `/admin/categories` (create + delete a test category), `/admin/secrets` (save/clear with the key set), `/admin/health` (all checks green), and the public legal pages.
+
 ## 3. Cloudflare R2
 
 1. R2 → Create bucket (e.g. `nebula-noir-gallery`).

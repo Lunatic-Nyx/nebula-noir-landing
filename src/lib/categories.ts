@@ -13,8 +13,8 @@ export const fixtureCategories: Category[] = DEFAULT_CATEGORIES
 
 /**
  * Label resolution order:
- * 1. i18n override/default for `categories.<slug>` (covers the seeded slugs),
- * 2. the DB `label_en`/`label`,
+ * 1. the DB `label_en`/`label` (operator-editable, authoritative),
+ * 2. the i18n override/default for `categories.<slug>` (legacy/Demo),
  * 3. the raw slug.
  */
 export function resolveCategoryLabel(
@@ -22,9 +22,9 @@ export function resolveCategoryLabel(
   locale: 'de' | 'en',
   category: Pick<Category, 'slug' | 'label' | 'labelEn'>
 ): string {
+  const dbLabel = locale === 'en' ? category.labelEn || category.label : category.label
+  if (dbLabel && dbLabel.trim().length > 0) return dbLabel
   const key = `categories.${category.slug}`
   const translated = t(key)
-  if (translated !== key) return translated
-  if (locale === 'en' && category.labelEn) return category.labelEn
-  return category.label || category.slug
+  return translated === key ? category.slug : translated
 }

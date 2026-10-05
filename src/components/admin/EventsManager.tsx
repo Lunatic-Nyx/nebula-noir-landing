@@ -20,13 +20,19 @@ function toLocalInput(value?: string | null) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
+function toIso(value: string) {
+  if (!value) return ''
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : date.toISOString()
+}
+
 function readForm(data: FormData) {
   return {
     title: String(data.get('title') || ''),
     venue: String(data.get('venue') || ''),
     city: String(data.get('city') || ''),
-    startsAt: String(data.get('startsAt') || ''),
-    endsAt: String(data.get('endsAt') || ''),
+    startsAt: toIso(String(data.get('startsAt') || '')),
+    endsAt: toIso(String(data.get('endsAt') || '')),
     description: String(data.get('description') || ''),
     url: String(data.get('url') || ''),
     published: data.get('published') === 'on',
@@ -107,7 +113,7 @@ export function EventsManager({ events, demo }: { events: EventRow[]; demo?: boo
                   {event.city} · {event.venue}
                   {event.published === false ? ' · unveröffentlicht' : ''}
                 </p>
-                <p className="text-xs text-foreground/50">{toLocalInput(event.startsAt).replace('T', ' ')}</p>
+                <p className="text-xs text-foreground/50" suppressHydrationWarning>{toLocalInput(event.startsAt).replace('T', ' ')}</p>
               </div>
               <Button
                 type="button"
@@ -131,8 +137,8 @@ export function EventsManager({ events, demo }: { events: EventRow[]; demo?: boo
                 <div className="grid gap-3 md:grid-cols-2">
                   <Input name="venue" defaultValue={event.venue} placeholder="Stand / Venue" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />
                   <Input name="city" defaultValue={event.city} placeholder="Stadt" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />
-                  <Input name="startsAt" type="datetime-local" defaultValue={toLocalInput(event.startsAt)} className="rounded-none border-2 border-foreground/30 bg-background" />
-                  <Input name="endsAt" type="datetime-local" defaultValue={toLocalInput(event.endsAt)} className="rounded-none border-2 border-foreground/30 bg-background" />
+                  <Input name="startsAt" type="datetime-local" defaultValue={toLocalInput(event.startsAt)} suppressHydrationWarning className="rounded-none border-2 border-foreground/30 bg-background" />
+                  <Input name="endsAt" type="datetime-local" defaultValue={toLocalInput(event.endsAt)} suppressHydrationWarning className="rounded-none border-2 border-foreground/30 bg-background" />
                 </div>
                 <Textarea name="description" defaultValue={event.description} placeholder="Beschreibung" className="min-h-[100px] rounded-none border-2 border-foreground/30 bg-background" />
                 <Input name="url" defaultValue={event.url ?? ''} placeholder="URL" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />

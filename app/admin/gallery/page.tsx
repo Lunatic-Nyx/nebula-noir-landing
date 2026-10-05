@@ -1,14 +1,14 @@
-import { GalleryManager } from '@/components/admin/GalleryManager'
+﻿import { GalleryManager } from '@/components/admin/GalleryManager'
 import { getCategories, getGallery } from '@/lib/data'
 import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import type { GalleryItem } from '@/lib/types'
-import { getServerT } from '@/i18n/server'
+import { getAdminT } from '@/i18n/server'
 
 type AdminGalleryItem = GalleryItem & { published?: boolean; sortOrder?: number }
 
 export default async function AdminGalleryPage() {
-  const t = await getServerT()
+  const t = await getAdminT()
   const demo = isDemoMode()
   const categories = await getCategories()
   let items: AdminGalleryItem[] = await getGallery()

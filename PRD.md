@@ -23,9 +23,9 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 | Gallery | Category filters, detail dialog, inquiry CTA — no price, no cart |
 | Instagram | Cached posts from Instagram Login API (`instagram_business_basic`) |
 | Contact | Name, email, message → `contact_inquiries`; best-effort notification email via Resend (`RESEND`) |
-| Legal | Static routes (Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns) |
-| i18n | DE default, EN cookie `nn-locale` |
-| Admin | Auth + `profiles.role = 'admin'`: gallery, events, info, inquiries, IG sync, hero video |
+| Legal | Routes with `site_config.legal` overrides, fallback to code defaults; editable in admin |
+| i18n | DE default, EN cookie `nn-locale`; `site_config.translations` overrides editable in admin |
+| Admin | Auth + `profiles.role = 'admin'`: dashboard, gallery, events, brand texts, categories, site/i18n/legal content, inquiries, IG sync, hero video, encrypted API keys, health |
 | Demo Mode | Missing Supabase public env → fixtures, mutation toasts |
 
 ## Out of scope

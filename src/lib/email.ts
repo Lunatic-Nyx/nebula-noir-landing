@@ -1,4 +1,5 @@
 import { loadSecrets } from '@/lib/secrets/store'
+import { getPublicSiteConfig } from '@/lib/site-config'
 
 // Server-only module. Do NOT add a 'use server' directive: that would expose
 // every exported async function as a public RPC endpoint.
@@ -63,7 +64,7 @@ export async function sendContactNotification(input: {
   email: string
   message: string
 }): Promise<SendEmailResult> {
-  const { values } = await loadSecrets()
+  const [{ values }, site] = await Promise.all([loadSecrets(), getPublicSiteConfig()])
   const apiKey = values.resend_api_key
   if (!apiKey) return { ok: false, error: 'RESEND is not configured' }
 
@@ -81,7 +82,7 @@ export async function sendContactNotification(input: {
   return sendEmail({
     apiKey,
     from: values.contact_from_email || DEFAULT_FROM,
-    to: values.contact_to_email || DEFAULT_TO,
+    to: values.contact_to_email || site.contactEmail || DEFAULT_TO,
     subject: `Neue Anfrage über nebula-noir.com – ${input.name}`,
     text,
     replyTo: input.email,

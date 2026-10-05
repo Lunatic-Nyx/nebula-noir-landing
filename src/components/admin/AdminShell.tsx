@@ -54,6 +54,7 @@ export function AdminShell({ children, demo }: { children: React.ReactNode; demo
     <div className="min-h-screen text-foreground overflow-x-hidden max-w-full relative">
       <div className="crt-scanline" />
       <div className="relative z-[20]">
+        <h1 className="sr-only">Admin</h1>
         <header className="lg:hidden sticky top-0 z-50 border-b-2 border-foreground/20 bg-background/98 backdrop-blur-md">
           <div className="container mx-auto flex items-center justify-between gap-4 px-4 py-2">
             <Link href="/admin" className="text-lg uppercase tracking-[0.2em] bioshock-glow-animated">

@@ -18,7 +18,7 @@ export function ProductCard({ product, onViewDetails, categoryLabel }: ProductCa
   const t = useT()
   return (
     <div 
-      className="group relative bg-card transition-all duration-500 nebula-glow-hover overflow-hidden metallic-border cursor-pointer art-deco-card-hover spark-theme-card-wrapper"
+      className="group relative flex h-full flex-col bg-card transition-all duration-500 nebula-glow-hover overflow-hidden metallic-border cursor-pointer art-deco-card-hover spark-theme-card-wrapper"
       onClick={() => onViewDetails(product)}
     >
       <div className="spark-theme-card-corners" />
@@ -46,7 +46,7 @@ export function ProductCard({ product, onViewDetails, categoryLabel }: ProductCa
         </div>
       </div>
       
-      <div className="p-4 md:p-6 space-y-3 md:space-y-4 relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col space-y-3 p-4 md:space-y-4 md:p-6">
         <div>
           <h3 className="text-lg md:text-xl lg:text-2xl mb-2 md:mb-3 group-hover:text-foreground transition-colors uppercase tracking-[0.15em] spark-theme-bioshock-glow line-clamp-2">
             {product.name}
@@ -62,7 +62,7 @@ export function ProductCard({ product, onViewDetails, categoryLabel }: ProductCa
           </p>
         )}
 
-        <div className="flex items-center justify-between gap-2 pt-4 md:pt-6 border-t border-foreground/20">
+        <div className="mt-auto flex items-center justify-between gap-2 border-t border-foreground/20 pt-4 md:pt-6">
           <div className="min-w-0 text-base md:text-lg lg:text-xl font-light text-foreground tracking-wider spark-theme-bioshock-glow truncate">
             {categoryLabel ?? t(`categories.${product.category}`)}
           </div>

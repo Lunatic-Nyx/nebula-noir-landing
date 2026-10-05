@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.2] — 2026-10-05
+
+### Added
+
+- Footer is fully editable in **Admin → Texte & Übersetzungen → Footer**: columns, links (label DE/EN, URL, external), order (↑/↓), add/remove, brand blurb, copyright and made-in. Defaults match the previous footer; the Etsy link is just the default and can be renamed/replaced (`site_config.footer`).
+- Back button on all legal/info pages.
+
+### Fixed
+
+- `.art-deco-divider` is centered again: the frozen `index.css` rule (`margin: 4rem 0`, unlayered) overrode Tailwind's layered `mx-auto`, left-aligning the divider under Catalog/Instagram.
+- Loading-screen moon accents no longer overlap the corner brackets.
+- Product cards in a row share the same height; the category/Details footer is aligned across cards.
+
 ## [0.6.1] — 2026-10-05
 
 ### Added

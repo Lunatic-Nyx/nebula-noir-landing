@@ -10,11 +10,12 @@ import { MESSAGE_PATHS } from '@/i18n/paths'
 import type { TranslationOverrides } from '@/i18n/paths'
 import { defaultMessage } from '@/i18n/translate'
 import { saveLegalConfig, saveSiteConfig, saveTranslations } from '@/lib/actions/content'
-import type { PublicSiteConfig } from '@/lib/site-config.types'
+import { FooterManager } from '@/components/admin/FooterManager'
+import type { PublicSiteConfig, FooterConfig } from '@/lib/site-config.types'
 import type { LegalConfig } from '@/lib/legal-config.types'
 import type { LegalSection } from '@/lib/legal-content'
 
-type Tab = 'site' | 'translations' | 'legal'
+type Tab = 'site' | 'translations' | 'legal' | 'footer'
 
 const SECTION_LABELS: Record<LegalSection, string> = {
   impressum: 'Impressum',
@@ -30,10 +31,12 @@ export function ContentManager({
   siteConfig,
   overrides,
   legalConfig,
+  footerConfig,
 }: {
   siteConfig: PublicSiteConfig
   overrides: TranslationOverrides
   legalConfig: LegalConfig
+  footerConfig: FooterConfig
 }) {
   const [tab, setTab] = useState<Tab>('site')
   const [busy, setBusy] = useState(false)
@@ -113,6 +116,9 @@ export function ContentManager({
         </button>
         <button type="button" className={tabClass('legal')} onClick={() => setTab('legal')}>
           Rechtstexte
+        </button>
+        <button type="button" className={tabClass('footer')} onClick={() => setTab('footer')}>
+          Footer
         </button>
       </div>
 
@@ -224,6 +230,8 @@ export function ContentManager({
           </Button>
         </div>
       ) : null}
+
+      {tab === 'footer' ? <FooterManager config={footerConfig} /> : null}
     </div>
   )
 }

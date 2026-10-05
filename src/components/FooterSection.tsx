@@ -1,36 +1,17 @@
 'use client'
 
-import { LegalSection } from '@/lib/legal-content'
-import { useT } from '@/i18n/context'
-import { useSiteConfig } from '@/components/SiteConfigProvider'
+import { useI18n } from '@/i18n/context'
 import { ConsentSettingsLink } from '@/components/ConsentSettingsLink'
+import { useFooterConfig } from '@/components/SiteConfigProvider'
+import { footerText } from '@/lib/footer-config'
 
-const legalLinkClass =
+const linkClass =
   'text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider text-left'
 
 export function FooterSection() {
-  const t = useT()
-  const siteConfig = useSiteConfig()
+  const { locale } = useI18n()
+  const footer = useFooterConfig()
   const currentYear = new Date().getFullYear()
-
-  const legalHref = (section: LegalSection) => {
-    switch (section) {
-      case 'impressum':
-        return '/impressum'
-      case 'datenschutz':
-        return '/datenschutz'
-      case 'agb':
-        return '/agb'
-      case 'widerruf':
-        return '/widerruf'
-      case 'versand':
-        return '/versand'
-      case 'customOrders':
-        return '/custom-orders'
-      case 'about':
-        return '/ueber-uns'
-    }
-  }
 
   return (
     <footer className="border-t-2 border-foreground/20 py-12 md:py-16 overflow-hidden max-w-full">
@@ -47,117 +28,40 @@ export function FooterSection() {
               <h3 className="text-lg md:text-2xl uppercase tracking-[0.15em] md:tracking-[0.2em] bioshock-glow-animated">Nebula Noir</h3>
             </div>
             <p className="text-foreground/70 leading-relaxed font-light text-xs md:text-sm">
-              {t('footer.blurb')}
+              {footerText(footer.blurb, locale)}
             </p>
           </div>
 
-          <div>
-            <h4 className="text-xs md:text-sm uppercase tracking-[0.2em] md:tracking-[0.25em] mb-4 md:mb-6 bioshock-glow-animated">{t('footer.shop')}</h4>
-            <ul className="space-y-2 md:space-y-3">
-              <li>
-                <a href="/#catalog" className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider">
-                  {t('footer.collection')}
-                </a>
-              </li>
-              <li>
-                <a href="/#about" className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider">
-                  {t('footer.philosophy')}
-                </a>
-              </li>
-              <li>
-                <a href="/#contact" className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider">
-                  {t('footer.custom')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={legalHref('customOrders')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.customOrders')}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs md:text-sm uppercase tracking-[0.2em] md:tracking-[0.25em] mb-4 md:mb-6 bioshock-glow-animated">{t('footer.info')}</h4>
-            <ul className="space-y-2 md:space-y-3">
-              <li>
-                <a 
-                  href={legalHref('about')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.about')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={legalHref('versand')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.shipping')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={siteConfig.etsyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider"
-                >
-                  {t('footer.etsy')}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="text-xs md:text-sm uppercase tracking-[0.2em] md:tracking-[0.25em] mb-4 md:mb-6 bioshock-glow-animated">{t('footer.legal')}</h4>
-            <ul className="space-y-2 md:space-y-3">
-              <li>
-                <a 
-                  href={legalHref('impressum')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.impressum')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={legalHref('datenschutz')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.privacy')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={legalHref('agb')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.terms')}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={legalHref('widerruf')}
-                  className={legalLinkClass}
-                >
-                  {t('footer.withdrawal')}
-                </a>
-              </li>
-            </ul>
-          </div>
+          {footer.columns.map((column, columnIndex) => (
+            <div key={`${columnIndex}-${column.title.de}`}>
+              <h4 className="text-xs md:text-sm uppercase tracking-[0.2em] md:tracking-[0.25em] mb-4 md:mb-6 bioshock-glow-animated">
+                {footerText(column.title, locale)}
+              </h4>
+              <ul className="space-y-2 md:space-y-3">
+                {column.links.map((link, linkIndex) => (
+                  <li key={`${linkIndex}-${link.href}`}>
+                    <a
+                      href={link.href}
+                      target={link.external ? '_blank' : undefined}
+                      rel={link.external ? 'noopener noreferrer' : undefined}
+                      className={linkClass}
+                    >
+                      {footerText(link.label, locale)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <div className="border-t border-foreground/20 pt-6 md:pt-8">
           <div className="text-center space-y-2 md:space-y-3">
             <p className="text-foreground/60 text-xs uppercase tracking-[0.15em]">
-              {t('footer.copyright', { year: currentYear })}
+              {footerText(footer.copyright, locale).replaceAll('{year}', String(currentYear))}
             </p>
             <p className="text-foreground/50 text-xs tracking-wider">
-              {t('footer.madeIn')}
+              {footerText(footer.madeIn, locale)}
             </p>
             <ConsentSettingsLink />
           </div>

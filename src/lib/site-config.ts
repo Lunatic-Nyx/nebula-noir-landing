@@ -6,9 +6,12 @@ import { LEGAL_CONTENT, type LegalSection } from '@/lib/legal-content'
 import { messages, type Locale } from '@/i18n/messages'
 import { sanitizeHtml } from '@/lib/sanitize'
 import type { PublicSiteConfig } from '@/lib/site-config.types'
+import type { FooterConfig } from '@/lib/site-config.types'
 import type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
+import { parseFooterConfig } from '@/lib/footer-config'
 
 export type { PublicSiteConfig } from '@/lib/site-config.types'
+export type { FooterConfig } from '@/lib/site-config.types'
 export type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
 
 // Server-only config layer. Do NOT add a 'use server' directive.
@@ -80,6 +83,10 @@ export function parsePublicSiteConfig(raw: unknown): PublicSiteConfig {
 
 export const getPublicSiteConfig = cache(async (): Promise<PublicSiteConfig> => {
   return parsePublicSiteConfig(await readConfigValue('site'))
+})
+
+export const getFooterConfig = cache(async (): Promise<FooterConfig> => {
+  return parseFooterConfig(await readConfigValue('footer'))
 })
 
 // --- legal content ------------------------------------------------------------

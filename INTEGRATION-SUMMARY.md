@@ -34,7 +34,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 - Contact: insert-only for anon.
 - Instagram writes: service role only.
 - `instagram_auth`: single-row token metadata (`user_id`, `username`, `expires_at`); access token now lives encrypted in `api_secrets`.
-- `site_config`: public-read key/value JSONB (`site`, `legal`, `translations`); never store secrets here.
+- `site_config`: public-read key/value JSONB (`site`, `legal`, `footer`, `translations`); never store secrets here.
 - `api_secrets`: admin-only RLS, AES-256-GCM (`SECRETS_ENCRYPTION_KEY`), runtime reads via service role.
 - `rate_limits`: deny-all RLS; contact limiter via `consume_rate_limit()` (service role), keys are hashes.
 - Consent: `nn-consent` cookie gates external fonts (Google Fonts); `nn-locale` and admin session cookies are necessary.

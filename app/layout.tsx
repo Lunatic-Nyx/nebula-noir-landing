@@ -9,7 +9,7 @@ import { getServerLocale } from '@/i18n/server'
 import { getTranslationOverrides } from '@/i18n/overrides'
 import { translate } from '@/i18n/translate'
 import { CONSENT_COOKIE, parseConsent } from '@/lib/consent'
-import { getPublicSiteConfig } from '@/lib/site-config'
+import { getFooterConfig, getPublicSiteConfig } from '@/lib/site-config'
 import { SCROLL_OFFSET_VAR } from '@/lib/design'
 import '@/main.css'
 import '@/styles/theme.css'
@@ -29,10 +29,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [locale, overrides, siteConfig, cookieStore] = await Promise.all([
+  const [locale, overrides, siteConfig, footerConfig, cookieStore] = await Promise.all([
     getServerLocale(),
     getTranslationOverrides(),
     getPublicSiteConfig(),
+    getFooterConfig(),
     cookies(),
   ])
   const consent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value)
@@ -55,7 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <LocaleProvider initialLocale={locale} overrides={overrides}>
-          <SiteConfigProvider value={siteConfig}>
+          <SiteConfigProvider site={siteConfig} footer={footerConfig}>
             <SmoothScroll />
             <CursorGlow />
             {children}

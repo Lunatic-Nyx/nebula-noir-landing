@@ -73,7 +73,8 @@ Do not reintroduce `@github/spark`, `useKV`, Spark Vite plugins, `spark.meta.jso
 | `src/components/` | Live UI (freeze) |
 | `src/lib/data.ts` | Demo-aware data access |
 | `src/lib/env.ts` | Env + demo flags |
-| `src/lib/site-config.ts` | `site_config` readers (site/legal) with code fallbacks |
+| `src/lib/site-config.ts` | `site_config` readers (site, legal, footer) with code fallbacks |
+| `src/lib/footer-config.ts` | Editable footer model: defaults, parser, safe-href rules |
 | `src/lib/secrets/` | AES-256-GCM crypto + encrypted secret store |
 | `src/i18n/paths.ts` | Overridable message path allowlist |
 | `src/i18n/overrides.ts` | Per-request translation override loader |

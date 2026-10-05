@@ -1,12 +1,20 @@
 import { ContentManager } from '@/components/admin/ContentManager'
-import { getLegalConfig, getPublicSiteConfig } from '@/lib/site-config'
+import { getFooterConfig, getLegalConfig, getPublicSiteConfig } from '@/lib/site-config'
 import { getTranslationOverrides } from '@/i18n/overrides'
 
 export default async function AdminContentPage() {
-  const [siteConfig, overrides, legalConfig] = await Promise.all([
+  const [siteConfig, overrides, legalConfig, footerConfig] = await Promise.all([
     getPublicSiteConfig(),
     getTranslationOverrides(),
     getLegalConfig(),
+    getFooterConfig(),
   ])
-  return <ContentManager siteConfig={siteConfig} overrides={overrides} legalConfig={legalConfig} />
+  return (
+    <ContentManager
+      siteConfig={siteConfig}
+      overrides={overrides}
+      legalConfig={legalConfig}
+      footerConfig={footerConfig}
+    />
+  )
 }

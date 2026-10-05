@@ -11,9 +11,10 @@ import { IMAGE_FILTER } from '@/lib/design'
 interface ProductCardProps {
   product: Product
   onViewDetails: (product: Product) => void
+  categoryLabel?: string
 }
 
-export function ProductCard({ product, onViewDetails }: ProductCardProps) {
+export function ProductCard({ product, onViewDetails, categoryLabel }: ProductCardProps) {
   const t = useT()
   return (
     <div 
@@ -63,7 +64,7 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
 
         <div className="flex items-center justify-between gap-2 pt-4 md:pt-6 border-t border-foreground/20">
           <div className="min-w-0 text-base md:text-lg lg:text-xl font-light text-foreground tracking-wider spark-theme-bioshock-glow truncate">
-            {t(`categories.${product.category}`)}
+            {categoryLabel ?? t(`categories.${product.category}`)}
           </div>
           <Button
             onClick={(e) => {

@@ -5,11 +5,13 @@ import { motion } from 'framer-motion'
 import { ArtDecoCorner } from './ArtDecoCorner'
 import type { InstagramPost } from '@/lib/types'
 import { useT } from '@/i18n/context'
+import { useSiteConfig } from '@/components/SiteConfigProvider'
 import { IMAGE_FILTER, SCROLL_OFFSET_VAR } from '@/lib/design'
 import { EASE_DECO } from '@/lib/motion'
 
 export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
   const t = useT()
+  const siteConfig = useSiteConfig()
   const { ref, isVisible } = useScrollTrigger(0.1)
   if (!posts.length) return null
 
@@ -67,7 +69,7 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
         </div>
         <div className="text-center mt-12 md:mt-16 px-4">
           <a
-            href="https://www.instagram.com/nebula_noir.official/"
+            href={siteConfig.instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="text-foreground/70 hover:text-foreground transition-all duration-300 uppercase text-xs tracking-wider"

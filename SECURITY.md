@@ -25,6 +25,7 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 - `SUPABASE_SERVICE_ROLE_KEY` — bypasses RLS; cron + admin server actions only
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ENDPOINT`
 - `INSTAGRAM_ACCESS_TOKEN` (Instagram Login user token), `INSTAGRAM_APP_SECRET`
+- `RESEND` (Resend API key; contact-form notification email only)
 - `CRON_SECRET`
 
 `R2_PUBLIC_URL` is not a credential but is server-used when writing object URLs.
@@ -42,6 +43,9 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 | `instagram_posts` | SELECT | SELECT (writes via service role) |
 | `instagram_auth` | none | none (service role only) |
 | `contact_inquiries` | INSERT | SELECT, UPDATE, DELETE |
+| `site_config` | SELECT | ALL — public read; never store secrets here |
+| `api_secrets` | none | ALL (runtime reads use the service role) |
+| `rate_limits` | none | Deny-all; only `consume_rate_limit()` (SECURITY DEFINER) and the service role |
 | `profiles` | none | SELECT own row; admin role set only via SQL/service |
 
 Admin check: JWT user id exists in `profiles` with `role = 'admin'`.
@@ -59,17 +63,37 @@ Service role is used only in:
 - Auth: admin session required for all uploads
 - No public write on the bucket; Next.js server uses S3-compatible credentials
 
+## Secret store (admin-editable keys)
+
+`RESEND`, Instagram and contact addresses can be stored encrypted in `api_secrets` and edited under **Admin → API-Keys**:
+
+- AES-256-GCM (`src/lib/secrets/crypto.ts`), key from `SECRETS_ENCRYPTION_KEY` (64 hex chars), format `enc:v1:<iv>:<tag>:<cipher>`, AAD = logical key name.
+- Writes go through admin-gated server actions + service role; the client only ever sees `db`/`env`/`missing` status, never a value or ciphertext.
+- Runtime resolution is DB (decrypted) → environment fallback. `site_config` is public-read and must never contain secrets.
+- Losing or rotating `SECRETS_ENCRYPTION_KEY` makes stored values unreadable (env fallbacks keep working); encrypted entries must be re-entered.
+- Legal HTML written through the admin editor is sanitized on write (scripts/iframes/event handlers/`javascript:` URLs stripped) as defense in depth; admin-only RLS remains the primary trust boundary.
+
 ## Cron
 
 `/api/cron/instagram` requires `Authorization: Bearer $CRON_SECRET` (constant-time compare). Vercel Cron sends this header automatically when the `CRON_SECRET` env var is set. If the variable is missing or the header does not match, the route returns 401. The spoofable `x-vercel-cron` header is not trusted.
 
 ## HTTP security headers
 
-`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, and HSTS for all routes.
+`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, HSTS and a Content-Security-Policy (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, inline scripts/styles for Next/Tailwind, fonts from `fonts.gstatic.com`, images/media over HTTPS, `connect-src` to Supabase).
+
+## Rate limiting
+
+The contact action enforces 5 requests / 10 minutes per hashed IP+email via `public.consume_rate_limit()` (table `rate_limits`, deny-all RLS, `SECURITY DEFINER`, execute revoked from `public`/`anon`/`authenticated`, granted to `service_role` only). The function rejects out-of-range parameters and opportunistically deletes expired rows, so an abusive caller cannot poison buckets or grow the table unbounded. The hashed key is stored, never the raw IP. The limiter fails open when Supabase/service role is missing so a misconfiguration cannot block the form. This complements — but does not replace — an edge/WAF limit before enabling `RESEND`.
+
+## Server-only modules
+
+`src/lib/secrets/**`, `src/lib/email.ts`, `src/lib/site-config.ts`, `src/lib/admin-gate.ts`, `src/lib/health.ts`, `src/lib/instagram.ts`, `src/lib/r2.ts` and the Supabase clients import `server-only`, so a client import fails the build. None of them may carry a `'use server'` directive.
 
 ## Contact form
 
 Validate name/email/message server-side. Truncate oversized payloads. RLS INSERT is not a substitute for rate limiting (add WAF/Vercel firewall in production).
+
+When `RESEND` is set, a best-effort notification email is sent server-side via `https://api.resend.com` after the inquiry is stored. The API key is server-only, never returned to the client, and is not logged. A mail failure never fails the form and never loses the stored inquiry. Before enabling `RESEND` in production, put an edge/WAF rate limit in front of the public contact action — otherwise anyone can drive outbound email to the operator (inbox spam, Resend quota).
 
 ## Auth
 

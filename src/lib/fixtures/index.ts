@@ -1,5 +1,5 @@
 import { PRODUCTS } from '@/lib/products'
-import type { BrandInfo, EventItem, GalleryItem, InstagramPost, JewelryCategory, Product } from '@/lib/types'
+import type { BrandInfo, EventItem, GalleryItem, InstagramPost, Product } from '@/lib/types'
 
 export function productsToGallery(products: Product[]): GalleryItem[] {
   return products.map((p) => ({
@@ -101,7 +101,3 @@ export const fixtureInstagram: InstagramPost[] = [
   permalink: 'https://www.instagram.com/nebula_noir.official/',
   timestamp: new Date(Date.UTC(2026, 7, 1 + i * 3)).toISOString(),
 }))
-
-export function isJewelryCategory(value: string): value is JewelryCategory {
-  return ['chokers', 'bracelets', 'rings', 'earrings', 'accessories'].includes(value)
-}

@@ -1,15 +1,16 @@
 import { HomePage } from '@/components/HomePage'
-import { brandMap, galleryAsProducts, getBrandInfo, getEvents, getGallery, getHeroVideoUrl, getInstagramPosts } from '@/lib/data'
+import { brandMap, galleryAsProducts, getBrandInfo, getCategories, getEvents, getGallery, getHeroVideoUrl, getInstagramPosts } from '@/lib/data'
 
 export const dynamic = 'force-dynamic'
 
 export default async function Page() {
-  const [gallery, brandInfo, events, instagram, heroVideoUrl] = await Promise.all([
+  const [gallery, brandInfo, events, instagram, heroVideoUrl, categories] = await Promise.all([
     getGallery(),
     getBrandInfo(),
     getEvents({ upcomingOnly: true }),
     getInstagramPosts(),
     getHeroVideoUrl(),
+    getCategories(),
   ])
 
   return (
@@ -19,6 +20,7 @@ export default async function Page() {
       events={events}
       instagram={instagram}
       heroVideoUrl={heroVideoUrl}
+      categories={categories}
     />
   )
 }

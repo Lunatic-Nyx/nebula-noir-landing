@@ -12,7 +12,3 @@ export function isR2Configured(): boolean {
       process.env.R2_PUBLIC_URL
   )
 }
-
-export function isInstagramConfigured(): boolean {
-  return Boolean(process.env.INSTAGRAM_ACCESS_TOKEN)
-}

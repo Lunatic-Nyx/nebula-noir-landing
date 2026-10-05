@@ -41,6 +41,8 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Gallery uses fixture images (`/demo/instagram/*.jpg` via `src/lib/products.ts` / fixtures).
 - [ ] Events, brand copy, and Instagram fixtures render.
 - [ ] Contact submit shows success or demo toast; no crash.
+- [ ] Without `RESEND`, contact submit still succeeds and stores the row (no mail call, warn logged).
+- [ ] With `RESEND`, a notification email is sent to `CONTACT_TO_EMAIL` with reply-to = visitor; an invalid key logs an error but the form still returns success.
 - [ ] Admin mutations show a demo/disabled toast; no R2 upload attempted.
 - [ ] Hero without `NEXT_PUBLIC_HERO_VIDEO_URL` keeps the original SVG pattern background.
 
@@ -91,10 +93,36 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Hero video, when URL is set, sits behind existing content, muted, no player chrome.
 - [ ] Scroll through hero scrubs `currentTime`; `prefers-reduced-motion` freezes on frame 0.
 
+## Consent & legal
+
+- [ ] First visit shows the cookie banner; "Nur notwendige" stores `nn-consent` and no request to `fonts.googleapis.com` / `fonts.gstatic.com` occurs (system fonts are used).
+- [ ] "Alle akzeptieren" stores `nn-consent` and loads Google Fonts (Poiret One active).
+- [ ] Footer "Cookie-Einstellungen" resets the choice and the banner reappears.
+- [ ] `/impressum` and `/datenschutz` contain no `[[…]]` placeholders before go-live; the admin legal editor warns while any remain.
+- [ ] Contact form: the 6th request within 10 minutes (same IP+email) returns the rate-limit message; other visitors are unaffected.
+- [ ] `Content-Security-Policy` header present; the site, admin, Supabase calls and R2 media still work.
+
 ## Admin auth
 
 - [ ] `/admin` unauthenticated → `/login`.
 - [ ] Non-admin authenticated user → 403.
 - [ ] Demo Mode `/admin` is reachable as read-only preview with banner.
 - [ ] `LICENSE` is proprietary (not MIT / not GitHub, Inc.).
-- [ ] `.env.example` lists site, Supabase, R2, Instagram, hero, and cron variables.
+- [ ] `.env.example` lists Supabase, R2, Instagram, Resend, hero, cron, and `SECRETS_ENCRYPTION_KEY`.
+
+## Admin backoffice
+
+- [ ] Desktop sidebar (lg+) and mobile menu drawer both show the four groups; the current page is highlighted (`aria-current="page"`).
+- [ ] Admin stays German when the public locale cookie is `nn-locale=en` (headings, nav, toasts).
+- [ ] `/admin/content` → Website: changing the Etsy/Instagram URL updates the footer/nav links after reload; empty field falls back to default.
+- [ ] `/admin/content` → Übersetzungen: an override (e.g. `hero.tagline`) appears in server HTML and client with no visible flash; clearing it restores the default; unknown paths are discarded.
+- [ ] `/admin/content` → Rechtstexte: editing Impressum content is visible on `/impressum` after reload; clearing a field restores the code default (never a blank page); `<script>`/`onerror` are stripped on save.
+- [ ] `/admin/categories`: create a category, rename labels, reorder; deleting a category with images shows the reassign dialog; after reassign the delete succeeds.
+- [ ] Public catalog shows the DB categories (and still the Demo fixtures with empty Supabase).
+- [ ] `/admin/gallery`: inline edit changes title/description/category/published/sort without resetting the others.
+- [ ] `/admin/events`: unpublished events are visible and editable; saving does not shift the time by a timezone offset.
+- [ ] `/admin/info`: create and delete a `brand_info` key.
+- [ ] `/admin/secrets`: without `SECRETS_ENCRYPTION_KEY` saving is disabled; with it, a stored value shows status `gespeichert` and the raw value is never returned; clearing falls back to `ENV`; `api_secrets.value_encrypted` starts with `enc:v1:`.
+- [ ] Contact form still sends the notification using the stored key when the env key is removed.
+- [ ] `/admin/health` shows five checks with latency; a wrong key shows an error without echoing the key; the page returns within ~6 s.
+- [ ] `.next/static` contains no `value_encrypted`, `SECRETS_ENCRYPTION_KEY`, `enc:v1`, or `api_secrets` strings.

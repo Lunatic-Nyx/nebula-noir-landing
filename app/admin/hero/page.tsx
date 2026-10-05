@@ -1,10 +1,10 @@
-import { HeroVideoManager } from '@/components/admin/HeroVideoManager'
+﻿import { HeroVideoManager } from '@/components/admin/HeroVideoManager'
 import { getHeroVideoUrl } from '@/lib/data'
 import { isDemoMode } from '@/lib/env'
-import { getServerT } from '@/i18n/server'
+import { getAdminT } from '@/i18n/server'
 
 export default async function AdminHeroPage() {
-  const t = await getServerT()
+  const t = await getAdminT()
   const url = await getHeroVideoUrl()
   return (
     <div className="space-y-8">

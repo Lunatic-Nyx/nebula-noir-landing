@@ -1,4 +1,5 @@
 import { messages, type Locale } from '@/i18n/messages'
+import type { MessagePath, TranslationOverrides } from '@/i18n/paths'
 
 type Dict = Record<string, unknown>
 
@@ -15,13 +16,23 @@ function lookup(tree: Dict, path: string): string {
 export function translate(
   locale: Locale,
   path: string,
-  vars?: Record<string, string | number>
+  vars?: Record<string, string | number>,
+  overrides?: TranslationOverrides | null
 ): string {
-  let value = lookup(messages[locale] as unknown as Dict, path)
+  const override = overrides?.[locale]?.[path as MessagePath]
+  let value =
+    typeof override === 'string' && override.length > 0
+      ? override
+      : lookup(messages[locale] as unknown as Dict, path)
   if (vars) {
     for (const [key, item] of Object.entries(vars)) {
       value = value.replaceAll(`{${key}}`, String(item))
     }
   }
   return value
+}
+
+/** Default (code) message for editor placeholders. */
+export function defaultMessage(locale: Locale, path: string): string {
+  return lookup(messages[locale] as unknown as Dict, path)
 }

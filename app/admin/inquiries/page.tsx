@@ -1,10 +1,10 @@
-import { isDemoMode } from '@/lib/env'
+﻿import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { InquiriesManager } from '@/components/admin/InquiriesManager'
-import { getServerT } from '@/i18n/server'
+import { getAdminT } from '@/i18n/server'
 
 export default async function AdminInquiriesPage() {
-  const t = await getServerT()
+  const t = await getAdminT()
   const demo = isDemoMode()
   let rows: { id: string; name: string; email: string; message: string; read: boolean; created_at: string }[] = []
   if (!demo) {

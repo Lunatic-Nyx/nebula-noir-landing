@@ -5,6 +5,14 @@ export const messages = {
     common: {
       close: 'Schließen',
     },
+    consent: {
+      title: 'Cookies & externe Inhalte',
+      text: 'Diese Website setzt nur technisch notwendige Cookies. Externe Schriftarten (Google Fonts) laden wir erst nach Ihrer Zustimmung.',
+      accept: 'Alle akzeptieren',
+      necessary: 'Nur notwendige',
+      more: 'Datenschutz',
+      settings: 'Cookie-Einstellungen',
+    },
     nav: {
       collection: 'Kollektion',
       philosophy: 'Philosophie',
@@ -93,6 +101,7 @@ export const messages = {
       tooLong: 'Eingabe zu lang',
       unavailable: 'Dienst nicht verfügbar',
       saveFailed: 'Nachricht konnte nicht gespeichert werden',
+      rateLimited: 'Zu viele Anfragen. Bitte versuche es später erneut.',
     },
     footer: {
       blurb: 'Statementschmuck für die schwarze Szene. Cybergoth, Industrial, Cyberpunk. Made in Germany.',
@@ -204,6 +213,14 @@ export const messages = {
     common: {
       close: 'Close',
     },
+    consent: {
+      title: 'Cookies & external content',
+      text: 'This website only uses technically necessary cookies. External fonts (Google Fonts) are loaded only after your consent.',
+      accept: 'Accept all',
+      necessary: 'Necessary only',
+      more: 'Privacy',
+      settings: 'Cookie settings',
+    },
     nav: {
       collection: 'Collection',
       philosophy: 'Philosophy',
@@ -292,6 +309,7 @@ export const messages = {
       tooLong: 'Input too long',
       unavailable: 'Service unavailable',
       saveFailed: 'Message could not be stored',
+      rateLimited: 'Too many requests. Please try again later.',
     },
     footer: {
       blurb: 'Statement jewelry for the black scene. Cybergoth, industrial, cyberpunk. Made in Germany.',

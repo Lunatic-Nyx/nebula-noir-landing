@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import type { Locale } from '@/i18n/messages'
+import type { TranslationOverrides } from '@/i18n/paths'
 import { translate } from '@/i18n/translate'
 
 type I18nValue = {
@@ -15,9 +16,11 @@ const I18nContext = createContext<I18nValue | null>(null)
 export function LocaleProvider({
   children,
   initialLocale,
+  overrides,
 }: {
   children: React.ReactNode
   initialLocale: Locale
+  overrides?: TranslationOverrides
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
@@ -28,8 +31,8 @@ export function LocaleProvider({
   }, [])
 
   const t = useCallback(
-    (path: string, vars?: Record<string, string | number>) => translate(locale, path, vars),
-    [locale]
+    (path: string, vars?: Record<string, string | number>) => translate(locale, path, vars, overrides),
+    [locale, overrides]
   )
 
   const value = useMemo(() => ({ locale, setLocale, t }), [locale, setLocale, t])

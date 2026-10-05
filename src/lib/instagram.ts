@@ -1,6 +1,8 @@
+import 'server-only'
 import { isR2Configured } from '@/lib/env'
 import { createServiceSupabase } from '@/lib/supabase/service'
 import { extensionForMime, isAllowedImageType, uploadToR2 } from '@/lib/r2'
+import { loadSecrets, setApiSecret } from '@/lib/secrets/store'
 
 const GRAPH_HOST = 'https://graph.instagram.com'
 const GRAPH_VERSION = process.env.INSTAGRAM_GRAPH_VERSION || 'v22.0'
@@ -77,23 +79,28 @@ async function copyStillToR2(url: string, id: string): Promise<string> {
 }
 
 async function loadAuth(supabase: NonNullable<ReturnType<typeof createServiceSupabase>>) {
+  let token: string | undefined
+  let userId: string | undefined
+  let username: string | undefined
   try {
     const { data } = await supabase
       .from('instagram_auth')
       .select('access_token, user_id, username')
       .eq('id', true)
       .maybeSingle()
-    return {
-      token: (data?.access_token as string | undefined) || process.env.INSTAGRAM_ACCESS_TOKEN,
-      userId: (data?.user_id as string | undefined) || process.env.INSTAGRAM_USER_ID,
-      username: (data?.username as string | undefined) || undefined,
-    }
+    token = (data?.access_token as string | undefined) || undefined
+    userId = (data?.user_id as string | undefined) || undefined
+    username = (data?.username as string | undefined) || undefined
   } catch {
-    return {
-      token: process.env.INSTAGRAM_ACCESS_TOKEN,
-      userId: process.env.INSTAGRAM_USER_ID,
-      username: undefined,
-    }
+    // Table may be missing until reset.sql is re-run.
+  }
+  // Priority: encrypted store (admin override) > legacy refreshed row > env.
+  const { values, sources } = await loadSecrets()
+  const encryptedToken = sources.instagram_access_token === 'db' ? values.instagram_access_token : undefined
+  return {
+    token: encryptedToken || token || values.instagram_access_token,
+    userId: userId || values.instagram_user_id,
+    username,
   }
 }
 
@@ -101,23 +108,31 @@ async function saveAuth(
   supabase: NonNullable<ReturnType<typeof createServiceSupabase>>,
   input: { token: string; userId?: string; username?: string; expiresIn?: number }
 ) {
+  // Store the refreshed token encrypted when possible; keep instagram_auth for
+  // metadata and as a legacy fallback (empty token when encrypted storage works).
+  let legacyToken = input.token
+  try {
+    const encrypted = await setApiSecret('instagram_access_token', input.token)
+    if (encrypted.ok) legacyToken = ''
+  } catch (error) {
+    console.error('[instagram] failed to store refreshed token encrypted', error)
+  }
+
   const row: Record<string, unknown> = {
     id: true,
-    access_token: input.token,
+    access_token: legacyToken,
     user_id: input.userId ?? null,
     username: input.username ?? null,
     updated_at: new Date().toISOString(),
   }
   // Only touch expires_at when the refresh actually returned a new lifetime.
-  // Otherwise a failed refresh would wipe a previously stored expiry.
   if (input.expiresIn) {
     row.expires_at = new Date(Date.now() + input.expiresIn * 1000).toISOString()
   }
   try {
     await supabase.from('instagram_auth').upsert(row)
   } catch (error) {
-    // Table may be missing until reset.sql is re-run.
-    console.error('[instagram] failed to persist auth token', error)
+    console.error('[instagram] failed to persist auth metadata', error)
   }
 }
 

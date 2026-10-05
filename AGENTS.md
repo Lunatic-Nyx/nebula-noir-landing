@@ -35,8 +35,10 @@ Allowed exceptions (product decisions):
 - Demo Mode: if `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is missing, all reads use `src/lib/fixtures/`. Mutations no-op with a user-visible toast.
 - R2 uploads only on the server. Never expose R2 secrets to the client.
 - Instagram: **Instagram API with Instagram Login** only (`graph.instagram.com`, scope `instagram_business_basic`). No Facebook Login, no Messenger. Syncs media into `instagram_posts`. Handle: `@nebula_noir.official`.
-- i18n: German default, English via `LocaleProvider` + `src/i18n/messages.ts`. Cookie `nn-locale`. Do not hardcode user-facing UI strings.
-- Admin: Supabase Auth email/password + `profiles.role = 'admin'` + RLS.
+- i18n: German default, English via `LocaleProvider` + `src/i18n/messages.ts`. Cookie `nn-locale`. Do not hardcode user-facing UI strings. Admin overrides for public strings live in `site_config.translations` (`src/i18n/paths.ts` allowlist, `src/i18n/overrides.ts` loader); unknown/empty paths are discarded.
+- Consent: the `nn-consent` cookie gates external content. Google Fonts (and preconnects) render only when `external` is allowed; otherwise system fonts. Do not load third-party assets unconditionally. Banner + reset link: `src/components/CookieConsent.tsx`, `ConsentSettingsLink.tsx`, logic in `src/lib/consent.ts`.
+- Admin: Supabase Auth email/password + `profiles.role = 'admin'` + RLS. Admin is a **German-only** operator surface (`getAdminT()`), independent of the public locale cookie. Everything visitor-facing is editable there: site links, i18n overrides, legal texts, categories, gallery/events/brand texts, hero video, inquiries.
+- Admin secrets: `RESEND`/Instagram/contact keys can be stored encrypted in `api_secrets` (AES-256-GCM, `SECRETS_ENCRYPTION_KEY`) and edited at `/admin/secrets`; env is the fallback. `site_config` is public-read and must never contain secrets. Server-only modules (`src/lib/secrets/**`, `src/lib/email.ts`, `src/lib/site-config.ts`, `src/lib/admin-gate.ts`) must not get a `'use server'` directive.
 - License: proprietary (`LICENSE`). Do not reintroduce MIT or GitHub, Inc. copyright.
 
 ## Spark is gone
@@ -71,6 +73,11 @@ Do not reintroduce `@github/spark`, `useKV`, Spark Vite plugins, `spark.meta.jso
 | `src/components/` | Live UI (freeze) |
 | `src/lib/data.ts` | Demo-aware data access |
 | `src/lib/env.ts` | Env + demo flags |
+| `src/lib/site-config.ts` | `site_config` readers (site/legal) with code fallbacks |
+| `src/lib/secrets/` | AES-256-GCM crypto + encrypted secret store |
+| `src/i18n/paths.ts` | Overridable message path allowlist |
+| `src/i18n/overrides.ts` | Per-request translation override loader |
+| `src/lib/admin-gate.ts` | Shared `requireAdmin()` guard for server actions |
 | `src/lib/supabase/` | Browser, server, service clients |
 | `src/lib/r2.ts` | R2 uploads |
 | `supabase/reset.sql` | Schema, RLS, seed |

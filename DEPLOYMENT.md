@@ -63,6 +63,82 @@ where not exists (
 );
 ```
 
+### Upgrade an existing database (admin backoffice)
+
+Do not re-run `reset.sql` on a live database. Apply this additive, idempotent block instead:
+
+```sql
+alter table public.categories add column if not exists label_en text not null default '';
+
+create table if not exists public.site_config (
+  key text primary key,
+  value jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.api_secrets (
+  key text primary key,
+  value_encrypted text not null,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_config enable row level security;
+alter table public.api_secrets enable row level security;
+
+drop policy if exists "site_config_public_read" on public.site_config;
+create policy "site_config_public_read" on public.site_config for select to anon, authenticated using (true);
+drop policy if exists "site_config_admin_all" on public.site_config;
+create policy "site_config_admin_all" on public.site_config for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "api_secrets_admin_all" on public.api_secrets;
+create policy "api_secrets_admin_all" on public.api_secrets for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- optional: allows the encrypted refresh token to blank the legacy column
+alter table public.instagram_auth alter column access_token set default '';
+
+create table if not exists public.rate_limits (
+  key text primary key,
+  count int not null default 0,
+  reset_at timestamptz not null
+);
+alter table public.rate_limits enable row level security;
+
+create or replace function public.consume_rate_limit(p_key text, p_limit int, p_window_seconds int)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare v_count int;
+begin
+  if p_key is null or length(p_key) = 0 or length(p_key) > 200
+     or p_limit < 1 or p_limit > 1000
+     or p_window_seconds < 1 or p_window_seconds > 86400 then
+    return false;
+  end if;
+  if random() < 0.02 then
+    delete from public.rate_limits where reset_at < now() - interval '1 day';
+  end if;
+  insert into public.rate_limits (key, count, reset_at)
+  values (p_key, 1, now() + make_interval(secs => p_window_seconds))
+  on conflict (key) do update
+    set count = case when public.rate_limits.reset_at < now() then 1 else public.rate_limits.count + 1 end,
+        reset_at = case when public.rate_limits.reset_at < now() then now() + make_interval(secs => p_window_seconds) else public.rate_limits.reset_at end
+  returning count into v_count;
+  return v_count <= p_limit;
+end;
+$$;
+revoke execute on function public.consume_rate_limit(text, int, int) from public, anon, authenticated;
+grant execute on function public.consume_rate_limit(text, int, int) to service_role;
+```
+
+Set `SECRETS_ENCRYPTION_KEY` (64 hex chars) to enable the Admin → API-Keys editor:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Smoke test after deploy: `/admin` (dashboard), `/admin/content` (save a translation), `/admin/categories` (create + delete a test category), `/admin/secrets` (save/clear with the key set), `/admin/health` (all checks green), and the public legal pages.
+
+Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-party image host). Existing installs that still point at `images.unsplash.com` should replace those rows in Admin → Galerie so the privacy policy stays accurate.
+
 ## 3. Cloudflare R2
 
 1. R2 → Create bucket (e.g. `nebula-noir-gallery`).
@@ -144,8 +220,17 @@ Signup creates `profiles` with role `user` via trigger. Promote the operator:
 update public.profiles set role = 'admin' where id = '<auth.users uuid>';
 ```
 
-## 5. Hero video
+## 4b. Contact form email (Resend)
 
+The contact form always stores the inquiry in Supabase. To also get a notification email:
+
+1. Create an API key in Resend and set `RESEND` (server-only, never `NEXT_PUBLIC_`).
+2. Verify the sending domain in Resend and set `CONTACT_FROM_EMAIL` to a verified sender (default `contact@nebula-noir.com`).
+3. Optionally set `CONTACT_TO_EMAIL` for the recipient (default `contact@nebula-noir.com`).
+
+Email is best-effort: a Resend error or timeout is logged and does not fail the form; the inquiry remains visible under `/admin/inquiries`.
+
+## 5. Hero video
 Upload in **Admin → Hero-Video** (`/admin/hero`). The file goes to R2 via presigned PUT; the public URL is stored in `brand_info` key `hero_video`.
 
 1. Encode H.264 + AAC, `faststart`, keyframes every 0.5–1s (for scrub).

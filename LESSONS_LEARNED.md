@@ -40,6 +40,11 @@ Poiret One + `letter-spacing: 0.2em` + `word-wrap: break-word` splits `MASSANFER
 
 `src/index.css` (frozen) sets `h1–h6 { overflow-wrap: normal }`. Adding `break-words` to a **wrapper** does nothing for the heading, because a declaration on the element beats an inherited value. To wrap long German legal compounds, either put the utility **directly on the heading element** (class specificity beats the `h*` type selector) or add a higher-specificity rule like `.legal-content h3 { overflow-wrap: break-word }` in the non-frozen `src/main.css`. Never edit the frozen stylesheet.
 
+## `break-words` is a fallback, not a mobile layout fix
+
+On the Contact H2, `break-words` alone split `MASSANFERTIGUNGEN` into `MASSANFERTIGUNGE` + `N`. Prefer responsive type: shrink the font/tracking at the base breakpoint (`text-2xl tracking-normal sm:text-3xl sm:tracking-[0.15em] …`) so the longest word actually fits, and keep `break-words` only as a last-resort guard for pathological widths.
+
+
 ## Viewport height: prefer `svh` with an explicit fallback
 
 `min-h-screen` compiles to `100vh`, which is taller than the visible area on iOS Safari/Chrome Android (collapsing URL bar). Use `.nn-hero { min-height: 100vh }` plus `@supports (min-height: 100svh) { min-height: 100svh }`. Do not stack `min-h-screen min-h-[100svh]` — which wins depends on Tailwind's emission order, not the class order.
@@ -144,4 +149,38 @@ Server actions and server components cannot use the client `useT()` hook. Keep o
 ## Upload/confirm keys are server-issued
 
 `/api/gallery/upload` and `/api/hero/presign` generate the `{uuid}` key server-side. `confirmHeroVideo` must reject keys outside the `hero/` prefix and derive the public URL from `R2_PUBLIC_URL` instead of storing a client-supplied URL.
+
+## `datetime-local` is wall-clock time — convert on the client
+
+A `datetime-local` input yields `2026-05-21T10:00` without a zone. Parsing that on the server (Vercel = UTC) shifts every event by the offset. Convert to ISO in the browser (`new Date(value).toISOString()`) before calling the action, and `suppressHydrationWarning` on the rendered default value because server and browser timezones differ.
+
+## `site_config` is public — code defaults are the safety net
+
+`site_config` is anon-readable by design. Store only public content (`site`, `legal`, `translations`); secrets belong in `api_secrets` (AES-256-GCM, admin-only). Every reader must fall back to code defaults on empty/error/timeout, and an empty legal field must mean "use the default", never a blank page. Admin-authored legal HTML is sanitized on write as defense in depth.
+
+## Admin-editable labels beat i18n keys
+
+`resolveCategoryLabel` prefers DB labels over `messages.categories.*`, otherwise renaming "Ringe" in the admin would be a no-op while showing success. The i18n key remains only as the Demo/legacy fallback.
+
+## `space-y-*` displaces absolutely positioned decorations
+
+Tailwind's `space-y-*` sets both `margin-block-start` and `margin-block-end` on non-last children. An `absolute bottom-0` corner with a `space-y` parent gets pushed up by ~24px. Reset with `m-0!` on the decoration itself; padding-based offsets cannot fix it.
+
+## Admin is German-only and server pages must not follow the public cookie
+
+The admin layout nests `LocaleProvider initialLocale="de"`, but server components that call `getServerT()` still read `nn-locale` from the cookie. Use `getAdminT()` in admin pages and actions so headings/toasts stay German when a visitor has English selected. The public locale switch does not re-render admin server pages.
+
+## Secret caches in serverless
+
+`loadSecrets()` caches for 60s per instance. Invalidate on write (`invalidateSecretsCache()`), and remember a concurrent in-flight read can repopulate the cache with a stale snapshot; treat 60s staleness as the bound. `SECRETS_ENCRYPTION_KEY` loss makes stored values unreadable — env fallbacks are the escape hatch.
+
+## Gate external fonts behind consent server-side
+
+The consent choice lives in the `nn-consent` cookie, so the root layout can decide in the first HTML render whether to emit the Google Fonts `<link>` (and its preconnects). No client component swap, no FOUC, and revoking consent on the next request simply omits the request. Because fonts are gated, the design freeze's "keep the existing Google Fonts URL" holds — the URL is unchanged; only when it is requested changes. Without consent system fonts render; do not silently fall back to a different webfont.
+
+## Legal templates need machine-checkable placeholders
+
+Operator identity (name, address, VAT) cannot be invented. Mark required gaps as `[[…]]`, keep the defaults in `legal-content.ts`, and let the admin legal editor warn while any `[[` remains. Legal bases use the standard dual phrasing (Art. 6(1)(b) for contract-related, (f) otherwise); processor guarantees stay a bracketed operator confirmation until contracts exist.
+
+
 

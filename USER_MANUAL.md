@@ -122,26 +122,39 @@ Felder: Name, E-Mail, Nachricht. Alle Pflicht. Client- und Server-Prüfung (E-Ma
 - Live: Zeile in `contact_inquiries`, Toast **Nachricht ist raus…**
 - Demo: Toast **Demo Mode: Nachricht lokal bestätigt, nicht gespeichert.**
 - Doppelklick während des Sendens sendet nicht zweimal.
+- Ist `RESEND` gesetzt, geht zusätzlich eine Benachrichtigungsmail an `CONTACT_TO_EMAIL` (Standard `contact@nebula-noir.com`); Reply-To ist die Besucher-Adresse. Ein Mailfehler ändert die Erfolgsmeldung nicht — die Anfrage ist gespeichert.
 
 Hinweis: Maßanfertigungen in der Regel 2–4 Wochen.
 
 ### 3.10 Footer und Rechtliches
 
-Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab.
+Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab. Im Footer unten: **Cookie-Einstellungen** (öffnet den Cookie-Hinweis erneut).
 
 Statische Routen (Site-Chrome, keine Dialoge):
 
 | Pfad | Inhalt |
 |---|---|
-| `/impressum` | Impressum (§ 5 TMG) — Platzhalter für Name/Adresse ersetzen |
-| `/datenschutz` | Datenschutzerklärung |
+| `/impressum` | Impressum (§ 5 DDG) — `[[…]]`-Pflichtfelder für Betreibername/Anschrift im Admin ergänzen |
+| `/datenschutz` | Datenschutzerklärung (Hosting, Kontakt/Resend, Cookies/Consent, R2, Google, Meta, Etsy, Rechte) |
 | `/agb` | AGB |
 | `/widerruf` | Widerruf |
 | `/versand` | Versand |
 | `/custom-orders` | Custom Orders |
 | `/ueber-uns` | Über uns |
 
-### 3.11 Darstellung und Bewegung
+### 3.11 Cookies und Einwilligung
+
+Beim ersten Besuch erscheint ein Cookie-Hinweis:
+
+- **Alle akzeptieren** → lädt externe Inhalte (Google Fonts) und setzt `nn-consent` (1 Jahr).
+- **Nur notwendige** → es werden nur technisch notwendige Cookies gesetzt (`nn-locale`, `nn-consent`); Google Fonts wird nicht geladen, die Seite nutzt Systemschriftarten.
+- **Datenschutz** öffnet die Datenschutzerklärung.
+
+Die Entscheidung lässt sich jederzeit über **Cookie-Einstellungen** im Footer zurücksetzen. Ohne Einwilligung findet keine Übermittlung an Google statt.
+
+Das Kontaktformular ist auf **5 Anfragen pro 10 Minuten** (pro gehashter IP + E-Mail) begrenzt; darüber erscheint ein Hinweis „Zu viele Anfragen".
+
+### 3.12 Darstellung und Bewegung
 
 - Custom Cursor-Glow nur bei feinem Pointer; Touch behält den Systemcursor.
 - CRT-Scanline und geometrische Hintergründe sind Teil des Looks (Design Freeze).
@@ -179,20 +192,25 @@ Zum Live-Betrieb beide Public-Keys setzen, Service Role nur serverseitig.
 
 ### 4.3 Übersicht — `/admin`
 
-Zeigt:
+Dashboard mit Zählern (Galerie, Events, Kategorien, Instagram, Anfragen) und Status (Demo Mode, R2, Resend, Instagram-Token, Secret-Verschlüsselung). Ein Klick auf eine Kachel öffnet den Bereich; **Detaillierte API-Prüfung** führt zu `/admin/health`.
 
-- Demo Mode an/aus
-- R2 konfiguriert/fehlt
-- Instagram konfiguriert/fehlt
+Navigation (Desktop-Sidebar, mobil als Menü-Drawer):
 
-Nav: Übersicht, Galerie, Events, Info, Anfragen, Instagram, Hero-Video, Site (`/`), DE/EN, Logout.
+| Gruppe | Seiten |
+|---|---|
+| Übersicht | Dashboard |
+| Inhalte | Galerie, Events, Marken-Texte, Kategorien, Hero-Video |
+| Website | Texte & Übersetzungen (Site-Links, DE/EN-Overrides, Rechtstexte) |
+| System | Anfragen, Instagram, API-Keys, API-Status |
+
+Der Admin ist bewusst **deutsch** und unabhängig von der Besuchersprache (der öffentliche DE/EN-Schalter wirkt nur auf die Website). Logout und „Site" liegen am Ende der Navigation.
 
 ### 4.4 Galerie — `/admin/gallery`
 
 **Upload**
 
 1. Datei: JPEG, PNG, WebP, GIF, max. **10 MB** (SVG wird aus Sicherheitsgründen abgelehnt)
-2. Titel (Pflicht), Beschreibung, Kategorie
+2. Titel (Pflicht), Beschreibung, Kategorie (aus der DB-Kategorienliste)
 3. **Hochladen** → Server schreibt nach R2 `gallery/{uuid}.{ext}` und eine Zeile `gallery_images` (`published: true`)
 4. Startseite und Admin-Galerie werden revalidiert
 
@@ -200,18 +218,18 @@ Ohne R2: Fehler *R2 ist nicht konfiguriert*.
 
 **Liste**
 
-- **Edit**: Prompt ändert den Titel (Beschreibung/Published/Sort bleiben wie geladen).
-- **Delete**: löscht DB-Zeile und R2-Objekt, wenn `r2_key` gesetzt ist.
+- **Bearbeiten** (aufklappbar): Titel, Beschreibung, Kategorie, Sortierung, Veröffentlicht.
+- **Löschen**: entfernt DB-Zeile und R2-Objekt, wenn `r2_key` gesetzt ist.
 
-Unpublished-Schalter gibt es in der UI nicht; öffentlich sichtbar sind nur `published = true`.
+Unveröffentlichte Bilder bleiben im Admin sichtbar und können wieder veröffentlicht werden; öffentlich sichtbar sind nur `published = true`.
 
 ### 4.5 Events — `/admin/events`
 
-**Neues Event:** Titel, Venue, Stadt, Start (`datetime-local`, Pflicht), Ende, Beschreibung, URL, Checkbox **Published**.
+**Neues Event:** Titel, Venue, Stadt, Start (`datetime-local`, Pflicht), Ende, Beschreibung, URL, Checkbox **Veröffentlicht**.
 
-Gespeichert als ISO-Zeit. Die Landing listet nur published + zukünftig/laufend.
+Zeiten werden beim Speichern in die Browser-Zeitzone korrekt nach ISO umgerechnet. Die Landing listet nur published + zukünftig/laufend.
 
-Liste: Titel, Stadt, Venue, **Löschen**. Kein Inline-Edit — zum Ändern neu anlegen oder in Supabase editieren.
+Liste: **Bearbeiten** (aufklappbar, inkl. unveröffentlichter Events) und **Löschen**.
 
 ### 4.6 Info — `/admin/info`
 
@@ -267,9 +285,36 @@ Vorrang: `NEXT_PUBLIC_HERO_VIDEO_URL` (Env) schlägt den Admin-Upload.
 
 Große Dateien **nicht** durch die Next.js-Funktion posten (Vercel-Body-Limit ~4,5 MB) — der Presign-Weg ist Pflicht.
 
-### 4.10 Logout
+### 4.10 Texte & Übersetzungen — `/admin/content`
 
-**Logout** / *Logout* beendet die Supabase-Session und geht zu `/login`. In Demo Mode kein Logout-Button.
+Drei Reiter:
+
+1. **Website**: Etsy-URL, Instagram-URL, Kontakt-E-Mail. Leere Felder fallen auf den Standard zurück (die Kontakt-E-Mail ist zugleich Fallback-Empfänger der Kontakt-Benachrichtigung).
+2. **Übersetzungen**: alle UI-Strings DE/EN. Leer = Standardtext (Platzhalter zeigt ihn). Unbekannte Pfade werden beim Speichern verworfen. Betrifft die öffentliche Website, nicht den Admin.
+3. **Rechtstexte**: Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns — Titel + HTML-Inhalt je Sprache. **Leer = Code-Standard**, dadurch wird keine Pflichtseite leer. Aktives HTML wird beim Speichern entfernt (Scripts, iframes, Event-Handler, `javascript:`).
+
+### 4.11 Kategorien — `/admin/categories`
+
+Neue Kategorien mit Slug (a–z, 0–9, Bindestrich; danach unveränderlich), Label DE/EN und Sortierung.
+
+- **Speichern** ändert Label/Sortierung; DB-Labels sind die Quelle für den öffentlichen Filter.
+- **Löschen** ist nur möglich, wenn keine Bilder zugeordnet sind. Sonst erscheint der **Verschieben**-Dialog: Zielkategorie wählen → Bilder werden umgehängt → danach löschen.
+
+### 4.12 API-Keys — `/admin/secrets`
+
+Speichert Resend-, Instagram- und Kontakt-Werte **verschlüsselt** (AES-256-GCM). Voraussetzung: `SECRETS_ENCRYPTION_KEY` (64 Hex-Zeichen). Ohne Key ist Speichern deaktiviert; ENV-Variablen gelten weiter.
+
+- Status je Feld: **gespeichert** (DB), **ENV** oder **fehlt**. Werte werden nie angezeigt.
+- „Speichern" überschreibt; „Gespeicherten Wert entfernen" fällt auf ENV zurück.
+- Ein neuer Instagram-Token ersetzt den alten (inkl. Refresh-Zeile in `instagram_auth`).
+
+### 4.13 API-Status — `/admin/health`
+
+Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (Verschlüsselung/Secrets) mit Laufzeit und Status (OK / Eingeschränkt / Fehler / Nicht konfiguriert / Demo). **Aktualisieren** prüft erneut.
+
+### 4.14 Logout
+
+**Logout** beendet die Supabase-Session und geht zu `/login`. In Demo Mode kein Logout-Button.
 
 ---
 
@@ -287,11 +332,15 @@ Große Dateien **nicht** durch die Next.js-Funktion posten (Vercel-Body-Limit ~4
 
 | Pfad | Funktion |
 |---|---|
-| `/admin` | Status |
-| `/admin/gallery` | Bilder |
-| `/admin/events` | Termine |
-| `/admin/info` | Markentexte |
-| `/admin/inquiries` | Kontakt |
+| `/admin` | Dashboard (Zähler + Status) |
+| `/admin/gallery` | Bilder (Upload, Inline-Edit, Löschen) |
+| `/admin/events` | Termine (inkl. unveröffentlicht, Inline-Edit) |
+| `/admin/info` | Marken-Texte (Keys anlegen/bearbeiten/löschen) |
+| `/admin/categories` | Kategorien-CRUD inkl. Reassign |
+| `/admin/content` | Site-Links, DE/EN-Übersetzungen, Rechtstexte |
+| `/admin/secrets` | Verschlüsselte API-Keys |
+| `/admin/health` | API-Status |
+| `/admin/inquiries` | Kontaktanfragen |
 | `/admin/instagram` | Sync |
 | `/admin/hero` | Hintergrundvideo |
 

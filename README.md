@@ -6,7 +6,7 @@ Stack: Next.js 15 App Router, Supabase (Postgres + Auth + RLS), Cloudflare R2, V
 
 **License:** proprietary. All rights reserved. See `LICENSE`. This is not an open-source project.
 
-**Last reviewed:** 2026-09-10
+**Last reviewed:** 2026-10-05
 
 ## Quick start (Demo Mode)
 
@@ -46,7 +46,7 @@ Locale: German default, English via **DE / EN** (`nn-locale` cookie). How to use
 | `app/` | Routes, API, cron |
 | `src/components/` | Live UI — design freeze |
 | `src/lib/data.ts` | Demo-aware reads |
-| `src/lib/env.ts` | Demo / R2 / Instagram flags |
+| `src/lib/env.ts` | Demo / R2 flags |
 | `src/i18n/` | DE/EN strings |
 | `supabase/reset.sql` | Schema, RLS, seed |
 | `.env.example` | Every supported variable |

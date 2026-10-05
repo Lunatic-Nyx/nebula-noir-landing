@@ -15,7 +15,7 @@ import { EventsSection } from '@/components/EventsSection'
 import { InstagramSection } from '@/components/InstagramSection'
 import LoadingScreen from '@/themes/nebula-noir-theme/LoadingScreen'
 import { TOAST_STYLE } from '@/lib/design'
-import type { BrandInfo, EventItem, InstagramPost, Product } from '@/lib/types'
+import type { BrandInfo, Category, EventItem, InstagramPost, Product } from '@/lib/types'
 
 interface HomePageProps {
   products: Product[]
@@ -23,9 +23,10 @@ interface HomePageProps {
   events: EventItem[]
   instagram: InstagramPost[]
   heroVideoUrl?: string
+  categories: Category[]
 }
 
-export function HomePage({ products, brandInfo, events, instagram, heroVideoUrl }: HomePageProps) {
+export function HomePage({ products, brandInfo, events, instagram, heroVideoUrl, categories }: HomePageProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -68,7 +69,7 @@ export function HomePage({ products, brandInfo, events, instagram, heroVideoUrl 
           </>
         ) : null}
         <SectionTransition />
-        <CatalogSection products={products} />
+        <CatalogSection products={products} categories={categories} />
         {instagram.length > 0 ? (
           <>
             <SectionTransition />

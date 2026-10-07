@@ -55,6 +55,7 @@ export function GalleryManager({
     const result = await updateGalleryMeta(item.id, {
       title: String(data.get('title') || ''),
       description: String(data.get('description') || ''),
+      notice: String(data.get('notice') || ''),
       published: data.get('published') === 'on',
       sortOrder: Number(data.get('sortOrder') || 0),
       category: String(data.get('category') || '') || undefined,
@@ -81,6 +82,10 @@ export function GalleryManager({
         <div className="space-y-3">
           <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Beschreibung</Label>
           <Input name="description" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />
+        </div>
+        <div className="space-y-3">
+          <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Produkthinweis (optional)</Label>
+          <Input name="notice" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />
         </div>
         <div className="space-y-3">
           <Label className="text-sm uppercase tracking-[0.2em] text-foreground/90">Kategorie</Label>
@@ -121,6 +126,7 @@ export function GalleryManager({
               <form onSubmit={(e) => onSave(e, item)} className="mt-3 space-y-3">
                 <Input name="title" defaultValue={item.name} placeholder="Titel" className="rounded-none border-0 border-b-2 border-foreground/30 bg-background px-0 focus:border-foreground" />
                 <Textarea name="description" defaultValue={item.description} placeholder="Beschreibung" className="min-h-[80px] rounded-none border-2 border-foreground/30 bg-background" />
+                <Textarea name="notice" defaultValue={item.notice} placeholder="Produkthinweis (optional)" className="min-h-[60px] rounded-none border-2 border-foreground/30 bg-background" />
                 <div className="space-y-2">
                   <Label className="text-xs uppercase tracking-[0.15em] text-foreground/70">Kategorie</Label>
                   <select

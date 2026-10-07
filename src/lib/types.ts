@@ -12,6 +12,8 @@ export interface Product {
   id: string
   name: string
   description: string
+  /** Optional per-product notice (materials, care, made-to-order, ...). */
+  notice?: string
   price: number
   category: JewelryCategory
   image: string
@@ -23,6 +25,8 @@ export interface GalleryItem {
   id: string
   name: string
   description: string
+  /** Optional per-product notice editable in Admin → Galerie. */
+  notice?: string
   category: JewelryCategory
   image: string
   alt?: string

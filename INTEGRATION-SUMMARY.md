@@ -30,6 +30,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 - `supabase/reset.sql` is **additive and idempotent** (create-if-not-exists, no drops; never deletes application data). `scripts/db-migrate.mjs` applies it in one transaction on every Vercel **production** build via `vercel.json`, using `SUPABASE_DB_URL` (Session pooler) or the Vercel Supabase integration's `POSTGRES_URL*`/`DATABASE_URL` (tried in order). Best-effort by default (warn + continue); `DB_MIGRATE_REQUIRED=1` fails, `DB_MIGRATE_SKIP=1` bypasses, non-production `VERCEL_ENV` skips; `npm run test:db` verifies the SQL. Baseline seed is one-time (sentinel `site_config._schema_seed_v1`).
 - UUIDs for app rows; Instagram media id is text PK.
 - `published` gates public SELECT on gallery and events.
+- `gallery_images.notice` holds an optional per-product notice shown in the product dialog; the global `site_config.site.productNotice` (DE/EN) is shown in addition.
 - `categories` is the source for gallery filters; admin CRUD + `label_en`; `on delete restrict` blocks deleting a category that still has images (admin offers reassign).
 - `profiles.role` is `'admin'` or `'user'`.
 - Contact: insert-only for anon.

@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.6] — 2026-10-07
+
+### Added
+
+- Per-product notice: new `gallery_images.notice` column (additive/idempotent in `supabase/reset.sql`), editable in Admin → Galerie (upload + inline edit) and shown in the public product dialog.
+- Global product notice (DE/EN) in `site_config.site.productNotice`, editable under Admin → Texte & Übersetzungen → Website, shown in the product dialog for every item.
+- `catalog.notice` UI label (DE/EN).
+
+### Note
+
+- Legal content (Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns) and footer/legal links were already editable in Admin → Texte & Übersetzungen (Rechtstexte / Footer); no change needed there.
+
 ## [0.6.5] — 2026-10-07
 
 ### Changed

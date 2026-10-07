@@ -9,6 +9,7 @@ import type { PublicSiteConfig } from '@/lib/site-config.types'
 import type { FooterConfig } from '@/lib/site-config.types'
 import type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
 import { parseFooterConfig } from '@/lib/footer-config'
+import { clampNotice } from '@/lib/notice'
 
 export type { PublicSiteConfig } from '@/lib/site-config.types'
 export type { FooterConfig } from '@/lib/site-config.types'
@@ -64,11 +65,18 @@ export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   etsyUrl: 'https://www.etsy.com/shop/nebulanoirnn',
   instagramUrl: 'https://www.instagram.com/nebula_noir.official',
   contactEmail: 'contact@nebula-noir.com',
+  productNotice: { de: '', en: '' },
 }
 
 function pickString(raw: Record<string, unknown>, key: string, fallback: string): string {
   const value = raw[key]
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback
+}
+
+function pickProductNotice(raw: unknown): PublicSiteConfig['productNotice'] {
+  if (!raw || typeof raw !== 'object') return { ...DEFAULT_PUBLIC_SITE_CONFIG.productNotice }
+  const record = raw as Record<string, unknown>
+  return { de: clampNotice(record.de), en: clampNotice(record.en) }
 }
 
 export function parsePublicSiteConfig(raw: unknown): PublicSiteConfig {
@@ -78,6 +86,7 @@ export function parsePublicSiteConfig(raw: unknown): PublicSiteConfig {
     etsyUrl: pickString(record, 'etsyUrl', DEFAULT_PUBLIC_SITE_CONFIG.etsyUrl),
     instagramUrl: pickString(record, 'instagramUrl', DEFAULT_PUBLIC_SITE_CONFIG.instagramUrl),
     contactEmail: pickString(record, 'contactEmail', DEFAULT_PUBLIC_SITE_CONFIG.contactEmail),
+    productNotice: pickProductNotice(record.productNotice),
   }
 }
 

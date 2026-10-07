@@ -4,6 +4,7 @@ import { getAdminUser } from '@/lib/auth'
 import { isDemoMode, isR2Configured } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { extensionForMime, isAllowedImageType, R2_MAX_BYTES, deleteFromR2, uploadToR2 } from '@/lib/r2'
+import { clampNotice } from '@/lib/notice'
 
 export async function POST(request: Request) {
   if (isDemoMode()) {
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
   const file = form.get('file')
   const title = String(form.get('title') || '').trim()
   const description = String(form.get('description') || '').trim()
+  const notice = clampNotice(form.get('notice'))
   const categorySlug = String(form.get('category') || '').trim()
   const alt = String(form.get('alt') || title).trim()
 
@@ -59,6 +61,7 @@ export async function POST(request: Request) {
     category_id: category.id,
     title,
     description,
+    notice,
     alt,
     r2_key: key,
     public_url: publicUrl,

@@ -5,6 +5,7 @@ import { isR2Configured } from '@/lib/env'
 import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { deleteFromR2, publicObjectUrl } from '@/lib/r2'
+import { clampNotice } from '@/lib/notice'
 import { syncInstagramPosts } from '@/lib/instagram'
 
 export async function saveBrandInfo(key: string, title: string, body: string) {
@@ -132,6 +133,7 @@ export async function deleteGalleryImage(id: string) {
 export async function updateGalleryMeta(id: string, input: {
   title: string
   description: string
+  notice?: string
   published: boolean
   sortOrder: number
   category?: string
@@ -145,6 +147,7 @@ export async function updateGalleryMeta(id: string, input: {
   const payload: Record<string, unknown> = {
     title: input.title,
     description: input.description,
+    notice: clampNotice(input.notice),
     published: input.published,
     sort_order: input.sortOrder,
   }

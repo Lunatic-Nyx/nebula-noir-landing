@@ -139,6 +139,27 @@ export function ContentManager({
             <Label className="text-sm uppercase tracking-[0.2em]">Kontakt-E-Mail</Label>
             <Input value={site.contactEmail} onChange={(e) => setSite({ ...site, contactEmail: e.target.value })} className="rounded-none border-0 border-b-2 border-foreground/30 px-0 focus:border-foreground" />
           </div>
+          <div className="space-y-3 border-t-2 border-foreground/20 pt-6">
+            <p className="text-sm text-foreground/70">
+              Globaler Produkthinweis. Erscheint im Produkt-Dialog bei jedem Stück; ein Hinweis am
+              einzelnen Produkt (Admin → Galerie → Bearbeiten) wird zusätzlich angezeigt. Leer
+              lassen, um keinen Hinweis anzuzeigen.
+            </p>
+            <Label className="text-sm uppercase tracking-[0.2em]">Produkthinweis DE</Label>
+            <Textarea
+              value={site.productNotice?.de ?? ''}
+              onChange={(e) => setSite({ ...site, productNotice: { de: e.target.value, en: site.productNotice?.en ?? '' } })}
+              placeholder="z. B. Handgefertigt – Farben können leicht abweichen. Resin nicht in die direkte Sonne legen."
+              className="min-h-[90px] rounded-none border-2 border-foreground/30"
+            />
+            <Label className="text-sm uppercase tracking-[0.2em]">Produkthinweis EN (optional)</Label>
+            <Textarea
+              value={site.productNotice?.en ?? ''}
+              onChange={(e) => setSite({ ...site, productNotice: { de: site.productNotice?.de ?? '', en: e.target.value } })}
+              placeholder="e.g. Handmade – colors may vary slightly. Keep resin out of direct sunlight."
+              className="min-h-[90px] rounded-none border-2 border-foreground/30"
+            />
+          </div>
           <Button type="button" disabled={busy} onClick={saveSite} className="bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-[0.2em] text-xs px-6 py-3">
             Speichern
           </Button>

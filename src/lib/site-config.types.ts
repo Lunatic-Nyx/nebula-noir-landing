@@ -3,6 +3,8 @@ export interface PublicSiteConfig {
   etsyUrl: string
   instagramUrl: string
   contactEmail: string
+  /** Global product notice shown in the product dialog (DE/EN, plain text). */
+  productNotice: LocalizedText
 }
 
 export interface LocalizedText {

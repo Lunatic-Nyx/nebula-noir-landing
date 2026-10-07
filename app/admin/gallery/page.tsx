@@ -2,6 +2,7 @@
 import { getCategories, getGallery } from '@/lib/data'
 import { isDemoMode } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { clampNotice } from '@/lib/notice'
 import type { GalleryItem } from '@/lib/types'
 import { getAdminT } from '@/i18n/server'
 
@@ -16,9 +17,9 @@ export default async function AdminGalleryPage() {
     const supabase = await createServerSupabase()
     if (supabase) {
       const { data } = await supabase
-        .from('gallery_images')
-        .select('id, title, description, alt, public_url, sort_order, published, categories(slug)')
-        .order('sort_order', { ascending: true })
+          .from('gallery_images')
+          .select('id, title, description, notice, alt, public_url, sort_order, published, categories(slug)')
+          .order('sort_order', { ascending: true })
       if (data) {
         const next: AdminGalleryItem[] = []
         for (const row of data) {
@@ -29,6 +30,7 @@ export default async function AdminGalleryPage() {
             id: row.id as string,
             name: row.title as string,
             description: (row.description as string) || '',
+            notice: clampNotice(row.notice),
             category: slug,
             image: row.public_url as string,
             alt: (row.alt as string) || (row.title as string),

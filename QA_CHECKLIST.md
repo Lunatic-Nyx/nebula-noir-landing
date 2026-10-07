@@ -142,6 +142,10 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] `/admin/categories`: create a category, rename labels, reorder; deleting a category with images shows the reassign dialog; after reassign the delete succeeds.
 - [ ] Public catalog shows the DB categories (and still the Demo fixtures with empty Supabase).
 - [ ] `/admin/gallery`: inline edit changes title/description/category/published/sort without resetting the others.
+- [ ] `/admin/gallery`: a Produkthinweis saved per item appears in the public product dialog (text only, no HTML).
+- [ ] Gallery upload accepts an optional Produkthinweis and stores it in `gallery_images.notice`.
+- [ ] `/admin/content` → Website: a global Produkthinweis (DE/EN) appears in the product dialog for every item; a per-item notice is shown additionally.
+- [ ] `gallery_images.notice` is created/converged by `supabase/reset.sql` (additive).
 - [ ] `/admin/events`: unpublished events are visible and editable; saving does not shift the time by a timezone offset.
 - [ ] `/admin/info`: create and delete a `brand_info` key.
 - [ ] `/admin/secrets`: without `SECRETS_ENCRYPTION_KEY` saving is disabled; with it, a stored value shows status `gespeichert` and the raw value is never returned; clearing falls back to `ENV`; `api_secrets.value_encrypted` starts with `enc:v1:`.

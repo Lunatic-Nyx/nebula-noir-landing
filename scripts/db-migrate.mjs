@@ -16,12 +16,21 @@
  * - Fails closed on a production Vercel build that uses Supabase but has no DB
  *   URL, and refuses `sslmode=disable`/`sslmode=no-verify` for a remote host.
  *
- * Env:
- *   SUPABASE_DB_URL            Postgres connection string. Use the Supabase
- *                              "Session pooler" string (IPv4). Example:
- *                              postgresql://postgres.<ref>:<URL-ENCODED-PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
- *   DB_MIGRATE_SKIP=1          Emergency bypass (e.g. database briefly unreachable).
- *   DB_MIGRATE_ALLOW_PREVIEW=1 Allow the apply on a non-production Vercel build.
+ * Env (a direct Postgres connection string is required; first match wins, and
+ * each is tried in order until one connects):
+ *   SUPABASE_DB_URL              Explicit override. Supabase session pooler (IPv4):
+ *                                postgresql://postgres.<ref>:<URL-ENCODED-PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
+ *   POSTGRES_URL_NON_POOLING     Set by the Vercel Supabase integration (direct/session).
+ *   POSTGRES_URL                 Set by the Vercel Supabase integration (pooler).
+ *   DATABASE_URL                 Common alias.
+ *   POSTGRES_PRISMA_URL          Common alias.
+ *   DB_MIGRATE_SKIP=1            Emergency bypass (database briefly unreachable).
+ *   DB_MIGRATE_ALLOW_PREVIEW=1   Allow the apply on a non-production Vercel build.
+ *
+ * Note: the integration's API keys (NEXT_PUBLIC_SUPABASE_*, *_SERVICE_ROLE_KEY)
+ * talk to PostgREST over HTTPS and cannot run DDL, so this needs a real Postgres
+ * URL. If the integration already exports POSTGRES_URL / POSTGRES_URL_NON_POOLING,
+ * no extra variable is needed. Prefer a session/direct (non-pooling) URL for DDL.
  *
  * Manual use: npm run db:migrate  (reads .env.local when present)
  */
@@ -38,6 +47,27 @@ const SQL_PATH = resolve(ROOT, 'supabase', 'reset.sql')
 // Identifies this app's schema-apply lock. Any constant works; it only needs to
 // be stable so two deployments cannot apply DDL at the same time.
 const ADVISORY_LOCK_KEY = 80219001
+
+// Direct Postgres connection strings, in preference order. The first one that
+// is set is used; if it cannot connect, the next is tried. This lets the Vercel
+// Supabase integration work without any manually created variable, while
+// SUPABASE_DB_URL stays available as an explicit session-pooler override.
+const DB_URL_CANDIDATES = [
+  'SUPABASE_DB_URL',
+  'POSTGRES_URL_NON_POOLING',
+  'POSTGRES_URL',
+  'DATABASE_URL',
+  'POSTGRES_PRISMA_URL',
+]
+
+function resolveDbUrls() {
+  const found = []
+  for (const name of DB_URL_CANDIDATES) {
+    const value = (process.env[name] ?? '').trim()
+    if (value) found.push({ name, url: value })
+  }
+  return found
+}
 
 /**
  * Minimal `.env.local` reader for manual/local runs. `next dev`/`next build`
@@ -92,9 +122,9 @@ function assertNoCleartext(url) {
   const local = host === null || ['localhost', '127.0.0.1', '::1'].includes(host)
   if (!local) {
     throw new Error(
-      'Refusing SUPABASE_DB_URL with sslmode=disable/no-verify or ' +
-        'uselibpqcompat for a remote host: the database password or TLS ' +
-        'validation would be compromised. Use sslmode=require.',
+      'Refusing a remote database URL with sslmode=disable/no-verify or ' +
+        'uselibpqcompat: the database password or TLS validation would be ' +
+        'compromised. Use sslmode=require.',
     )
   }
 }
@@ -126,41 +156,68 @@ async function main() {
     return
   }
 
-  const url = (process.env.SUPABASE_DB_URL ?? '').trim()
-  if (!url) {
+  const candidates = resolveDbUrls()
+  if (candidates.length === 0) {
     // Production that actually talks to Supabase must not silently skip its
     // schema step. Demo Mode (no Supabase URL) and local runs still skip.
     if (vercelEnv === 'production' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
       throw new Error(
-        'SUPABASE_DB_URL is not set on a production build that uses Supabase. ' +
-          'Set it, or set DB_MIGRATE_SKIP=1 to bypass the schema apply.',
+        'No Postgres connection string found on a production build that uses ' +
+          'Supabase. Set SUPABASE_DB_URL, or ensure the Vercel Supabase ' +
+          'integration exports POSTGRES_URL / POSTGRES_URL_NON_POOLING; or set ' +
+          'DB_MIGRATE_SKIP=1 to bypass the schema apply.',
       )
     }
-    console.log('[db-migrate] skipped: SUPABASE_DB_URL is not set')
+    console.log('[db-migrate] skipped: no Postgres connection string set')
     return
   }
 
-  assertNoCleartext(url)
-
   const sql = await readFile(SQL_PATH, 'utf8')
-  const client = new pg.Client({
-    connectionString: url,
-    // An explicit sslmode in the URL wins (Supabase recommends `sslmode=require`,
-    // which the pinned node-postgres verifies like `verify-full`). Otherwise use
-    // TLS validation for remote hosts. Never disable TLS for a remote database.
-    ...(needsForcedSsl(url) ? { ssl: { rejectUnauthorized: true } } : {}),
-    connectionTimeoutMillis: 20000,
-    application_name: 'nebula-noir-db-migrate',
-  })
 
-  await client.connect()
+  // Try each configured URL until one connects (the integration may expose the
+  // direct URL first, which is IPv6-only on some projects), then apply once.
+  let client = null
+  let usedName = null
+  const failures = []
+  for (const candidate of candidates) {
+    assertNoCleartext(candidate.url)
+    const attempt = new pg.Client({
+      connectionString: candidate.url,
+      // An explicit sslmode in the URL wins (Supabase recommends `sslmode=require`,
+      // which the pinned node-postgres verifies like `verify-full`). Otherwise use
+      // TLS validation for remote hosts. Never disable TLS for a remote database.
+      ...(needsForcedSsl(candidate.url)
+        ? { ssl: { rejectUnauthorized: true } }
+        : {}),
+      connectionTimeoutMillis: 20000,
+      application_name: 'nebula-noir-db-migrate',
+    })
+    try {
+      await attempt.connect()
+      client = attempt
+      usedName = candidate.name
+      break
+    } catch (error) {
+      failures.push(`${candidate.name}: ${redact(error)}`)
+      await attempt.end().catch(() => {})
+    }
+  }
+
+  if (!client) {
+    throw new Error(
+      `could not connect with any configured Postgres URL (${failures.join('; ')})`,
+    )
+  }
+  console.log(`[db-migrate] connected via ${usedName}`)
+
   try {
     await client.query('begin')
     // Session-local limits; released with the transaction.
     await client.query("set local statement_timeout = '120s'")
     await client.query("set local lock_timeout = '30s'")
     // Serialize concurrent deployments (rollback releases this automatically).
-    await client.query('select pg_advisory_xact_lock($1)', [ADVISORY_LOCK_KEY])
+    // Inlined constant (no bound parameter) so it also works behind a pooler.
+    await client.query(`select pg_advisory_xact_lock(${ADVISORY_LOCK_KEY})`)
     // Multi-statement simple query (no parameters) executes the whole file.
     await client.query(sql)
     await client.query('commit')

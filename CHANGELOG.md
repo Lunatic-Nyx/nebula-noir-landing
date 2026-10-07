@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.4] — 2026-10-07
+
+### Changed
+
+- Deploy-time schema apply no longer requires a manually created `SUPABASE_DB_URL`: the runner also uses the Vercel Supabase integration's Postgres connection strings (`POSTGRES_URL_NON_POOLING`, `POSTGRES_URL`, `DATABASE_URL`, `POSTGRES_PRISMA_URL`), trying them in order until one connects. `SUPABASE_DB_URL` remains the preferred override.
+- The advisory lock is inlined (no bound parameter), so the runner's queries stay simple and also work behind the transaction pooler.
+
 ## [0.6.3] — 2026-10-07
 
 ### Added

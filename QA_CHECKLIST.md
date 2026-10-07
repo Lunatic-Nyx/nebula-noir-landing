@@ -120,15 +120,16 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Non-admin authenticated user → 403.
 - [ ] Demo Mode `/admin` is reachable as read-only preview with banner.
 - [ ] `LICENSE` is proprietary (not MIT / not GitHub, Inc.).
-- [ ] `.env.example` lists Supabase (incl. `SUPABASE_DB_URL`), R2, Instagram, Resend, hero, cron, and `SECRETS_ENCRYPTION_KEY`.
-- [ ] Deploy-time apply: `node scripts/db-migrate.mjs` with `SUPABASE_DB_URL` unset prints "skipped" and exits 0 (Demo/local); `npm run build` itself never invokes the runner.
-- [ ] Deploy-time apply: with `DB_MIGRATE_SKIP=1`, `scripts/db-migrate.mjs` prints "skipped" and does not touch the DB.
-- [ ] Deploy-time apply: on a non-production `VERCEL_ENV`, the runner skips even with `SUPABASE_DB_URL` set (unless `DB_MIGRATE_ALLOW_PREVIEW=1`).
-- [ ] Deploy-time apply: on a production `VERCEL_ENV` with `NEXT_PUBLIC_SUPABASE_URL` set but no `SUPABASE_DB_URL`, the runner exits non-zero (fail-closed).
-- [ ] Deploy-time apply: with a valid `SUPABASE_DB_URL`, `npm run db:migrate` applies the schema and a second run succeeds (idempotent); it also reads `SUPABASE_DB_URL` from `.env.local`.
-- [ ] Deploy-time apply: with only `POSTGRES_URL_NON_POOLING`/`POSTGRES_URL` set (Vercel Supabase integration), the runner uses it; `SUPABASE_DB_URL` takes precedence; if several are set it tries them in order until one connects.
-- [ ] Deploy-time apply: with a bad/unreachable `SUPABASE_DB_URL`, the script exits non-zero and logs contain no password.
-- [ ] Deploy-time apply: a `sslmode=disable` or `sslmode=no-verify` URL for a remote host is refused.
+- [ ] `.env.example` lists Supabase (incl. `SUPABASE_DB_URL`, `DB_MIGRATE_REQUIRED`), R2, Instagram, Resend, hero, cron, and `SECRETS_ENCRYPTION_KEY`.
+- [ ] Deploy-time apply: `node scripts/db-migrate.mjs` with no Postgres URL prints a warning and exits 0 (best-effort; `npm run build` itself never invokes the runner).
+- [ ] Deploy-time apply: with `DB_MIGRATE_SKIP=1`, the runner prints "skipped" and does not touch the DB.
+- [ ] Deploy-time apply: on a non-production `VERCEL_ENV`, the runner skips even with a URL set (unless `DB_MIGRATE_ALLOW_PREVIEW=1`).
+- [ ] Deploy-time apply: an unreachable URL warns and exits 0 by default; with `DB_MIGRATE_REQUIRED=1` it exits non-zero.
+- [ ] Deploy-time apply: with a valid (Session pooler) URL, `npm run db:migrate` applies the schema and a second run succeeds (idempotent); it also reads the URL from `.env.local`.
+- [ ] Deploy-time apply: with only `POSTGRES_URL_NON_POOLING`/`POSTGRES_URL` set (Vercel Supabase integration), the runner uses them; `SUPABASE_DB_URL` takes precedence; if several are set it tries them in order until one connects.
+- [ ] Deploy-time apply: the Direct connection (`db.<ref>.supabase.co`, IPv6-only) is NOT used from Vercel; the Session pooler is used.
+- [ ] Deploy-time apply: logs contain no password.
+- [ ] Deploy-time apply: a `sslmode=disable`, `sslmode=no-verify` or `uselibpqcompat` URL for a remote host is refused.
 - [ ] CI (`.github/workflows/ci.yml`) runs `npm ci`, `npm run test:db`, `npm run lint`, `npm run typecheck`, `npm run build` on push to `main` and on PRs.
 
 ## Admin backoffice

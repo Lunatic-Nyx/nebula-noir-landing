@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.5] — 2026-10-07
+
+### Changed
+
+- The deploy-time schema apply is **best effort by default**: a missing or unreachable Postgres URL logs a warning and the deployment continues, instead of failing the build. Set `DB_MIGRATE_REQUIRED=1` (recommended on the schema-owning project) to fail the build on any error.
+- Documented clearly: use the Supabase **Session pooler** (IPv4) URL. The **Direct connection** (`db.<ref>.supabase.co:5432`) is IPv6-only and cannot connect from a Vercel build — this is why a deployment using the direct URL failed.
+
 ## [0.6.4] — 2026-10-07
 
 ### Changed

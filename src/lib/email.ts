@@ -18,7 +18,7 @@ type SendEmailInput = {
   from?: string
 }
 
-export type SendEmailResult = { ok: true } | { ok: false; error: string }
+type SendEmailResult = { ok: true } | { ok: false; error: string }
 
 async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   const replyTo =

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 
-export type CategoryResult = { ok: true } | { ok: false; error: string; count?: number }
+type CategoryResult = { ok: true } | { ok: false; error: string; count?: number }
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 

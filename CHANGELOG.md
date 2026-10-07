@@ -2,6 +2,15 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.9] — 2026-10-07
+
+### Changed
+
+- Reduced the public module surface: un-exported helpers and types that are only used inside their own module (`CONSENT_VERSION`, `ConsentState`, `DEFAULT_CATEGORIES`, `DEFAULT_FOOTER_CONFIG`, `isSafeHref`, `DEFAULT_PUBLIC_SITE_CONFIG`, `MAX_PRODUCT_NOTICE`, `productsToGallery`, `invalidateSecretsCache`, `SecretsSnapshot`, `SecretMutationResult`, `resolveActiveNavItem`, `AdminNavItem`, `AdminNavGroup`, `ServerT`, `AdminGate`, `HealthCheck`, `SendEmailResult`, and the `*Result` action types) and dropped the unused type re-exports in `src/lib/site-config.ts`.
+- Removed the dead `MessageTree` type (`src/i18n/messages.ts`) and `ApiSecretMeta` interface (`src/lib/secrets/catalog.ts`).
+
+No behavior change. The shadcn UI primitives keep their exports (library surface).
+
 ## [0.6.8] — 2026-10-07
 
 ### Changed

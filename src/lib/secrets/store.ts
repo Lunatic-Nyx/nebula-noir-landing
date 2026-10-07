@@ -11,7 +11,7 @@ import {
 // Server-only store. Do NOT add a 'use server' directive.
 export type SecretSource = 'db' | 'env' | 'missing'
 
-export interface SecretsSnapshot {
+interface SecretsSnapshot {
   values: Partial<Record<ApiSecretKey, string>>
   sources: Record<ApiSecretKey, SecretSource>
 }
@@ -69,11 +69,11 @@ export async function getApiSecretStatus(): Promise<Record<ApiSecretKey, SecretS
   return (await loadSecrets()).sources
 }
 
-export function invalidateSecretsCache() {
+function invalidateSecretsCache() {
   cache = null
 }
 
-export type SecretMutationResult = { ok: true } | { ok: false; error: string }
+type SecretMutationResult = { ok: true } | { ok: false; error: string }
 
 export async function setApiSecret(key: ApiSecretKey, plaintext: string): Promise<SecretMutationResult> {
   if (!isEncryptionConfigured()) {

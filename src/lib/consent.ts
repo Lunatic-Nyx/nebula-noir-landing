@@ -1,7 +1,7 @@
 export const CONSENT_COOKIE = 'nn-consent'
-export const CONSENT_VERSION = 1
+const CONSENT_VERSION = 1
 
-export interface ConsentState {
+interface ConsentState {
   version: number
   necessary: true
   external: boolean

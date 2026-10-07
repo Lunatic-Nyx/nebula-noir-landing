@@ -1,7 +1,7 @@
 import { PRODUCTS } from '@/lib/products'
 import type { BrandInfo, EventItem, GalleryItem, InstagramPost, Product } from '@/lib/types'
 
-export function productsToGallery(products: Product[]): GalleryItem[] {
+function productsToGallery(products: Product[]): GalleryItem[] {
   return products.map((p) => ({
     id: p.id,
     name: p.name,

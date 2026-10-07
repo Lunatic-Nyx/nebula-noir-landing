@@ -2,9 +2,9 @@ import 'server-only'
 import { getAdminUser } from '@/lib/auth'
 import { getAdminT } from '@/i18n/server'
 
-export type ServerT = (path: string, vars?: Record<string, string | number>) => string
+type ServerT = (path: string, vars?: Record<string, string | number>) => string
 
-export interface AdminGate {
+interface AdminGate {
   demo: boolean
   error?: string
   t: ServerT

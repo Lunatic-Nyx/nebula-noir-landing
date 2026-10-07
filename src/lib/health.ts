@@ -11,7 +11,7 @@ import { API_SECRET_KEYS_LIST } from '@/lib/secrets/catalog'
 // Server-only health checks. Never include secrets in `detail`.
 export type CheckStatus = 'ok' | 'degraded' | 'error' | 'not_configured' | 'demo'
 
-export interface HealthCheck {
+interface HealthCheck {
   id: string
   label: string
   status: CheckStatus

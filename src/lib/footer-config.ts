@@ -7,7 +7,7 @@ const MAX_LINKS = 24
 const MAX_LABEL = 160
 const MAX_HREF = 500
 
-export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
+const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   blurb: {
     de: 'Statementschmuck für die schwarze Szene. Cybergoth, Industrial, Cyberpunk. Made in Germany.',
     en: 'Statement jewelry for the black scene. Cybergoth, industrial, cyberpunk. Made in Germany.',
@@ -52,7 +52,7 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   madeIn: { de: 'Made in Germany', en: 'Made in Germany' },
 }
 
-export function isSafeHref(href: string): boolean {
+function isSafeHref(href: string): boolean {
   const value = href.trim()
   if (!value) return false
   if (value.startsWith('//')) return false

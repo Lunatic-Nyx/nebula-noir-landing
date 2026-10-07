@@ -424,5 +424,3 @@ export const messages = {
     },
   },
 } as const
-
-export type MessageTree = (typeof messages)['de']

@@ -7,30 +7,34 @@
  * deployment. It is wired into the Vercel build via vercel.json ("buildCommand").
  *
  * Guarantees:
- * - Runs the whole file inside one transaction and rolls back on error, then
- *   exits non-zero so a broken deploy is not promoted against a half-applied
- *   schema. A cross-deploy advisory lock serializes concurrent builds.
+ * - Runs the whole file inside one transaction and rolls back on error. A
+ *   cross-deploy advisory lock serializes concurrent builds.
  * - Never logs the connection string or its password.
- * - Production only: a Preview/Development build skips unless explicitly allowed,
- *   so a leaked URL cannot mutate the production database from a branch build.
- * - Fails closed on a production Vercel build that uses Supabase but has no DB
- *   URL, and refuses `sslmode=disable`/`sslmode=no-verify` for a remote host.
+ * - Best effort by default: if no Postgres URL is configured or the database is
+ *   unreachable, it logs a warning and lets the deployment continue, so schema
+ *   plumbing can never take the site down. Set DB_MIGRATE_REQUIRED=1 to make
+ *   any failure fail the build instead.
+ * - Production only: a Preview/Development build skips unless explicitly allowed.
+ * - Refuses `sslmode=disable`/`sslmode=no-verify`/`uselibpqcompat` for a remote host.
  *
- * Env (a direct Postgres connection string is required; first match wins, and
- * each is tried in order until one connects):
- *   SUPABASE_DB_URL              Explicit override. Supabase session pooler (IPv4):
+ * Env (a Postgres connection string is needed; first match wins, then each is
+ * tried until one connects):
+ *   SUPABASE_DB_URL              Explicit override. Use the Supabase **Session
+ *                                pooler** (IPv4). The **Direct connection** is
+ *                                IPv6-only and will NOT connect from Vercel:
  *                                postgresql://postgres.<ref>:<URL-ENCODED-PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require
- *   POSTGRES_URL_NON_POOLING     Set by the Vercel Supabase integration (direct/session).
+ *   POSTGRES_URL_NON_POOLING     Set by the Vercel Supabase integration (direct;
+ *                                may be IPv6-only).
  *   POSTGRES_URL                 Set by the Vercel Supabase integration (pooler).
- *   DATABASE_URL                 Common alias.
- *   POSTGRES_PRISMA_URL          Common alias.
- *   DB_MIGRATE_SKIP=1            Emergency bypass (database briefly unreachable).
+ *   DATABASE_URL / POSTGRES_PRISMA_URL  Common aliases.
+ *   DB_MIGRATE_REQUIRED=1        Fail the build if the apply cannot run/succeed.
+ *   DB_MIGRATE_SKIP=1            Emergency bypass.
  *   DB_MIGRATE_ALLOW_PREVIEW=1   Allow the apply on a non-production Vercel build.
  *
  * Note: the integration's API keys (NEXT_PUBLIC_SUPABASE_*, *_SERVICE_ROLE_KEY)
- * talk to PostgREST over HTTPS and cannot run DDL, so this needs a real Postgres
- * URL. If the integration already exports POSTGRES_URL / POSTGRES_URL_NON_POOLING,
- * no extra variable is needed. Prefer a session/direct (non-pooling) URL for DDL.
+ * talk to PostgREST over HTTPS and cannot run DDL, so a real Postgres URL is
+ * required. If the integration exports a pooler URL it is used automatically;
+ * otherwise set SUPABASE_DB_URL to the Session pooler string.
  *
  * Manual use: npm run db:migrate  (reads .env.local when present)
  */
@@ -48,10 +52,10 @@ const SQL_PATH = resolve(ROOT, 'supabase', 'reset.sql')
 // be stable so two deployments cannot apply DDL at the same time.
 const ADVISORY_LOCK_KEY = 80219001
 
-// Direct Postgres connection strings, in preference order. The first one that
-// is set is used; if it cannot connect, the next is tried. This lets the Vercel
-// Supabase integration work without any manually created variable, while
-// SUPABASE_DB_URL stays available as an explicit session-pooler override.
+// Postgres connection strings, in preference order. The first that is set is
+// used; if it cannot connect the next is tried. This lets the Vercel Supabase
+// integration work without a manual variable, while SUPABASE_DB_URL stays the
+// explicit session-pooler override.
 const DB_URL_CANDIDATES = [
   'SUPABASE_DB_URL',
   'POSTGRES_URL_NON_POOLING',
@@ -158,24 +162,19 @@ async function main() {
 
   const candidates = resolveDbUrls()
   if (candidates.length === 0) {
-    // Production that actually talks to Supabase must not silently skip its
-    // schema step. Demo Mode (no Supabase URL) and local runs still skip.
-    if (vercelEnv === 'production' && process.env.NEXT_PUBLIC_SUPABASE_URL) {
-      throw new Error(
-        'No Postgres connection string found on a production build that uses ' +
-          'Supabase. Set SUPABASE_DB_URL, or ensure the Vercel Supabase ' +
-          'integration exports POSTGRES_URL / POSTGRES_URL_NON_POOLING; or set ' +
-          'DB_MIGRATE_SKIP=1 to bypass the schema apply.',
-      )
-    }
-    console.log('[db-migrate] skipped: no Postgres connection string set')
-    return
+    throw new Error(
+      'No Postgres connection string found. For the Vercel Supabase ' +
+        'integration, ensure it exports POSTGRES_URL / POSTGRES_URL_NON_POOLING ' +
+        '(a pooler, IPv4 URL), or set SUPABASE_DB_URL to the Supabase Session ' +
+        'pooler string. The Direct connection (db.<ref>.supabase.co) is ' +
+        'IPv6-only and will not connect from Vercel.',
+    )
   }
 
   const sql = await readFile(SQL_PATH, 'utf8')
 
-  // Try each configured URL until one connects (the integration may expose the
-  // direct URL first, which is IPv6-only on some projects), then apply once.
+  // Try each configured URL until one connects (the integration's direct URL is
+  // IPv6-only on many projects), then apply once.
   let client = null
   let usedName = null
   const failures = []
@@ -230,8 +229,7 @@ async function main() {
     } catch {
       // The connection may already be broken; the transaction is discarded.
     }
-    console.error('[db-migrate] failed:', redact(error))
-    process.exitCode = 1
+    throw error
   } finally {
     await client.end().catch(() => {})
   }
@@ -240,6 +238,15 @@ async function main() {
 loadEnvLocal()
 
 main().catch((error) => {
-  console.error('[db-migrate] fatal:', redact(error))
-  process.exit(1)
+  const message = redact(error)
+  if (process.env.DB_MIGRATE_REQUIRED === '1') {
+    console.error(
+      `[db-migrate] failed (DB_MIGRATE_REQUIRED=1): ${message}`,
+    )
+    process.exit(1)
+  }
+  console.warn(
+    `[db-migrate] schema apply skipped, deployment continues (set ` +
+      `DB_MIGRATE_REQUIRED=1 to fail the build): ${message}`,
+  )
 })

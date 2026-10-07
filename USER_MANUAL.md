@@ -18,7 +18,7 @@ Die Website ist:
 - Event-Termine (Stände)
 - Instagram-Gitter (`@nebula_noir.official`)
 - Kontakt / Maßanfertigung
-- Rechtstexte (Impressum, Datenschutz, AGB, Widerruf, Versand)
+- Rechtstexte (Impressum, Datenschutz, AGB, Widerruf, Versand, Produkthinweise)
 
 Kaufen bleibt auf **Etsy**: [etsy.com/shop/nebulanoirnn](https://www.etsy.com/shop/nebulanoirnn).
 
@@ -140,6 +140,7 @@ Statische Routen (Site-Chrome, keine Dialoge). Jede Rechtsseite hat oben einen *
 | `/widerruf` | Widerruf |
 | `/versand` | Versand |
 | `/custom-orders` | Custom Orders |
+| `/produkthinweise` | Produkthinweise (Material, Pflege, Sicherheit/GPSR) |
 | `/ueber-uns` | Über uns |
 
 ### 3.11 Cookies und Einwilligung
@@ -293,7 +294,7 @@ Vier Reiter:
 
 1. **Website**: Etsy-URL, Instagram-URL, Kontakt-E-Mail sowie der globale **Produkthinweis** (DE/EN, erscheint im Produkt-Dialog bei jedem Stück). Leere Felder fallen auf den Standard zurück (die Kontakt-E-Mail ist zugleich Fallback-Empfänger der Kontakt-Benachrichtigung).
 2. **Übersetzungen**: alle UI-Strings DE/EN. Leer = Standardtext (Platzhalter zeigt ihn). Unbekannte Pfade werden beim Speichern verworfen. Betrifft die öffentliche Website, nicht den Admin.
-3. **Rechtstexte**: Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Über uns — Titel + HTML-Inhalt je Sprache. **Leer = Code-Standard**, dadurch wird keine Pflichtseite leer. Aktives HTML wird beim Speichern entfernt (Scripts, iframes, Event-Handler, `javascript:`).
+3. **Rechtstexte**: Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Produkthinweise, Über uns — Titel + HTML-Inhalt je Sprache. **Leer = Code-Standard**, dadurch wird keine Pflichtseite leer. Aktives HTML wird beim Speichern entfernt (Scripts, iframes, Event-Handler, `javascript:`).
 4. **Footer**: Spalten, Links (Label DE/EN, URL, extern), Reihenfolge (↑/↓), Hinzufügen/Entfernen, Marken-Blurb, Copyright und „Made in". Defaults entsprechen dem bisherigen Footer; z. B. lässt sich „Über Uns" in „Über mich" umbenennen oder der Etsy-Link durch einen anderen Shop ersetzen.
 
 ### 4.11 Kategorien — `/admin/categories`
@@ -328,7 +329,7 @@ Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (V
 | Pfad | Funktion |
 |---|---|
 | `/` | Landing (Intro + alle Sektionen) |
-| `/impressum` `/datenschutz` `/agb` `/widerruf` `/versand` `/custom-orders` `/ueber-uns` | Recht / Info |
+| `/impressum` `/datenschutz` `/agb` `/widerruf` `/versand` `/custom-orders` `/produkthinweise` `/ueber-uns` | Recht / Info |
 | `/login` | Admin-Login |
 
 ### Admin (Session + Rolle, außer Demo)

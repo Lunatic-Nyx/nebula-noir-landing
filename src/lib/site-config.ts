@@ -107,6 +107,7 @@ const DEFAULT_LEGAL_TITLE: Record<LegalSection, LocalizedText> = {
   widerruf: { de: messages.de.footer.withdrawal, en: messages.en.footer.withdrawal },
   versand: { de: messages.de.footer.shipping, en: messages.en.footer.shipping },
   customOrders: { de: messages.de.footer.customOrders, en: messages.en.footer.customOrders },
+  produkt: { de: messages.de.footer.productNotes, en: messages.en.footer.productNotes },
   about: { de: messages.de.footer.about, en: messages.en.footer.about },
 }
 

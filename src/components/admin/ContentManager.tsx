@@ -24,6 +24,7 @@ const SECTION_LABELS: Record<LegalSection, string> = {
   widerruf: 'Widerruf',
   versand: 'Versand',
   customOrders: 'Custom Orders',
+  produkt: 'Produkthinweise',
   about: 'Über uns',
 }
 

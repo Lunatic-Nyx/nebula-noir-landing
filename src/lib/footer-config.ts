@@ -41,6 +41,7 @@ export const DEFAULT_FOOTER_CONFIG: FooterConfig = {
         { label: { de: 'Datenschutz', en: 'Privacy' }, href: '/datenschutz' },
         { label: { de: 'AGB', en: 'Terms' }, href: '/agb' },
         { label: { de: 'Widerruf', en: 'Withdrawal' }, href: '/widerruf' },
+        { label: { de: 'Produkthinweise', en: 'Product notes' }, href: '/produkthinweise' },
       ],
     },
   ],

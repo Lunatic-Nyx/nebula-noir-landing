@@ -380,6 +380,56 @@ export const LEGAL_CONTENT = {
     `
   },
 
+  produkt: {
+    title: 'Produkthinweise',
+    content: `
+      <h3>Handgefertigte Unikate</h3>
+      <p>
+        Alle Stücke von Nebula Noir sind handgefertigt. Jedes Teil ist ein Unikat; leichte Abweichungen in Form, Farbe und Oberfläche sind typisch für Handarbeit und stellen keinen Mangel dar.
+      </p>
+
+      <h3>Materialien</h3>
+      <ul>
+        <li><strong>Resin (Kunstharz):</strong> empfindlich gegen UV-Licht und Hitze. Nicht in die pralle Sonne legen.</li>
+        <li><strong>PVC:</strong> wasser- und schweißresistent, aber kratzempfindlich.</li>
+        <li><strong>Metall (Ketten, Nieten, Ringe):</strong> kann anlaufen. Mit einem trockenen Tuch pflegen; Kontakt mit Parfüm, Chlor und Reinigern vermeiden.</li>
+        <li><strong>Neon:</strong> fluoreszierende Elemente nicht mit scharfen Reinigungsmitteln behandeln.</li>
+      </ul>
+
+      <h3>Pflege</h3>
+      <p>
+        Vor dem Duschen, Schwimmen und Sport ablegen. Trocken und dunkel lagern. Nicht auf rauen Oberflächen reiben.
+      </p>
+
+      <h3>Made-to-Order</h3>
+      <p>
+        Viele Stücke werden erst nach Bestelleingang gefertigt. Die angegebene Produktionszeit beginnt nach Zahlungseingang.
+      </p>
+
+      <h3>Sicherheit</h3>
+      <p>
+        Schmuck ist kein Spielzeug. Kleinteile können sich lösen; von kleinen Kindern und Haustieren fernhalten. Bei Hautreizungen das Stück abnehmen und uns kontaktieren.
+      </p>
+
+      <h3>Hersteller / Verantwortliche Person (GPSR)</h3>
+      <p>
+        [[Vor- und Nachname / Firma]]<br />
+        [[Straße und Hausnummer]]<br />
+        [[PLZ und Ort]]<br />
+        Deutschland<br />
+        E-Mail: contact@nebula-noir.com
+      </p>
+      <p>
+        Produktkennzeichnung und Sicherheitsinformationen werden gemäß der EU-Produktsicherheitsverordnung (GPSR) bereitgestellt. [[Vom Betreiber zu bestätigen: weitere GPSR-Angaben bzw. EU-Verantwortlicher, falls erforderlich.]]
+      </p>
+
+      <h3>Fragen</h3>
+      <p>
+        Fragen zu Material, Pflege oder Passform? Schreib uns über das Kontaktformular oder per E-Mail.
+      </p>
+    `
+  },
+
   about: {
     title: 'Über Nebula Noir',
     content: `

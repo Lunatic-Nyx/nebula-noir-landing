@@ -2,7 +2,7 @@
 
 Living snapshot of product status, schema, and services.
 
-**Last reviewed:** 2026-10-05 · How-to: `USER_MANUAL.md` · Env: `.env.example` · License: proprietary.
+**Last reviewed:** 2026-10-07 · How-to: `USER_MANUAL.md` · Env: `.env.example` · License: proprietary.
 
 ## Product status
 
@@ -27,6 +27,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 
 ## Schema rules
 
+- `supabase/reset.sql` is **additive and idempotent** (create-if-not-exists, no drops; never deletes application data). `scripts/db-migrate.mjs` applies it in one transaction on every Vercel **production** build via `vercel.json` (`SUPABASE_DB_URL`, session pooler); unset URL or non-production `VERCEL_ENV` = skip, `DB_MIGRATE_SKIP=1` = bypass, `npm run test:db` verifies the SQL. Baseline seed is one-time (sentinel `site_config._schema_seed_v1`).
 - UUIDs for app rows; Instagram media id is text PK.
 - `published` gates public SELECT on gallery and events.
 - `categories` is the source for gallery filters; admin CRUD + `label_en`; `on delete restrict` blocks deleting a category that still has images (admin offers reassign).
@@ -44,7 +45,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 
 | Service | Role |
 |---|---|
-| Vercel | Next.js host + cron |
+| Vercel | Next.js host + cron + build-time schema apply |
 | Supabase | Postgres, Auth, RLS |
 | Cloudflare R2 | Gallery + cached IG media |
 | Resend | Contact-form notification email (`RESEND`, server-only) |

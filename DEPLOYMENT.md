@@ -1,6 +1,6 @@
 # Deployment
 
-**Last reviewed:** 2026-09-10 · Operator how-to after go-live: `USER_MANUAL.md`. Variable list: `.env.example`. License: proprietary (`LICENSE`).
+**Last reviewed:** 2026-10-07 · Operator how-to after go-live: `USER_MANUAL.md`. Variable list: `.env.example`. License: proprietary (`LICENSE`).
 
 ## 1. Vercel (Next.js)
 
@@ -22,7 +22,9 @@ Demo Mode: skip filling Supabase/R2 keys; `npm run dev` still serves the landing
 ## 2. Supabase
 
 1. Create a project.
-2. SQL Editor → paste and run `supabase/reset.sql` (drops public tables in that script, then recreates).
+2. Apply the schema — either let the deploy do it (recommended) or run it once manually:
+   - **Automatic:** set `SUPABASE_DB_URL` (see "Automatic schema apply on every deployment" below). Every deploy then applies `supabase/reset.sql`.
+   - **Manual:** Supabase SQL Editor → paste and run `supabase/reset.sql` (additive, idempotent), or locally `npm run db:migrate`.
 3. Authentication → enable Email provider.
 4. Create the first admin:
 
@@ -36,7 +38,7 @@ on conflict (id) do update set role = 'admin';
 5. Copy Project URL and anon key into `NEXT_PUBLIC_SUPABASE_*`.
 6. Copy service role key into `SUPABASE_SERVICE_ROLE_KEY` (Vercel encrypted env).
 
-Live DB already seeded? Do **not** re-run `reset.sql` (it drops tables). Instead update copy and add LOYG:
+Live DB already seeded? `reset.sql` is additive: it seeds a row only when it is missing and never overwrites operator edits. To change existing copy and add LOYG, use the statements below (they are safe to re-run):
 
 ```sql
 update public.brand_info set title = 'Mission', body = 'Lautes Statement für die schwarze Szene, Cosplay und Nerdkultur. Keine Massenware.' where key = 'mission';
@@ -63,71 +65,36 @@ where not exists (
 );
 ```
 
-### Upgrade an existing database (admin backoffice)
+### Automatic schema apply on every deployment
 
-Do not re-run `reset.sql` on a live database. Apply this additive, idempotent block instead:
+`supabase/reset.sql` is **additive and idempotent**: it creates missing tables/columns/indexes, replaces functions, (re)creates policies, and seeds missing baseline rows once. It never drops a table and never deletes application data, so it is safe to run on every deployment and on a live database. It supersedes the manual "upgrade an existing database" block that used to live here.
 
-```sql
-alter table public.categories add column if not exists label_en text not null default '';
+`vercel.json` runs it before the build:
 
-create table if not exists public.site_config (
-  key text primary key,
-  value jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now()
-);
-
-create table if not exists public.api_secrets (
-  key text primary key,
-  value_encrypted text not null,
-  updated_at timestamptz not null default now()
-);
-
-alter table public.site_config enable row level security;
-alter table public.api_secrets enable row level security;
-
-drop policy if exists "site_config_public_read" on public.site_config;
-create policy "site_config_public_read" on public.site_config for select to anon, authenticated using (true);
-drop policy if exists "site_config_admin_all" on public.site_config;
-create policy "site_config_admin_all" on public.site_config for all to authenticated
-  using (public.is_admin()) with check (public.is_admin());
-drop policy if exists "api_secrets_admin_all" on public.api_secrets;
-create policy "api_secrets_admin_all" on public.api_secrets for all to authenticated
-  using (public.is_admin()) with check (public.is_admin());
-
--- optional: allows the encrypted refresh token to blank the legacy column
-alter table public.instagram_auth alter column access_token set default '';
-
-create table if not exists public.rate_limits (
-  key text primary key,
-  count int not null default 0,
-  reset_at timestamptz not null
-);
-alter table public.rate_limits enable row level security;
-
-create or replace function public.consume_rate_limit(p_key text, p_limit int, p_window_seconds int)
-returns boolean language plpgsql security definer set search_path = public as $$
-declare v_count int;
-begin
-  if p_key is null or length(p_key) = 0 or length(p_key) > 200
-     or p_limit < 1 or p_limit > 1000
-     or p_window_seconds < 1 or p_window_seconds > 86400 then
-    return false;
-  end if;
-  if random() < 0.02 then
-    delete from public.rate_limits where reset_at < now() - interval '1 day';
-  end if;
-  insert into public.rate_limits (key, count, reset_at)
-  values (p_key, 1, now() + make_interval(secs => p_window_seconds))
-  on conflict (key) do update
-    set count = case when public.rate_limits.reset_at < now() then 1 else public.rate_limits.count + 1 end,
-        reset_at = case when public.rate_limits.reset_at < now() then now() + make_interval(secs => p_window_seconds) else public.rate_limits.reset_at end
-  returning count into v_count;
-  return v_count <= p_limit;
-end;
-$$;
-revoke execute on function public.consume_rate_limit(text, int, int) from public, anon, authenticated;
-grant execute on function public.consume_rate_limit(text, int, int) to service_role;
+```json
+"buildCommand": "node scripts/db-migrate.mjs && next build"
 ```
+
+Setup:
+
+1. Supabase Dashboard → Project Settings → Database → **Connection string → Session pooler** (IPv4, port `5432`):
+   `postgresql://postgres.<ref>:<URL-ENCODED-PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require`
+2. Set it in Vercel as **`SUPABASE_DB_URL`** (Production scope, encrypted). Never prefix `NEXT_PUBLIC_`.
+3. Deploy. `scripts/db-migrate.mjs` connects, applies the file in one transaction with a cross-deploy advisory lock, then runs `next build`.
+
+Behavior:
+
+- Scope **`SUPABASE_DB_URL` to Production only.** Preview and Development builds skip the apply even if the variable is present, so a branch build cannot mutate the production database.
+- `SUPABASE_DB_URL` unset → skip and continue (local/Demo Mode). Exception: a **production** build that has `NEXT_PUBLIC_SUPABASE_URL` set but no `SUPABASE_DB_URL` **fails the build**, so a misconfigured secret cannot silently drift the schema. Demo Mode production (no Supabase) and local runs still skip.
+- Apply error → the transaction rolls back and the script exits non-zero, so the deployment is not promoted against a half-applied schema.
+- `DB_MIGRATE_SKIP=1` → emergency bypass (e.g. the database is briefly unreachable and you must ship anyway). `DB_MIGRATE_ALLOW_PREVIEW=1` opts a non-production build into applying.
+- Manual apply anywhere: `npm run db:migrate` (reads `.env.local` when present, otherwise the shell env).
+- Use the **session pooler**, not the transaction pooler (port `6543`): the file creates a trigger on `auth.users` and needs a real session.
+- Keep TLS on: use Supabase's `?sslmode=require`. The runner refuses `sslmode=disable`, `sslmode=no-verify` and `uselibpqcompat` for a remote host. Never disable certificate/TLS verification for the production database.
+- The runner relies on Vercel's `VERCEL_ENV` system variable (exposed by default). If "Automatically expose System Environment Variables" is disabled, a production build fails instead of guessing — re-enable it or set `DB_MIGRATE_SKIP=1`.
+- The baseline seed is **one-time** (guarded by the `site_config` key `_schema_seed_v1`): after the first apply, deploys no longer re-insert baseline rows the operator deleted or duplicated rows they renamed. To seed new baseline rows in a future change, bump the sentinel key in `supabase/reset.sql`.
+- Keep `supabase/reset.sql` as the single source of truth; do not add schema DDL elsewhere.
+- Verify the SQL and its idempotency locally with `npm run test:db` (in-memory Postgres, no Supabase project needed). This is what backs the "safe on every deploy" claim.
 
 Set `SECRETS_ENCRYPTION_KEY` (64 hex chars) to enable the Admin → API-Keys editor:
 
@@ -223,9 +190,9 @@ Do **not** put the token in `NEXT_PUBLIC_*`.
 - Demo Mode (no Supabase public keys): fixture posts. Live Supabase with empty `instagram_posts`: section hidden (no Unsplash fake-feed).
 - Without `INSTAGRAM_ACCESS_TOKEN`, cron/admin sync does not call Graph.
 
-Cron/admin sync refreshes the long-lived token and stores it in `instagram_auth` (service role only). Env `INSTAGRAM_ACCESS_TOKEN` is the bootstrap if that table is empty. Re-run `reset.sql` (or add the `instagram_auth` table) if an older schema is already applied.
+Cron/admin sync refreshes the long-lived token and stores it in `instagram_auth` (service role only). Env `INSTAGRAM_ACCESS_TOKEN` is the bootstrap if that table is empty. The deploy-time apply creates `instagram_auth` on older schemas.
 
-Existing databases: re-run `reset.sql` (or add the `contact_admin_delete` policy manually) so admins can delete contact inquiries — the new delete action in `/admin/inquiries` needs that RLS policy.
+Existing databases: the deploy-time apply (or `npm run db:migrate`) adds the `contact_admin_delete` policy so admins can delete contact inquiries — the delete action in `/admin/inquiries` needs that RLS policy.
 
 Signup creates `profiles` with role `user` via trigger. Promote the operator:
 

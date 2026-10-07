@@ -2,7 +2,7 @@
 
 Use this as a testable pass/fail list. Demo Mode means Supabase public keys are unset. Operator steps: `USER_MANUAL.md`.
 
-**Last reviewed:** 2026-10-05
+**Last reviewed:** 2026-10-07
 
 ## UI parity (design freeze)
 
@@ -48,7 +48,10 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 
 ## Supabase / R2
 
-- [ ] `supabase/reset.sql` creates tables, RLS, and seed categories/brand_info.
+- [ ] `npm run test:db` passes (fresh apply, second apply idempotent, operator row + admin survive, deleted/renamed baseline rows not re-seeded, legacy schema converges).
+- [ ] `supabase/reset.sql` is additive/idempotent: running it twice creates tables, RLS, and seed categories/brand_info without errors and without dropping data.
+- [ ] A row inserted into `contact_inquiries` survives a second `reset.sql` / deploy-time run.
+- [ ] After the first apply, `site_config._schema_seed_v1` exists; deleting a seeded gallery/event row in Admin is not undone by the next apply.
 - [ ] Anon can SELECT published gallery/events/instagram/brand_info.
 - [ ] Anon can INSERT `contact_inquiries` only (not SELECT others’ rows).
 - [ ] Anon cannot INSERT/UPDATE gallery or events.
@@ -117,7 +120,15 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Non-admin authenticated user → 403.
 - [ ] Demo Mode `/admin` is reachable as read-only preview with banner.
 - [ ] `LICENSE` is proprietary (not MIT / not GitHub, Inc.).
-- [ ] `.env.example` lists Supabase, R2, Instagram, Resend, hero, cron, and `SECRETS_ENCRYPTION_KEY`.
+- [ ] `.env.example` lists Supabase (incl. `SUPABASE_DB_URL`), R2, Instagram, Resend, hero, cron, and `SECRETS_ENCRYPTION_KEY`.
+- [ ] Deploy-time apply: `node scripts/db-migrate.mjs` with `SUPABASE_DB_URL` unset prints "skipped" and exits 0 (Demo/local); `npm run build` itself never invokes the runner.
+- [ ] Deploy-time apply: with `DB_MIGRATE_SKIP=1`, `scripts/db-migrate.mjs` prints "skipped" and does not touch the DB.
+- [ ] Deploy-time apply: on a non-production `VERCEL_ENV`, the runner skips even with `SUPABASE_DB_URL` set (unless `DB_MIGRATE_ALLOW_PREVIEW=1`).
+- [ ] Deploy-time apply: on a production `VERCEL_ENV` with `NEXT_PUBLIC_SUPABASE_URL` set but no `SUPABASE_DB_URL`, the runner exits non-zero (fail-closed).
+- [ ] Deploy-time apply: with a valid `SUPABASE_DB_URL`, `npm run db:migrate` applies the schema and a second run succeeds (idempotent); it also reads `SUPABASE_DB_URL` from `.env.local`.
+- [ ] Deploy-time apply: with a bad/unreachable `SUPABASE_DB_URL`, the script exits non-zero and logs contain no password.
+- [ ] Deploy-time apply: a `sslmode=disable` or `sslmode=no-verify` URL for a remote host is refused.
+- [ ] CI (`.github/workflows/ci.yml`) runs `npm ci`, `npm run test:db`, `npm run lint`, `npm run typecheck`, `npm run build` on push to `main` and on PRs.
 
 ## Admin backoffice
 

@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { EnvelopeSimple, X } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useT } from '@/i18n/context'
+import { useI18n, useT } from '@/i18n/context'
+import { useSiteConfig } from '@/components/SiteConfigProvider'
 import { IMAGE_FILTER } from '@/lib/design'
 import { EASE_DECO } from '@/lib/motion'
 
@@ -19,7 +20,16 @@ interface ProductDetailDialogProps {
 
 export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel }: ProductDetailDialogProps) {
   const t = useT()
+  const { locale } = useI18n()
+  const site = useSiteConfig()
   if (!product) return null
+
+  const productNotice = (product.notice ?? '').trim()
+  const globalNotice = (
+    locale === 'en'
+      ? site.productNotice?.en || site.productNotice?.de
+      : site.productNotice?.de || site.productNotice?.en
+  )?.trim() ?? ''
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,6 +138,29 @@ export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel
                         <strong className="text-foreground/90">{t('catalog.categoryLabel')}:</strong> {categoryLabel ?? t(`categories.${product.category}`)}
                       </p>
                     </motion.div>
+
+                    {productNotice || globalNotice ? (
+                      <motion.div
+                        className="mt-8 p-4 border-l-2 border-primary bg-primary/5"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: 0.85, ease: EASE_DECO }}
+                      >
+                        <p className="text-xs text-foreground/70 uppercase tracking-wider">
+                          {t('catalog.notice')}
+                        </p>
+                        {productNotice ? (
+                          <p className="mt-2 whitespace-pre-line text-sm font-light leading-relaxed text-foreground/80">
+                            {productNotice}
+                          </p>
+                        ) : null}
+                        {globalNotice ? (
+                          <p className="mt-2 whitespace-pre-line text-sm font-light leading-relaxed text-foreground/80">
+                            {globalNotice}
+                          </p>
+                        ) : null}
+                      </motion.div>
+                    ) : null}
                   </div>
 
                   <motion.div 

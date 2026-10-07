@@ -153,6 +153,7 @@ async function hasIndex(db, name) {
       (await hasColumn(db, 'categories', 'sort_order')) &&
       (await hasColumn(db, 'gallery_images', 'alt')) &&
       (await hasColumn(db, 'gallery_images', 'r2_key')) &&
+      (await hasColumn(db, 'gallery_images', 'notice')) &&
       (await hasColumn(db, 'events', 'venue')) &&
       (await hasColumn(db, 'events', 'published')) &&
       (await hasColumn(db, 'instagram_posts', 'caption')) &&

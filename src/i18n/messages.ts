@@ -64,6 +64,7 @@ export const messages = {
       productionTime: 'Geschätzte Produktionszeit: {days} Tage',
       handmade: 'Jedes Stück wird von Hand gefertigt.',
       madeToOrder: 'Auf Bestellung',
+      notice: 'Hinweis',
       days: '{days} Tage',
     },
     categories: {
@@ -273,6 +274,7 @@ export const messages = {
       productionTime: 'Estimated production time: {days} days',
       handmade: 'Each piece is made by hand.',
       madeToOrder: 'Made to order',
+      notice: 'Note',
       days: '{days} days',
     },
     categories: {

@@ -1,4 +1,5 @@
 import { isDemoMode } from '@/lib/env'
+import { clampNotice } from '@/lib/notice'
 import {
   fixtureBrandInfo,
   fixtureEvents,
@@ -13,24 +14,45 @@ export async function getGallery(): Promise<GalleryItem[]> {
   if (isDemoMode()) return fixtureGallery
   const supabase = await createServerSupabase()
   if (!supabase) return fixtureGallery
-  const { data, error } = await supabase
+  type GalleryRow = {
+    id: string
+    title: string
+    description: string | null
+    notice?: string | null
+    alt: string | null
+    public_url: string
+    categories: { slug: string } | { slug: string }[] | null
+  }
+  // `notice` is added by the additive deploy migration; on an unmigrated
+  // database fall back to the previous column set so the gallery never blanks.
+  const full = await supabase
     .from('gallery_images')
-    .select('id, title, description, alt, public_url, categories(slug)')
+    .select('id, title, description, notice, alt, public_url, categories(slug)')
     .eq('published', true)
     .order('sort_order', { ascending: true })
-  if (error || !data) return []
+  let rows = full.data as unknown as GalleryRow[] | null
+  if (full.error) {
+    const legacy = await supabase
+      .from('gallery_images')
+      .select('id, title, description, alt, public_url, categories(slug)')
+      .eq('published', true)
+      .order('sort_order', { ascending: true })
+    rows = legacy.data as unknown as GalleryRow[] | null
+  }
+  if (!rows) return []
   const items: GalleryItem[] = []
-  for (const row of data) {
-    const related = row.categories as { slug: string } | { slug: string }[] | null
+  for (const row of rows) {
+    const related = row.categories
     const slug = Array.isArray(related) ? related[0]?.slug : related?.slug
     if (!slug) continue
     items.push({
-      id: row.id as string,
-      name: row.title as string,
-      description: (row.description as string) || '',
+      id: row.id,
+      name: row.title,
+      description: row.description || '',
+      notice: clampNotice(row.notice),
       category: slug,
-      image: row.public_url as string,
-      alt: (row.alt as string) || (row.title as string),
+      image: row.public_url,
+      alt: row.alt || row.title,
     })
   }
   return items
@@ -103,6 +125,7 @@ export function galleryAsProducts(items: GalleryItem[]): import('@/lib/types').P
     id: item.id,
     name: item.name,
     description: item.description,
+    notice: item.notice || '',
     price: 0,
     category: item.category as JewelryCategory,
     image: item.image,

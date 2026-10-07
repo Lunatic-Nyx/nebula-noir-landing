@@ -1,6 +1,6 @@
 # Product Requirements — Nebula Noir Landing
 
-**Status:** live product (post Spark/Vite). **Last reviewed:** 2026-09-10
+**Status:** live product (post Spark/Vite). **Last reviewed:** 2026-10-07
 
 This document replaces the original Spark e-commerce PRD (cart, checkout, occult/Art Deco copy). Visual chrome from that era is frozen; the product and words are not.
 
@@ -20,10 +20,10 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 | Hero | Existing layout; optional muted scroll-scrub video |
 | Philosophy | CMS `brand_info` (or fixtures in Demo Mode) |
 | Events | Published upcoming stands only |
-| Gallery | Category filters, detail dialog, inquiry CTA — no price, no cart |
+| Gallery | Category filters, detail dialog, inquiry CTA — no price, no cart; optional per-product notice plus a global product notice in the dialog |
 | Instagram | Cached posts from Instagram Login API (`instagram_business_basic`) |
 | Contact | Name, email, message → `contact_inquiries`; best-effort notification email via Resend (`RESEND`) |
-| Legal | Routes with `site_config.legal` overrides, fallback to code defaults; editable in admin |
+| Legal | Routes with `site_config.legal` overrides, fallback to code defaults; editable in admin (DE/EN, HTML) |
 | i18n | DE default, EN cookie `nn-locale`; `site_config.translations` overrides editable in admin |
 | Consent | `nn-consent` gates external content (Google Fonts); reset via footer |
 | Admin | Auth + `profiles.role = 'admin'`: dashboard, gallery, events, brand texts, categories, site/i18n/legal content, inquiries, IG sync, hero video, encrypted API keys, health |

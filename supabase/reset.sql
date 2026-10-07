@@ -43,6 +43,7 @@ create table if not exists public.gallery_images (
   category_id uuid not null references public.categories (id) on delete restrict,
   title text not null,
   description text not null default '',
+  notice text not null default '',
   alt text,
   r2_key text,
   public_url text not null,
@@ -135,6 +136,7 @@ alter table public.categories add column if not exists sort_order int not null d
 alter table public.gallery_images add column if not exists category_id uuid;
 alter table public.gallery_images add column if not exists title text not null default '';
 alter table public.gallery_images add column if not exists description text not null default '';
+alter table public.gallery_images add column if not exists notice text not null default '';
 alter table public.gallery_images add column if not exists alt text;
 alter table public.gallery_images add column if not exists r2_key text;
 alter table public.gallery_images add column if not exists public_url text not null default '';

@@ -23,23 +23,48 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
   }, [])
 
   useEffect(() => {
+    let cancelled = false
+    let deferred: ReturnType<typeof setTimeout> | undefined
     const startTime = Date.now()
+    // The brand fonts are self-hosted + preloaded, but wait (bounded) for them
+    // before revealing the site so the intro/first paint never swaps a fallback.
+    const fontsReady = (): Promise<void> => {
+      if (typeof document === 'undefined' || !document.fonts?.ready) {
+        return Promise.resolve()
+      }
+      let timer: ReturnType<typeof setTimeout> | undefined
+      const timeout = new Promise<void>((resolve) => {
+        timer = setTimeout(resolve, 1500)
+      })
+      return Promise.race([
+        document.fonts.ready.then(() => undefined),
+        timeout,
+      ]).finally(() => clearTimeout(timer))
+    }
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime
       const newProgress = Math.min((elapsed / duration) * 100, 100)
-      
+
       setProgress(newProgress)
-      
+
       if (newProgress >= 100) {
         clearInterval(interval)
-        setTimeout(() => {
-          setIsComplete(true)
-          onLoadingComplete?.()
-        }, 800)
+        void fontsReady().then(() => {
+          if (cancelled) return
+          deferred = setTimeout(() => {
+            if (cancelled) return
+            setIsComplete(true)
+            onLoadingComplete?.()
+          }, 800)
+        })
       }
     }, 16)
 
-    return () => clearInterval(interval)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+      if (deferred) clearTimeout(deferred)
+    }
   }, [duration, onLoadingComplete])
 
   return (
@@ -313,7 +338,7 @@ export default function LoadingScreen({ onLoadingComplete, duration = 3000 }: Lo
                   <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-foreground" />
                   <h1 
                     className="text-2xl tracking-[0.4em] uppercase spark-theme-bioshock-glow"
-                    style={{ fontFamily: "'Poiret One', cursive" }}
+                    style={{ fontFamily: "'Poiret One', 'Montserrat', sans-serif" }}
                   >
                     Nebula Noir
                   </h1>

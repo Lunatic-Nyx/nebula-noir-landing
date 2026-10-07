@@ -99,9 +99,9 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 
 ## Consent & legal
 
-- [ ] First visit shows the cookie banner; "Nur notwendige" stores `nn-consent` and no request to `fonts.googleapis.com` / `fonts.gstatic.com` occurs (system fonts are used).
-- [ ] "Alle akzeptieren" stores `nn-consent` and loads Google Fonts (Poiret One active).
-- [ ] Footer "Cookie-Einstellungen" resets the choice and the banner reappears.
+- [ ] No cookie banner appears; on a clean profile no request is made to any Google host (`fonts.googleapis.com` / `fonts.gstatic.com`).
+- [ ] `/fonts/*.woff2` are requested as high-priority preloads; "NEBULA NOIR" and headings render in Poiret One, body in Montserrat; with local fonts disabled the fallback is a neutral sans-serif, never Comic Sans.
+- [ ] Footer has no "Cookie-Einstellungen" link (the consent banner was retired).
 - [ ] `/impressum` and `/datenschutz` contain no `[[…]]` placeholders before go-live; the admin legal editor warns while any remain.
 - [ ] Contact form: the 6th request within 10 minutes (same IP+email) returns the rate-limit message; other visitors are unaffected.
 - [ ] `Content-Security-Policy` header present; the site, admin, Supabase calls and R2 media still work.

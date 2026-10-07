@@ -246,7 +246,7 @@
   fill: oklch(0.98 0 0);
   font-size: 1.5rem;
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
-  font-family: 'Poiret One', cursive;
+  font-family: 'Poiret One', 'Montserrat', sans-serif;
 }
 
 .spark-theme-logo-glow {

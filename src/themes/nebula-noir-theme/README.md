@@ -10,7 +10,7 @@ Full map: `THEME_INTEGRATION.md`. Product copy: `src/i18n/messages.ts` (Cybergot
 
 Use semantic Tailwind tokens (`bg-background`, `text-foreground`, `bg-primary`). Custom classes stay prefixed `spark-theme-*`.
 
-Fonts on the live site: Poiret One, Cinzel, Montserrat (Google Fonts URL in `app/layout.tsx`).
+Fonts on the live site: Poiret One, Montserrat — self-hosted in `public/fonts/` (`@font-face` in `src/styles/fonts.css`, preloaded in `app/layout.tsx`). Cinzel was removed as unused.
 
 ## Files
 

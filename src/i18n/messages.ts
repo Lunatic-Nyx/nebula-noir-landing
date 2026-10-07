@@ -6,14 +6,6 @@ export const messages = {
       close: 'Schließen',
       back: 'Zurück',
     },
-    consent: {
-      title: 'Cookies & externe Inhalte',
-      text: 'Diese Website setzt nur technisch notwendige Cookies. Externe Schriftarten (Google Fonts) laden wir erst nach Ihrer Zustimmung.',
-      accept: 'Alle akzeptieren',
-      necessary: 'Nur notwendige',
-      more: 'Datenschutz',
-      settings: 'Cookie-Einstellungen',
-    },
     nav: {
       collection: 'Kollektion',
       philosophy: 'Philosophie',
@@ -216,14 +208,6 @@ export const messages = {
     common: {
       close: 'Close',
       back: 'Back',
-    },
-    consent: {
-      title: 'Cookies & external content',
-      text: 'This website only uses technically necessary cookies. External fonts (Google Fonts) are loaded only after your consent.',
-      accept: 'Accept all',
-      necessary: 'Necessary only',
-      more: 'Privacy',
-      settings: 'Cookie settings',
     },
     nav: {
       collection: 'Collection',

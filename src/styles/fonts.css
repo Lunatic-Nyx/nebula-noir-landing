@@ -1,0 +1,20 @@
+/* Self-hosted brand fonts (SIL OFL 1.1 — see public/fonts/OFL.txt).
+   Served from our own origin, so there is no third-party request and no consent
+   gate. Combined with the <link rel="preload"> tags in app/layout.tsx this
+   avoids a fallback-font flash (FOUC). Poiret One is a static 400 face;
+   Montserrat is a variable face covering 300–600. */
+@font-face {
+  font-family: 'Poiret One';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/poiret-one-latin-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin.woff2') format('woff2');
+}

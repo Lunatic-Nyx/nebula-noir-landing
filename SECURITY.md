@@ -93,7 +93,7 @@ Service role is used only in:
 
 ## HTTP security headers
 
-`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, HSTS and a Content-Security-Policy (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, inline scripts/styles for Next/Tailwind, fonts from `fonts.gstatic.com`, images/media over HTTPS, `connect-src` to Supabase).
+`next.config.ts` sets `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a restrictive `Permissions-Policy`, HSTS and a Content-Security-Policy (`default-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, inline scripts/styles for Next/Tailwind, fonts from `'self'`, images/media over HTTPS, `connect-src` to Supabase).
 
 ## Rate limiting
 

@@ -25,7 +25,7 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 | Contact | Name, email, message → `contact_inquiries`; best-effort notification email via Resend (`RESEND`) |
 | Legal | Routes with `site_config.legal` overrides, fallback to code defaults; editable in admin (DE/EN, HTML): Impressum, Datenschutz, AGB, Widerruf, Versand, Custom Orders, Produkthinweise, Über uns |
 | i18n | DE default, EN cookie `nn-locale`; `site_config.translations` overrides editable in admin |
-| Consent | `nn-consent` gates external content (Google Fonts); reset via footer |
+| Fonts | Self-hosted Poiret One + Montserrat from `public/fonts/`, preloaded; no third-party font request, no cookie banner |
 | Admin | Auth + `profiles.role = 'admin'`: dashboard, gallery, events, brand texts, categories, site/i18n/legal content, inquiries, IG sync, hero video, encrypted API keys, health |
 | Demo Mode | Missing Supabase public env → fixtures, mutation toasts |
 
@@ -39,7 +39,7 @@ Black scene, cosplay, nerd culture, festivals, club nights. Copy is hard and tec
 
 ## Success criteria
 
-- Design freeze holds: colors, fonts (Poiret One, Cinzel, Montserrat via Google Fonts URL), Framer Motion, existing classNames
+- Design freeze holds: colors, fonts (Poiret One, Montserrat, self-hosted), Framer Motion, existing classNames
 - Empty env still renders (Demo Mode)
 - Production reads live tables; empty live tables do not fall back to Unsplash/fixtures
 - Admin uploads never expose R2 secrets to the client

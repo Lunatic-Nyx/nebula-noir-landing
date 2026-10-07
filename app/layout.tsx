@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
-import { CookieConsent } from '@/components/CookieConsent'
 import { CursorGlow } from '@/components/CursorGlow'
 import { SmoothScroll } from '@/components/SmoothScroll'
 import { SiteConfigProvider } from '@/components/SiteConfigProvider'
@@ -8,9 +6,9 @@ import { LocaleProvider } from '@/i18n/context'
 import { getServerLocale } from '@/i18n/server'
 import { getTranslationOverrides } from '@/i18n/overrides'
 import { translate } from '@/i18n/translate'
-import { CONSENT_COOKIE, parseConsent } from '@/lib/consent'
 import { getFooterConfig, getPublicSiteConfig } from '@/lib/site-config'
 import { SCROLL_OFFSET_VAR } from '@/lib/design'
+import '@/styles/fonts.css'
 import '@/main.css'
 import '@/styles/theme.css'
 import '@/index.css'
@@ -29,29 +27,31 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [locale, overrides, siteConfig, footerConfig, cookieStore] = await Promise.all([
+  const [locale, overrides, siteConfig, footerConfig] = await Promise.all([
     getServerLocale(),
     getTranslationOverrides(),
     getPublicSiteConfig(),
     getFooterConfig(),
-    cookies(),
   ])
-  const consent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value)
-  const externalAllowed = consent?.external === true
 
   return (
     <html lang={locale} style={{ scrollPaddingTop: SCROLL_OFFSET_VAR }}>
       <head>
-        {externalAllowed ? (
-          <>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-            <link
-              href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600&display=swap"
-              rel="stylesheet"
-            />
-          </>
-        ) : null}
+        {/* Self-hosted brand fonts: preload so the first paint never falls back. */}
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/poiret-one-latin-400.woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          as="font"
+          type="font/woff2"
+          href="/fonts/montserrat-latin.woff2"
+          crossOrigin="anonymous"
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
       <body>
@@ -60,7 +60,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <SmoothScroll />
             <CursorGlow />
             {children}
-            <CookieConsent />
           </SiteConfigProvider>
         </LocaleProvider>
       </body>

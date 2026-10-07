@@ -72,6 +72,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 | `PRD.md` | Current requirements |
 | `DEPLOYMENT.md` | Hosting and third-party setup |
 | `SECURITY.md` | RLS and secrets |
+| `COMPLIANCE.md` | DE/EU launch checklist |
 | `QA_CHECKLIST.md` | Manual tests |
 | `THEME_INTEGRATION.md` | Kit vs live UI |
 | `LICENSE` | Proprietary |

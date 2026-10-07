@@ -7,7 +7,7 @@ import { parseTranslationOverrides } from '@/i18n/paths'
 import { parseLegalConfig, parsePublicSiteConfig } from '@/lib/site-config'
 import { parseFooterConfig } from '@/lib/footer-config'
 
-export type ContentSaveResult = { ok: true } | { ok: false; error: string }
+type ContentSaveResult = { ok: true } | { ok: false; error: string }
 
 async function upsertConfig(key: string, value: unknown): Promise<ContentSaveResult> {
   const gate = await requireAdmin()

@@ -40,7 +40,7 @@ async function isRateLimited(email: string): Promise<boolean> {
   }
 }
 
-export type ContactResult = { ok: true; demo?: boolean } | { ok: false; error: string; demo?: boolean }
+type ContactResult = { ok: true; demo?: boolean } | { ok: false; error: string; demo?: boolean }
 
 export async function submitContact(formData: {
   name: string

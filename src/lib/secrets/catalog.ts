@@ -1,9 +1,3 @@
-export interface ApiSecretMeta {
-  envVar: string
-  label: string
-  sensitive: boolean
-}
-
 // Isomorphic catalog: safe for client imports (labels + env names only).
 export const API_SECRET_KEYS = {
   resend_api_key: { envVar: 'RESEND', label: 'Resend API-Key', sensitive: true },

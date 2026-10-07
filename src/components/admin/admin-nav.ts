@@ -1,10 +1,10 @@
-export interface AdminNavItem {
+interface AdminNavItem {
   href: string
   label: string
   exact?: boolean
 }
 
-export interface AdminNavGroup {
+interface AdminNavGroup {
   id: string
   label: string
   items: AdminNavItem[]
@@ -47,7 +47,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
 
 const ALL_ITEMS: AdminNavItem[] = ADMIN_NAV_GROUPS.flatMap((group) => group.items)
 
-export function resolveActiveNavItem(pathname: string): AdminNavItem | null {
+function resolveActiveNavItem(pathname: string): AdminNavItem | null {
   let best: AdminNavItem | null = null
   for (const item of ALL_ITEMS) {
     const matches = item.exact

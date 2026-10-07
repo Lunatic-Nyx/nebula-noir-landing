@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/admin-gate'
 import { isApiSecretKey } from '@/lib/secrets/catalog'
 import { clearApiSecret, setApiSecret } from '@/lib/secrets/store'
 
-export type SecretActionResult = { ok: true } | { ok: false; error: string }
+type SecretActionResult = { ok: true } | { ok: false; error: string }
 
 export async function saveSecret(key: string, value: string): Promise<SecretActionResult> {
   const gate = await requireAdmin()

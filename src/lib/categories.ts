@@ -1,7 +1,7 @@
 import type { Category } from '@/lib/types'
 
 /** Code defaults used in Demo Mode and as the initial gallery seed. */
-export const DEFAULT_CATEGORIES: Category[] = [
+const DEFAULT_CATEGORIES: Category[] = [
   { slug: 'chokers', label: 'Chokers', labelEn: 'Chokers', sortOrder: 1 },
   { slug: 'bracelets', label: 'Armbänder', labelEn: 'Bracelets', sortOrder: 2 },
   { slug: 'rings', label: 'Ringe', labelEn: 'Rings', sortOrder: 3 },

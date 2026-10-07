@@ -7,13 +7,9 @@ import { messages, type Locale } from '@/i18n/messages'
 import { sanitizeHtml } from '@/lib/sanitize'
 import type { PublicSiteConfig } from '@/lib/site-config.types'
 import type { FooterConfig } from '@/lib/site-config.types'
-import type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
+import type { LegalConfig, LocalizedText } from '@/lib/legal-config.types'
 import { parseFooterConfig } from '@/lib/footer-config'
 import { clampNotice } from '@/lib/notice'
-
-export type { PublicSiteConfig } from '@/lib/site-config.types'
-export type { FooterConfig } from '@/lib/site-config.types'
-export type { LegalConfig, LegalSectionConfig, LocalizedText } from '@/lib/legal-config.types'
 
 // Server-only config layer. Do NOT add a 'use server' directive.
 // Any DB failure degrades to code defaults so public pages never break.
@@ -61,7 +57,7 @@ export async function readConfigValue(key: string): Promise<unknown> {
 
 // --- public site config -------------------------------------------------------
 
-export const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
+const DEFAULT_PUBLIC_SITE_CONFIG: PublicSiteConfig = {
   etsyUrl: 'https://www.etsy.com/shop/nebulanoirnn',
   instagramUrl: 'https://www.instagram.com/nebula_noir.official',
   contactEmail: 'contact@nebula-noir.com',

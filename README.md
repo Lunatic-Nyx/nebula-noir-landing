@@ -63,6 +63,7 @@ Do not reintroduce GitHub Spark (`@github/spark`, `useKV`, Vite Spark plugins). 
 | `PRD.md` | Current product requirements |
 | `DEPLOYMENT.md` | Vercel, Supabase, R2, Instagram Login, hero |
 | `SECURITY.md` | Secrets, RLS, uploads |
+| `COMPLIANCE.md` | DE/EU launch checklist (operator + lawyer) |
 | `QA_CHECKLIST.md` | Manual pass/fail |
 | `INTEGRATION-SUMMARY.md` | Schema and service map |
 | `CHANGELOG.md` | Version history |

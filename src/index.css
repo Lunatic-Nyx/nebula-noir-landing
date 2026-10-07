@@ -89,7 +89,7 @@
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poiret One', cursive;
+    font-family: 'Poiret One', 'Montserrat', sans-serif;
     font-weight: 400;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -999,7 +999,7 @@
 }
 
 .legal-content h3 {
-  font-family: 'Poiret One', cursive;
+  font-family: 'Poiret One', 'Montserrat', sans-serif;
   font-size: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -1010,7 +1010,7 @@
 }
 
 .legal-content h4 {
-  font-family: 'Poiret One', cursive;
+  font-family: 'Poiret One', 'Montserrat', sans-serif;
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;

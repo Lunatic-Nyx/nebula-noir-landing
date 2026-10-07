@@ -39,7 +39,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 - `site_config`: public-read key/value JSONB (`site`, `legal`, `footer`, `translations`); never store secrets here.
 - `api_secrets`: admin-only RLS, AES-256-GCM (`SECRETS_ENCRYPTION_KEY`), runtime reads via service role.
 - `rate_limits`: deny-all RLS; contact limiter via `consume_rate_limit()` (service role), keys are hashes.
-- Consent: `nn-consent` cookie gates external fonts (Google Fonts); `nn-locale` and admin session cookies are necessary.
+- Fonts: self-hosted (Poiret One, Montserrat from `public/fonts/`, preloaded). No cookie banner; visitor cookies are only `nn-locale` (plus the Supabase admin session).
 - New auth users get `profiles.role = 'user'` via trigger.
 
 ## External services
@@ -52,7 +52,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 | Resend | Contact-form notification email (`RESEND`, server-only) |
 | Instagram API with Instagram Login (`graph.instagram.com`) | Media read (`instagram_business_basic`) |
 | Etsy | Commerce (`etsy.com/shop/nebulanoirnn`) |
-| Google Fonts | Poiret One, Cinzel, Montserrat |
+| Fonts | Self-hosted Poiret One + Montserrat (`public/fonts/`, preloaded) |
 
 ## Data flow
 

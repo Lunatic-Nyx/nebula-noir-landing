@@ -16,7 +16,7 @@ The live look is frozen. Do not restyle `src/index.css`, `src/styles/theme.css`,
 
 Live landing tree: `app/page.tsx` → `HomePage` → `HeroSection`, `AboutSection`, `EventsSection`, `CatalogSection`, `InstagramSection`, `ContactSection`, `FooterSection`, `Navigation`, `ArtDecoBackground`, etc.
 
-Fonts: Poiret One, Cinzel, Montserrat via the Google Fonts `<link>` in `app/layout.tsx`. Do not switch to `next/font`. Do not load the fonts unconditionally: the `<link>` (and its preconnects) render only when the `nn-consent` cookie allows external content; without consent the site uses system fonts. Do not put `class="dark"` on `<html>`.
+Fonts: Poiret One and Montserrat are **self-hosted** (`public/fonts/`, `@font-face` in `src/styles/fonts.css`) and preloaded via `<link rel="preload">` in `app/layout.tsx`. Do not switch to `next/font` and do not reintroduce the Google Fonts URL. There is no cookie banner: fonts are same-origin, so no consent is needed. Do not put `class="dark"` on `<html>`.
 
 ## What is not live
 

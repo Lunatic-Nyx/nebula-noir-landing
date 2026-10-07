@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.7.0] — 2026-10-07
+
+### Changed
+
+- **Fonts are now self-hosted and preloaded** (`public/fonts/poiret-one-latin-400.woff2`, `public/fonts/montserrat-latin.woff2` variable 300–600; `@font-face` in `src/styles/fonts.css`; `<link rel="preload">` in `app/layout.tsx`). No request to Google; Cinzel removed as unused. This fixes the fallback-font flash: the `'Poiret One', cursive` stack rendered as **Comic Sans** on Windows without consent, and even with consent the cross-origin load flashed before swapping.
+- **Consent banner retired.** Its only purpose was gating Google Fonts; self-hosted fonts are same-origin and need no consent. Removed `CookieConsent.tsx`, `ConsentSettingsLink.tsx`, `src/lib/consent.ts`, the `consent.*` i18n keys, and the footer "Cookie-Einstellungen" link. Visitor cookies are now only `nn-locale` (plus the Supabase admin session).
+- Datenschutz default text updated (fonts self-hosted, no `nn-consent`, Google removed from the processor list). CSP tightened: `style-src`/`font-src` no longer allow Google hosts.
+- `LoadingScreen` waits (bounded to 1.5 s) for `document.fonts.ready` before revealing the site.
+
+### Note
+
+- If the Datenschutz was edited in Admin → Texte & Übersetzungen → Rechtstexte, that saved override wins over the code default — re-save it to pick up the new wording.
+
 ## [0.6.9] — 2026-10-07
 
 ### Changed

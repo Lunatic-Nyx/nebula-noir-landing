@@ -182,9 +182,9 @@ The admin layout nests `LocaleProvider initialLocale="de"`, but server component
 
 `loadSecrets()` caches for 60s per instance. Invalidate on write (`invalidateSecretsCache()`), and remember a concurrent in-flight read can repopulate the cache with a stale snapshot; treat 60s staleness as the bound. `SECRETS_ENCRYPTION_KEY` loss makes stored values unreadable — env fallbacks are the escape hatch.
 
-## Gate external fonts behind consent server-side
+## Self-host brand fonts instead of gating Google Fonts
 
-The consent choice lives in the `nn-consent` cookie, so the root layout can decide in the first HTML render whether to emit the Google Fonts `<link>` (and its preconnects). No client component swap, no FOUC, and revoking consent on the next request simply omits the request. Because fonts are gated, the design freeze's "keep the existing Google Fonts URL" holds — the URL is unchanged; only when it is requested changes. Without consent system fonts render; do not silently fall back to a different webfont.
+Loading Google Fonts behind a consent cookie meant every visitor without consent got system fonts, and the `'Poiret One', cursive` fallback rendered as **Comic Sans** on Windows. Even with consent, the cross-origin CSS → woff2 hop caused a fallback flash (the owner's FOUC report). Self-hosting the fonts in `public/fonts/` with `@font-face` (`src/styles/fonts.css`) and `<link rel="preload">` in `app/layout.tsx` removes the third-party request (no consent needed, so the banner is retired) and the FOUC in one move. Cinzel was dropped as unused. Always give display fonts a real fallback stack (`'Poiret One', 'Montserrat', sans-serif`), never the `cursive` generic.
 
 ## Legal templates need machine-checkable placeholders
 

@@ -74,10 +74,10 @@ export const LEGAL_CONTENT = {
 
       <h3>2. Überblick und Rechtsgrundlagen</h3>
       <p>
-        Diese Website ist eine Galerie-, Marken- und Kontaktseite. Es gibt keinen eigenen Shop, keinen Warenkorb und keine Besucherkonten. Wir verarbeiten personenbezogene Daten nur, soweit dies für die Bereitstellung der Website, die Beantwortung von Anfragen und – nach Ihrer Einwilligung – das Laden externer Inhalte erforderlich ist.
+        Diese Website ist eine Galerie-, Marken- und Kontaktseite. Es gibt keinen eigenen Shop, keinen Warenkorb und keine Besucherkonten. Wir verarbeiten personenbezogene Daten nur, soweit dies für die Bereitstellung der Website und die Beantwortung von Anfragen erforderlich ist.
       </p>
       <p>
-        Rechtsgrundlagen sind je nach Verarbeitung Art. 6 Abs. 1 lit. a (Einwilligung), lit. b (Vertrag/vorvertragliche Maßnahmen) und lit. f (berechtigtes Interesse) DSGVO sowie § 25 Abs. 2 TDDDG für technisch notwendige Speicherungen. Eine automatisierte Entscheidungsfindung oder ein Profiling findet nicht statt.
+        Rechtsgrundlagen sind je nach Verarbeitung Art. 6 Abs. 1 lit. b (Vertrag/vorvertragliche Maßnahmen) und lit. f (berechtigtes Interesse) DSGVO sowie § 25 Abs. 2 TDDDG für technisch notwendige Speicherungen. Eine automatisierte Entscheidungsfindung oder ein Profiling findet nicht statt.
       </p>
 
       <h3>3. Hosting</h3>
@@ -104,20 +104,19 @@ export const LEGAL_CONTENT = {
         Zur Abwehr von Missbrauch speichern wir eine gekürzte, gehashte Kennung Ihrer Anfrage (Rate-Limit) ohne Klartext-IP-Adresse. Die Daten werden gelöscht, sobald sie für die Bearbeitung nicht mehr erforderlich sind, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Eine Löschung können Sie jederzeit unter den im Impressum genannten Kontaktdaten verlangen.
       </p>
 
-      <h3>6. Cookies und Einwilligung</h3>
-      <p>Wir setzen technisch notwendige Cookies ein:</p>
+      <h3>6. Cookies</h3>
+      <p>Wir setzen ausschließlich technisch notwendige Cookies ein:</p>
       <ul>
         <li><code>nn-locale</code> – speichert Ihre Spracheinstellung (Laufzeit: 1 Jahr).</li>
-        <li><code>nn-consent</code> – speichert Ihre Einwilligungsentscheidung (Laufzeit: 1 Jahr).</li>
         <li>Session-Cookies von Supabase – nur im Admin-Bereich nach dem Login.</li>
       </ul>
       <p>
-        Technisch notwendige Cookies werden auf Grundlage von § 25 Abs. 2 TDDDG ohne Einwilligung gespeichert. Ihre Einwilligung für externe Inhalte verwalten Sie über den Cookie-Hinweis; Sie können sie jederzeit über „Cookie-Einstellungen" im Footer mit Wirkung für die Zukunft ändern oder widerrufen (Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG).
+        Diese Cookies sind für den Betrieb der Website erforderlich und werden auf Grundlage von § 25 Abs. 2 TDDDG ohne Einwilligung gespeichert. Es werden keine Analyse-, Marketing- oder Tracking-Cookies gesetzt. Zu den beim Seitenaufruf technisch verarbeiteten Verbindungsdaten siehe Ziff. 3, 4, 8 und 9.
       </p>
 
-      <h3>7. Externe Schriftarten (Google Fonts)</h3>
+      <h3>7. Schriftarten</h3>
       <p>
-        Zur einheitlichen Darstellung verwenden wir Schriftarten von Google Fonts (Google Ireland Limited). Diese werden erst geladen, nachdem Sie dem Laden externer Inhalte zugestimmt haben. Ohne Einwilligung verwenden wir Systemschriftarten; es findet dann keine Übermittlung an Google statt. Nach Einwilligung wird beim Laden Ihre IP-Adresse an Google übermittelt; eine Übermittlung in die USA kann erfolgen. Rechtsgrundlage ist Ihre Einwilligung (Art. 6 Abs. 1 lit. a DSGVO).
+        Die verwendeten Schriftarten (Poiret One, Montserrat) werden direkt von unserem eigenen Server ausgeliefert. Es findet dabei keine Übermittlung an Google oder andere Dritte statt.
       </p>
 
       <h3>8. Instagram und Meta</h3>
@@ -147,7 +146,7 @@ export const LEGAL_CONTENT = {
 
       <h3>13. Übermittlung in Drittländer</h3>
       <p>
-        Einige der genannten Dienstleister (Vercel, Supabase, Resend, Cloudflare, Google, Meta) können Daten in den USA verarbeiten. Die Übermittlung erfolgt auf Grundlage der jeweils geltenden Garantien (z. B. Standardvertragsklauseln oder Angemessenheitsbeschluss), soweit diese vorliegen. [[Vom Betreiber zu bestätigen: AVV/DPA und Garantieart je Dienstleister.]]
+        Einige der genannten Dienstleister (Vercel, Supabase, Resend, Cloudflare, Meta) können Daten in den USA verarbeiten. Die Übermittlung erfolgt auf Grundlage der jeweils geltenden Garantien (z. B. Standardvertragsklauseln oder Angemessenheitsbeschluss), soweit diese vorliegen. [[Vom Betreiber zu bestätigen: AVV/DPA und Garantieart je Dienstleister.]]
       </p>
 
       <h3>14. SSL- bzw. TLS-Verschlüsselung</h3>

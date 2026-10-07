@@ -27,7 +27,8 @@ export function LocaleProvider({
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next)
     document.documentElement.lang = next
-    document.cookie = `nn-locale=${next};path=/;max-age=31536000;samesite=lax`
+    const secure = window.location.protocol === 'https:' ? ';secure' : ''
+    document.cookie = `nn-locale=${next};path=/;max-age=31536000;samesite=lax${secure}`
   }, [])
 
   const t = useCallback(

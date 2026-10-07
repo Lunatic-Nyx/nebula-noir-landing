@@ -128,14 +128,14 @@ Hinweis: Maßanfertigungen in der Regel 2–4 Wochen.
 
 ### 3.10 Footer und Rechtliches
 
-Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab. Im Footer unten: **Cookie-Einstellungen** (öffnet den Cookie-Hinweis erneut).
+Spalten Shop / Info / Rechtliches. Etsy öffnet den Shop in einem neuen Tab. Kein Cookie-Banner: Es werden nur technisch notwendige Cookies gesetzt (`nn-locale`, Admin-Session).
 
 Statische Routen (Site-Chrome, keine Dialoge). Jede Rechtsseite hat oben einen **Zurück**-Button.
 
 | Pfad | Inhalt |
 |---|---|
 | `/impressum` | Impressum (§ 5 DDG) — `[[…]]`-Pflichtfelder für Betreibername/Anschrift im Admin ergänzen |
-| `/datenschutz` | Datenschutzerklärung (Hosting, Kontakt/Resend, Cookies/Consent, R2, Google, Meta, Etsy, Rechte) |
+| `/datenschutz` | Datenschutzerklärung (Hosting, Kontakt/Resend, Cookies, R2, Meta, Etsy, Rechte) |
 | `/agb` | AGB |
 | `/widerruf` | Widerruf |
 | `/versand` | Versand |
@@ -143,15 +143,13 @@ Statische Routen (Site-Chrome, keine Dialoge). Jede Rechtsseite hat oben einen *
 | `/produkthinweise` | Produkthinweise (Material, Pflege, Sicherheit/GPSR) |
 | `/ueber-uns` | Über uns |
 
-### 3.11 Cookies und Einwilligung
+### 3.11 Cookies
 
-Beim ersten Besuch erscheint ein Cookie-Hinweis:
+Es gibt **keinen Cookie-Banner**. Die Website setzt nur technisch notwendige Cookies:
 
-- **Alle akzeptieren** → lädt externe Inhalte (Google Fonts) und setzt `nn-consent` (1 Jahr).
-- **Nur notwendige** → es werden nur technisch notwendige Cookies gesetzt (`nn-locale`, `nn-consent`); Google Fonts wird nicht geladen, die Seite nutzt Systemschriftarten.
-- **Datenschutz** öffnet die Datenschutzerklärung.
+- `nn-locale` – speichert die Spracheinstellung (1 Jahr). Im Admin zusätzlich Supabase-Session-Cookies nach dem Login.
 
-Die Entscheidung lässt sich jederzeit über **Cookie-Einstellungen** im Footer zurücksetzen. Ohne Einwilligung findet keine Übermittlung an Google statt.
+Schriftarten werden **selbst gehostet** (aus `public/fonts/`, per `<link rel="preload">` vorgeladen); es findet **keine** Übermittlung an Google oder andere Dritte statt. Analyse-, Marketing- oder Tracking-Cookies gibt es nicht.
 
 Das Kontaktformular ist auf **5 Anfragen pro 10 Minuten** (pro gehashter IP + E-Mail) begrenzt; darüber erscheint ein Hinweis „Zu viele Anfragen".
 
@@ -379,7 +377,7 @@ Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (V
 
 - Keine Art-Deco-, 1920er-, okkulten oder mystischen Formulierungen in Texten.
 - Look der bestehenden Komponenten nicht ändern (Farben, Fonts, Animationen, Layouts).
-- Fonts: Poiret One, Cinzel, Montserrat (Google Fonts-URL, nicht `next/font`).
+- Fonts: Poiret One, Montserrat — selbst gehostet (`public/fonts/`, per `<link rel="preload">` vorgeladen), nicht `next/font`.
 
 Details: `AGENTS.md` (Design Freeze).
 

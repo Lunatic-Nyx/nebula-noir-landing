@@ -14,7 +14,7 @@ The existing frontend look is sacred.
 - Do not reduce Framer Motion animations.
 - Do not edit Tailwind className strings on existing elements unless a confirmed bug requires it.
 - Do not restyle `src/index.css`, `src/styles/theme.css`, or `src/themes/nebula-noir-theme/styles.css`.
-- Fonts stay Poiret One, Cinzel, and Montserrat via the existing Google Fonts URL. Do not switch to `next/font`.
+- Fonts are **self-hosted** (Poiret One, Montserrat; Cinzel removed as unused) from `public/fonts/` via `@font-face` in `src/styles/fonts.css` and `<link rel="preload">` in `app/layout.tsx`. Do not switch to `next/font` and do not reintroduce the Google Fonts URL.
 - Do not add `class="dark"` or `data-appearance="dark"` on `<html>`. Token overrides live in `src/index.css` `:root`.
 - New UI must reuse existing classes: `bioshock-glow`, `bioshock-glow-animated`, `metallic-border`, `art-deco-*`, `spark-theme-*`, `nebula-glow-hover`.
 - `spark-theme-*` CSS class names are styling, not GitHub Spark. Keep them.
@@ -37,7 +37,7 @@ Allowed exceptions (product decisions):
 - R2 uploads only on the server. Never expose R2 secrets to the client.
 - Instagram: **Instagram API with Instagram Login** only (`graph.instagram.com`, scope `instagram_business_basic`). No Facebook Login, no Messenger. Syncs media into `instagram_posts`. Handle: `@nebula_noir.official`.
 - i18n: German default, English via `LocaleProvider` + `src/i18n/messages.ts`. Cookie `nn-locale`. Do not hardcode user-facing UI strings. Admin overrides for public strings live in `site_config.translations` (`src/i18n/paths.ts` allowlist, `src/i18n/overrides.ts` loader); unknown/empty paths are discarded.
-- Consent: the `nn-consent` cookie gates external content. Google Fonts (and preconnects) render only when `external` is allowed; otherwise system fonts. Do not load third-party assets unconditionally. Banner + reset link: `src/components/CookieConsent.tsx`, `ConsentSettingsLink.tsx`, logic in `src/lib/consent.ts`.
+- Consent: there is **no cookie banner**. Fonts are self-hosted (no third-party request, no consent needed) and there are no analytics/tracking tools. Visitor cookies are only `nn-locale` (plus the Supabase admin session). Do not add third-party assets; if third-party content is ever reintroduced, restore a consent gate first.
 - Admin: Supabase Auth email/password + `profiles.role = 'admin'` + RLS. Admin is a **German-only** operator surface (`getAdminT()`), independent of the public locale cookie. Everything visitor-facing is editable there: site links, i18n overrides, legal texts, categories, gallery/events/brand texts, hero video, inquiries.
 - Admin secrets: `RESEND`/Instagram/contact keys can be stored encrypted in `api_secrets` (AES-256-GCM, `SECRETS_ENCRYPTION_KEY`) and edited at `/admin/secrets`; env is the fallback. `site_config` is public-read and must never contain secrets. Server-only modules (`src/lib/secrets/**`, `src/lib/email.ts`, `src/lib/site-config.ts`, `src/lib/admin-gate.ts`) must not get a `'use server'` directive.
 - License: proprietary (`LICENSE`). Do not reintroduce MIT or GitHub, Inc. copyright.

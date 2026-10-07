@@ -1,7 +1,6 @@
 'use client'
 
 import { useI18n } from '@/i18n/context'
-import { ConsentSettingsLink } from '@/components/ConsentSettingsLink'
 import { useFooterConfig } from '@/components/SiteConfigProvider'
 import { footerText } from '@/lib/footer-config'
 
@@ -63,7 +62,6 @@ export function FooterSection() {
             <p className="text-foreground/50 text-xs tracking-wider">
               {footerText(footer.madeIn, locale)}
             </p>
-            <ConsentSettingsLink />
           </div>
         </div>
       </div>

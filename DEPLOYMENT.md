@@ -77,19 +77,21 @@ where not exists (
 
 Setup:
 
-1. Supabase Dashboard → Project Settings → Database → **Connection string → Session pooler** (IPv4, port `5432`):
+1. If the Vercel **Supabase integration** is connected, it already exports a Postgres connection string (`POSTGRES_URL` / `POSTGRES_URL_NON_POOLING`); the runner uses it automatically — no extra variable needed.
+2. Otherwise (or to force the IPv4 **session pooler**), set **`SUPABASE_DB_URL`** in Vercel (Production scope, encrypted) to the session-pooler string. It is tried first, then the integration variables:
    `postgresql://postgres.<ref>:<URL-ENCODED-PASSWORD>@aws-0-<region>.pooler.supabase.com:5432/postgres?sslmode=require`
-2. Set it in Vercel as **`SUPABASE_DB_URL`** (Production scope, encrypted). Never prefix `NEXT_PUBLIC_`.
-3. Deploy. `scripts/db-migrate.mjs` connects, applies the file in one transaction with a cross-deploy advisory lock, then runs `next build`.
+   Never prefix `NEXT_PUBLIC_`.
+3. Deploy. `scripts/db-migrate.mjs` connects (trying each configured URL until one succeeds), applies the file in one transaction with a cross-deploy advisory lock, then runs `next build`.
 
 Behavior:
 
 - Scope **`SUPABASE_DB_URL` to Production only.** Preview and Development builds skip the apply even if the variable is present, so a branch build cannot mutate the production database.
-- `SUPABASE_DB_URL` unset → skip and continue (local/Demo Mode). Exception: a **production** build that has `NEXT_PUBLIC_SUPABASE_URL` set but no `SUPABASE_DB_URL` **fails the build**, so a misconfigured secret cannot silently drift the schema. Demo Mode production (no Supabase) and local runs still skip.
+- No Postgres URL available (neither `SUPABASE_DB_URL` nor the integration's `POSTGRES_URL*`) → skip and continue (local/Demo Mode). Exception: a **production** build that has `NEXT_PUBLIC_SUPABASE_URL` set but no Postgres URL **fails the build**, so a misconfigured/incomplete integration cannot silently drift the schema. Demo Mode production (no Supabase) and local runs still skip.
+- If several URLs are configured (`SUPABASE_DB_URL` → `POSTGRES_URL_NON_POOLING` → `POSTGRES_URL` → `DATABASE_URL` → `POSTGRES_PRISMA_URL`), the runner tries them in order until one connects. Use the **session/direct** connection for DDL; the transaction pooler (port `6543`) is a fallback and works because the runner uses only simple queries and one transaction.
 - Apply error → the transaction rolls back and the script exits non-zero, so the deployment is not promoted against a half-applied schema.
 - `DB_MIGRATE_SKIP=1` → emergency bypass (e.g. the database is briefly unreachable and you must ship anyway). `DB_MIGRATE_ALLOW_PREVIEW=1` opts a non-production build into applying.
 - Manual apply anywhere: `npm run db:migrate` (reads `.env.local` when present, otherwise the shell env).
-- Use the **session pooler**, not the transaction pooler (port `6543`): the file creates a trigger on `auth.users` and needs a real session.
+- Use the **session pooler**, not the transaction pooler (port `6543`), when you set the URL yourself: the file creates a trigger on `auth.users`. The runner inlines all statements (no prepared statements) and uses one transaction, so the pooler is also usable as a fallback.
 - Keep TLS on: use Supabase's `?sslmode=require`. The runner refuses `sslmode=disable`, `sslmode=no-verify` and `uselibpqcompat` for a remote host. Never disable certificate/TLS verification for the production database.
 - The runner relies on Vercel's `VERCEL_ENV` system variable (exposed by default). If "Automatically expose System Environment Variables" is disabled, a production build fails instead of guessing — re-enable it or set `DB_MIGRATE_SKIP=1`.
 - The baseline seed is **one-time** (guarded by the `site_config` key `_schema_seed_v1`): after the first apply, deploys no longer re-insert baseline rows the operator deleted or duplicated rows they renamed. To seed new baseline rows in a future change, bump the sentinel key in `supabase/reset.sql`.

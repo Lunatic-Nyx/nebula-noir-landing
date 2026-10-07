@@ -23,7 +23,7 @@ Safe to ship to the browser:
 Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 
 - `SUPABASE_SERVICE_ROLE_KEY` — bypasses RLS; cron + admin server actions only
-- `SUPABASE_DB_URL` — direct Postgres connection string (session pooler, contains the DB password); build/deploy only, never client; used by `scripts/db-migrate.mjs`
+- `SUPABASE_DB_URL` — optional direct Postgres connection string (session pooler, contains the DB password); build/deploy only, never client. If unset, the runner reuses the Vercel Supabase integration's Postgres vars (`POSTGRES_URL_NON_POOLING`, `POSTGRES_URL`, `DATABASE_URL`, `POSTGRES_PRISMA_URL`). Used by `scripts/db-migrate.mjs`.
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ENDPOINT`
 - `INSTAGRAM_ACCESS_TOKEN` (Instagram Login user token), `INSTAGRAM_APP_SECRET`
 - `RESEND` (Resend API key; contact-form notification email only)
@@ -59,9 +59,9 @@ Service role is used only in:
 
 ## Deploy-time database access
 
-`scripts/db-migrate.mjs` runs during the Vercel build (`vercel.json` `buildCommand`) before `next build` and applies `supabase/reset.sql` over a direct Postgres connection (`SUPABASE_DB_URL`, session pooler). Because the file is additive and idempotent, this cannot drop tables and does not delete application data (only the runtime rate limiter prunes expired buckets); it creates missing objects and seeds baseline rows once. `supabase/reset.sql` is privileged code: protect `supabase/**` with branch protection/CODEOWNERS.
+`scripts/db-migrate.mjs` runs during the Vercel build (`vercel.json` `buildCommand`) before `next build` and applies `supabase/reset.sql` over a direct Postgres connection. It tries `SUPABASE_DB_URL` first, then the Vercel Supabase integration's `POSTGRES_URL_NON_POOLING` / `POSTGRES_URL` / `DATABASE_URL` / `POSTGRES_PRISMA_URL`, until one connects. Because the file is additive and idempotent, this cannot drop tables and does not delete application data (only the runtime rate limiter prunes expired buckets); it creates missing objects and seeds baseline rows once. `supabase/reset.sql` is privileged code: protect `supabase/**` with branch protection/CODEOWNERS.
 
-- The connection string contains the Postgres password. Store it as a **Production-scoped** encrypted Vercel variable; never `NEXT_PUBLIC_`, never in client code, never committed. Do not set it for Preview/Development.
+- The connection string contains the Postgres password. Store any explicit `SUPABASE_DB_URL` as a **Production-scoped** encrypted Vercel variable; never `NEXT_PUBLIC_`, never in client code, never committed. The integration-provided `POSTGRES_*` vars are managed by Vercel/Supabase and are likewise never client-exposed.
 - Preview/Development builds skip the apply even if the variable is present (`VERCEL_ENV` gate), so a branch build cannot mutate production. `DB_MIGRATE_ALLOW_PREVIEW=1` is the explicit override.
 - The script never logs the URL or password (redacted in errors).
 - The whole file runs in one transaction with a cross-deploy advisory lock; on error it rolls back and fails the build (fail-closed), so a deploy cannot be promoted against a half-applied schema. In production with Supabase configured, a missing `SUPABASE_DB_URL` also fails the build instead of silently skipping. `DB_MIGRATE_SKIP=1` is the emergency bypass.

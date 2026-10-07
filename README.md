@@ -49,7 +49,7 @@ Locale: German default, English via **DE / EN** (`nn-locale` cookie). How to use
 | `src/lib/env.ts` | Demo / R2 flags |
 | `src/i18n/` | DE/EN strings |
 | `supabase/reset.sql` | Schema, RLS, seed (additive, idempotent) |
-| `scripts/db-migrate.mjs` | Applies the schema on every deploy (`SUPABASE_DB_URL`) |
+| `scripts/db-migrate.mjs` | Applies the schema on every deploy (integration Postgres URL) |
 | `.env.example` | Every supported variable |
 
 Do not reintroduce GitHub Spark (`@github/spark`, `useKV`, Vite Spark plugins). CSS class names `spark-theme-*` are styling only.

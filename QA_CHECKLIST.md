@@ -126,6 +126,7 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Deploy-time apply: on a non-production `VERCEL_ENV`, the runner skips even with `SUPABASE_DB_URL` set (unless `DB_MIGRATE_ALLOW_PREVIEW=1`).
 - [ ] Deploy-time apply: on a production `VERCEL_ENV` with `NEXT_PUBLIC_SUPABASE_URL` set but no `SUPABASE_DB_URL`, the runner exits non-zero (fail-closed).
 - [ ] Deploy-time apply: with a valid `SUPABASE_DB_URL`, `npm run db:migrate` applies the schema and a second run succeeds (idempotent); it also reads `SUPABASE_DB_URL` from `.env.local`.
+- [ ] Deploy-time apply: with only `POSTGRES_URL_NON_POOLING`/`POSTGRES_URL` set (Vercel Supabase integration), the runner uses it; `SUPABASE_DB_URL` takes precedence; if several are set it tries them in order until one connects.
 - [ ] Deploy-time apply: with a bad/unreachable `SUPABASE_DB_URL`, the script exits non-zero and logs contain no password.
 - [ ] Deploy-time apply: a `sslmode=disable` or `sslmode=no-verify` URL for a remote host is refused.
 - [ ] CI (`.github/workflows/ci.yml`) runs `npm ci`, `npm run test:db`, `npm run lint`, `npm run typecheck`, `npm run build` on push to `main` and on PRs.

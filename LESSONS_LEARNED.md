@@ -1,5 +1,9 @@
 # Lessons Learned
 
+## Unused scaffold dependencies hide after a migration
+
+After moving off GitHub Spark/Vite the lockfile kept a full shadcn/Radix + dashboard dependency set (recharts, react-hook-form, @tanstack/react-query, date-fns, embla-carousel-react, vaul, cmdk, uuid, zod, ...). None of it was imported by the live tree. Run `npx knip` after a big migration: it flags unused files, exports and dependencies. Removal is safe once `next build` passes — but keep dev tooling (`eslint*`, `typescript-eslint`, `globals`) even when knip flags it, and never touch the frozen CSS (`index.css`, `theme.css`, `art-deco-*`/`spark-theme-*`).
+
 ## Spark MIT is not this project's license
 
 The template shipped an MIT file copyright GitHub, Inc. The live brand site is proprietary. Closing that license is a product decision; do not paste MIT back in. Third-party packages in `package.json` keep their own licenses.

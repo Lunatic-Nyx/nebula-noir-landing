@@ -6,7 +6,7 @@ Stack: Next.js 15 App Router, Supabase (Postgres + Auth + RLS), Cloudflare R2, V
 
 **License:** proprietary. All rights reserved. See `LICENSE`. This is not an open-source project.
 
-**Last reviewed:** 2026-10-05
+**Last reviewed:** 2026-10-07
 
 ## Quick start (Demo Mode)
 
@@ -48,7 +48,8 @@ Locale: German default, English via **DE / EN** (`nn-locale` cookie). How to use
 | `src/lib/data.ts` | Demo-aware reads |
 | `src/lib/env.ts` | Demo / R2 flags |
 | `src/i18n/` | DE/EN strings |
-| `supabase/reset.sql` | Schema, RLS, seed |
+| `supabase/reset.sql` | Schema, RLS, seed (additive, idempotent) |
+| `scripts/db-migrate.mjs` | Applies the schema on every deploy (`SUPABASE_DB_URL`) |
 | `.env.example` | Every supported variable |
 
 Do not reintroduce GitHub Spark (`@github/spark`, `useKV`, Vite Spark plugins). CSS class names `spark-theme-*` are styling only.
@@ -75,6 +76,8 @@ Do not reintroduce GitHub Spark (`@github/spark`, `useKV`, Vite Spark plugins). 
 |---|---|
 | Dev | `npm run dev` |
 | Production build | `npm run build` |
+| Apply DB schema (manual) | `npm run db:migrate` |
+| Verify DB schema (in-memory) | `npm run test:db` |
 | Serve build | `npm run start` |
 | Lint | `npm run lint` |
 | Types | `npm run typecheck` |

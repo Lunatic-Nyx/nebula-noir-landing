@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.3] — 2026-10-07
+
+### Added
+
+- Deploy-time schema apply: `scripts/db-migrate.mjs` runs `supabase/reset.sql` on every Vercel **production** build (`vercel.json` `buildCommand`) over the session-pooler connection string `SUPABASE_DB_URL`. It runs in one transaction with a cross-deploy advisory lock and fails the build (rollback) on error. It reads `.env.local` for local manual runs.
+- Guards: skip when the URL is unset (local/Demo/Preview); skip on non-production `VERCEL_ENV` unless `DB_MIGRATE_ALLOW_PREVIEW=1`; fail the build on a production build that uses Supabase but has no DB URL; reject `sslmode=disable` for remote hosts; redact the password from errors; emergency bypass `DB_MIGRATE_SKIP=1`.
+- `npm run db:migrate` (manual/local) and `npm run test:db` (in-memory Postgres verification of idempotency/convergence via PGlite).
+- CI workflow (`.github/workflows/ci.yml`) running `npm ci`, `npm run test:db`, `npm run lint`, `npm run typecheck`, `npm run build` on push to `main` and PRs.
+- Guards include refusing `sslmode=disable`/`sslmode=no-verify`/`uselibpqcompat` for remote hosts.
+- Duplicate-safe constraint convergence: the runner's SQL recreates the `categories.slug`/`brand_info.key` unique indexes the admin `onConflict` paths rely on, and skips creation (with a warning) instead of aborting when a corrupt legacy table contains duplicates.
+
+### Changed
+
+- `supabase/reset.sql` is now **additive and idempotent**: `create table/column/index if not exists`, `create or replace` functions, drop-if-exists + create policies, and a one-time baseline seed guarded by the `site_config` sentinel `_schema_seed_v1` (so deploys no longer re-insert deleted baseline rows or duplicate renamed ones). It no longer drops tables or deletes application data, so it is safe to run repeatedly, on a live database, and on every deployment.
+- `vercel.json` gains `buildCommand` (`node scripts/db-migrate.mjs && next build`).
+- `package.json` adds the `pg` dependency, `@electric-sql/pglite` dev dependency, and the `db:migrate`/`test:db` scripts.
+- `.gitignore` ignores `.env*` (except `.env.example`), covering `.env.production`/`.env.staging` etc.
+- Docs (`AGENTS.md`, `README.md`, `DEPLOYMENT.md`, `SECURITY.md`, `INTEGRATION-SUMMARY.md`, `USER_MANUAL.md`, `QA_CHECKLIST.md`, `LESSONS_LEARNED.md`) describe the new flow.
+
 ## [0.6.2] — 2026-10-05
 
 ### Added

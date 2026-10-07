@@ -33,6 +33,7 @@ Allowed exceptions (product decisions):
 - Smooth scroll: Lenis in `src/components/SmoothScroll.tsx` (public pages only).
 - Server components fetch in `app/page.tsx` via `src/lib/data.ts`.
 - Demo Mode: if `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is missing, all reads use `src/lib/fixtures/`. Mutations no-op with a user-visible toast.
+- Database schema: `supabase/reset.sql` is **additive and idempotent** (create-if-not-exists, no drops; never deletes application data). `scripts/db-migrate.mjs` applies it inside one transaction on every Vercel **production** build (`vercel.json` `buildCommand`), using `SUPABASE_DB_URL` (server/build only, session pooler). It skips if the URL is unset (local/Demo/Preview) and can be bypassed with `DB_MIGRATE_SKIP=1`. `npm run test:db` verifies the SQL's idempotency/convergence in-memory.
 - R2 uploads only on the server. Never expose R2 secrets to the client.
 - Instagram: **Instagram API with Instagram Login** only (`graph.instagram.com`, scope `instagram_business_basic`). No Facebook Login, no Messenger. Syncs media into `instagram_posts`. Handle: `@nebula_noir.official`.
 - i18n: German default, English via `LocaleProvider` + `src/i18n/messages.ts`. Cookie `nn-locale`. Do not hardcode user-facing UI strings. Admin overrides for public strings live in `site_config.translations` (`src/i18n/paths.ts` allowlist, `src/i18n/overrides.ts` loader); unknown/empty paths are discarded.
@@ -81,7 +82,8 @@ Do not reintroduce `@github/spark`, `useKV`, Spark Vite plugins, `spark.meta.jso
 | `src/lib/admin-gate.ts` | Shared `requireAdmin()` guard for server actions |
 | `src/lib/supabase/` | Browser, server, service clients |
 | `src/lib/r2.ts` | R2 uploads |
-| `supabase/reset.sql` | Schema, RLS, seed |
+| `supabase/reset.sql` | Schema, RLS, seed (additive, idempotent) |
+| `scripts/db-migrate.mjs` | Applies `reset.sql` on deploy via `SUPABASE_DB_URL` |
 | `.env.example` | All supported variables (required vs optional marked) |
 | `USER_MANUAL.md` | Visitor + admin how-to |
 | `LICENSE` | Proprietary, all rights reserved |

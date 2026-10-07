@@ -4,6 +4,10 @@
 
 The template shipped an MIT file copyright GitHub, Inc. The live brand site is proprietary. Closing that license is a product decision; do not paste MIT back in. Third-party packages in `package.json` keep their own licenses.
 
+## Idempotent schema beats a "reset" script
+
+The old `supabase/reset.sql` dropped every public table and recreated it. That is fine as a one-time bootstrap but can never be automated: run on a live database it destroys operator data and — because it drops `profiles` — strips admin roles. Automating it was only safe after converting the file to **additive idempotency** (`create ... if not exists`, `create or replace`, `drop policy if exists` + `create`), and adding a one-time seed sentinel so a deploy cannot resurrect deleted rows or duplicate renamed ones. Rule: never wire a destructive SQL file into a build/deploy pipeline; make it convergent first, then automate. `npm run test:db` proves it by applying the real file twice against in-memory Postgres.
+
 ## Stale PRD and theme READMEs lie
 
 Spark-era `PRD.md` still described cart, occult copy, and Cormorant Garamond. `THEME_INTEGRATION.md` pointed at `App.tsx`. Treat those files as living docs: they must match `AGENTS.md` and the App Router tree, or agents will rebuild the shop.

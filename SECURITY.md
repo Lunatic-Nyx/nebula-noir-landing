@@ -1,6 +1,6 @@
 # Security
 
-**Last reviewed:** 2026-10-05
+**Last reviewed:** 2026-10-07
 
 The repository is proprietary (`LICENSE`). Do not publish exploits, dump env files, or file public GitHub issues for vulnerabilities. Email the site operator (see Impressum / `contact@nebula-noir.com`).
 
@@ -23,6 +23,7 @@ Safe to ship to the browser:
 Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 
 - `SUPABASE_SERVICE_ROLE_KEY` — bypasses RLS; cron + admin server actions only
+- `SUPABASE_DB_URL` — direct Postgres connection string (session pooler, contains the DB password); build/deploy only, never client; used by `scripts/db-migrate.mjs`
 - `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_ENDPOINT`
 - `INSTAGRAM_ACCESS_TOKEN` (Instagram Login user token), `INSTAGRAM_APP_SECRET`
 - `RESEND` (Resend API key; contact-form notification email only)
@@ -55,6 +56,18 @@ Service role is used only in:
 - `src/lib/supabase/service.ts`
 - Instagram cron/sync route
 - Never `createBrowserClient` with the service key
+
+## Deploy-time database access
+
+`scripts/db-migrate.mjs` runs during the Vercel build (`vercel.json` `buildCommand`) before `next build` and applies `supabase/reset.sql` over a direct Postgres connection (`SUPABASE_DB_URL`, session pooler). Because the file is additive and idempotent, this cannot drop tables and does not delete application data (only the runtime rate limiter prunes expired buckets); it creates missing objects and seeds baseline rows once. `supabase/reset.sql` is privileged code: protect `supabase/**` with branch protection/CODEOWNERS.
+
+- The connection string contains the Postgres password. Store it as a **Production-scoped** encrypted Vercel variable; never `NEXT_PUBLIC_`, never in client code, never committed. Do not set it for Preview/Development.
+- Preview/Development builds skip the apply even if the variable is present (`VERCEL_ENV` gate), so a branch build cannot mutate production. `DB_MIGRATE_ALLOW_PREVIEW=1` is the explicit override.
+- The script never logs the URL or password (redacted in errors).
+- The whole file runs in one transaction with a cross-deploy advisory lock; on error it rolls back and fails the build (fail-closed), so a deploy cannot be promoted against a half-applied schema. In production with Supabase configured, a missing `SUPABASE_DB_URL` also fails the build instead of silently skipping. `DB_MIGRATE_SKIP=1` is the emergency bypass.
+- TLS stays on: use Supabase's `?sslmode=require` (verified). The runner rejects `sslmode=disable`, `sslmode=no-verify` and `uselibpqcompat` for remote hosts; do not disable TLS for the production database.
+- The role must be privileged enough to create the trigger on `auth.users` and run `create extension`; the session-pooler `postgres` role qualifies. Do not use the transaction pooler (port 6543) for this.
+- `npm run test:db` verifies the SQL's idempotency and convergence against in-memory Postgres without touching any real database.
 
 ## R2 upload limits
 

@@ -170,7 +170,7 @@ E-Mail + Passwort (Supabase Auth). **Eintreten** / *Enter*.
 
 Voraussetzungen für echtes Auth:
 
-1. Supabase-Projekt, Schema `supabase/reset.sql`
+1. Supabase-Projekt, Schema `supabase/reset.sql` (wird bei jedem Deployment automatisch angewandt, additiv/idempotent)
 2. E-Mail-Provider an
 3. Nutzer existiert in `auth.users`
 4. `profiles.role = 'admin'` für diese UUID

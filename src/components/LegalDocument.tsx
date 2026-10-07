@@ -12,6 +12,7 @@ const TITLE_KEY: Record<LegalSection, string> = {
   widerruf: 'footer.withdrawal',
   versand: 'footer.shipping',
   customOrders: 'footer.customOrders',
+  produkt: 'footer.productNotes',
   about: 'footer.about',
 }
 

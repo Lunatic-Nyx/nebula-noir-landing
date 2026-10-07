@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.7] — 2026-10-07
+
+### Added
+
+- New legal section **Produkthinweise** (`/produkthinweise`): material, care, made-to-order, safety and GPSR manufacturer notes. Editable in Admin → Texte & Übersetzungen → Rechtstexte (DE/EN, HTML) like the other legal pages, with a code default. Added to the default footer legal column; `footer.productNotes` is overridable.
+
+### Note
+
+- A footer link to a path with no matching route still returns 404. Use the built-in `/produkthinweise` page or an external URL.
+
 ## [0.6.6] — 2026-10-07
 
 ### Added

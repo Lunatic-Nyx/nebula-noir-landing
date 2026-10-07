@@ -91,7 +91,8 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Contact rows appear in admin inquiries when Supabase is configured.
 - [ ] Events section lists published upcoming stands; expired unpublished items hidden.
 - [ ] About copy matches seed/fixtures until edited in admin.
-- [ ] `/impressum`, `/datenschutz`, `/agb`, `/widerruf`, `/versand`, `/custom-orders`, `/ueber-uns` render with site chrome.
+- [ ] `/impressum`, `/datenschutz`, `/agb`, `/widerruf`, `/versand`, `/custom-orders`, `/produkthinweise`, `/ueber-uns` render with site chrome.
+- [ ] `/admin/content` → Rechtstexte: Produkthinweise is editable (DE/EN) and a saved value appears on `/produkthinweise`; clearing restores the default.
 - [ ] Footer legal links navigate to those routes (no dialog).
 - [ ] Hero video, when URL is set, sits behind existing content, muted, no player chrome.
 - [ ] Scroll through hero scrubs `currentTime`; `prefers-reduced-motion` freezes on frame 0.

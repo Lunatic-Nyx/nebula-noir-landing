@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.6.8] — 2026-10-07
+
+### Changed
+
+- Removed 39 unused dependencies left over from the Spark/Vite + shadcn scaffold: unused `@radix-ui/react-*` packages (only `dialog`, `label`, `slot` remain), `@radix-ui/react-separator` etc., `@tanstack/react-query`, `react-hook-form`, `@hookform/resolvers`, `recharts`, `date-fns`, `embla-carousel-react`, `input-otp`, `cmdk`, `react-day-picker`, `react-resizable-panels`, `vaul`, `@heroicons/react`, `next-themes`, `uuid`, `zod`, `@tailwindcss/container-queries`. No source imports them.
+- Removed dead exports `isTranslationPath` (`src/i18n/paths.ts`) and `getApiSecret` (`src/lib/secrets/store.ts`); trimmed the unused lucide deep-import type shim to its wildcard declaration.
+
+### Verified
+
+- `lint`, `typecheck`, `test:db`, `build` all pass (17/17 pages); `knip` reports no remaining unused production dependency.
+
 ## [0.6.7] — 2026-10-07
 
 ### Added

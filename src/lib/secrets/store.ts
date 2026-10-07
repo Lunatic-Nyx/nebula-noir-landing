@@ -65,10 +65,6 @@ export async function loadSecrets(): Promise<SecretsSnapshot> {
   return snapshot
 }
 
-export async function getApiSecret(key: ApiSecretKey): Promise<string | undefined> {
-  return (await loadSecrets()).values[key]
-}
-
 export async function getApiSecretStatus(): Promise<Record<ApiSecretKey, SecretSource>> {
   return (await loadSecrets()).sources
 }

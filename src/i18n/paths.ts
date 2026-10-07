@@ -47,7 +47,3 @@ export function parseTranslationOverrides(raw: unknown): TranslationOverrides {
   }
   return result
 }
-
-export function isTranslationPath(path: string): path is MessagePath {
-  return MESSAGE_PATHS.has(path)
-}

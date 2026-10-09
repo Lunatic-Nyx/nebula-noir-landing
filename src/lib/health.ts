@@ -85,8 +85,10 @@ async function checkResend() {
     signal: AbortSignal.timeout(4000),
   })
   if (res.ok) return { status: 'ok' as const, detail: 'API erreichbar' }
-  if (res.status === 401 || res.status === 403) {
-    return { status: 'error' as const, detail: 'API-Key ungültig' }
+  if (res.status === 401) return { status: 'error' as const, detail: 'API-Key ungültig' }
+  // Sending-only keys cannot list domains; they can still send.
+  if (res.status === 403) {
+    return { status: 'degraded' as const, detail: 'Key ok, Domain-Liste verweigert' }
   }
   return { status: 'error' as const, detail: `HTTP ${res.status}` }
 }

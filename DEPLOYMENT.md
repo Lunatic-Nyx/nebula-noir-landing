@@ -112,8 +112,9 @@ Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-pa
 1. R2 → Create bucket (e.g. `nebula-noir-gallery`).
 2. Manage API tokens → S3-compatible access key.
 3. Optional: custom domain or `r2.dev` public development URL → `R2_PUBLIC_URL` (no trailing slash).
-4. Endpoint: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`
-5. CORS (bucket settings) for the site origins:
+4. Endpoint: `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` (S3 API host, not the public `r2.dev` URL). No trailing slash. Trim whitespace in Vercel values.
+5. `getR2Client()` sets AWS SDK checksums to `WHEN_REQUIRED`. SDK ≥3.729 otherwise signs CRC32, which R2 rejects as SignatureDoesNotMatch.
+6. CORS (bucket settings) for the site origins:
 
 ```json
 [

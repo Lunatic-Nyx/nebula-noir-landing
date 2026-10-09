@@ -27,11 +27,14 @@ export function getR2Client(): S3Client | null {
   if (!isR2Configured()) return null
   return new S3Client({
     region: 'auto',
-    endpoint: process.env.R2_ENDPOINT,
+    endpoint: process.env.R2_ENDPOINT!.trim(),
     credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+      accessKeyId: process.env.R2_ACCESS_KEY_ID!.trim(),
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!.trim(),
     },
+    // AWS SDK ≥3.729 signs CRC32 by default; R2 does not support CRC32 FULL_OBJECT.
+    requestChecksumCalculation: 'WHEN_REQUIRED',
+    responseChecksumValidation: 'WHEN_REQUIRED',
   })
 }
 

@@ -13,6 +13,11 @@ All notable changes to this project are documented in reverse chronological orde
 - Gallery images upload with a presigned PUT (same path as the hero video). The signature includes the file size. Confirm accepts only a server-shaped `gallery/{uuid}.{ext}` key.
 - Gallery delete removes the database row before the R2 object.
 
+### Fixed
+
+- R2 S3 client no longer signs default CRC32 checksums (AWS SDK ≥3.729 vs R2) and trims endpoint/keys, so health/upload stop failing with SignatureDoesNotMatch on a valid token.
+- Resend health treats HTTP 403 on `/domains` as degraded (sending-only key), not invalid.
+
 ### Changed
 
 - An event with no end time stays on the homepage for 24 hours after it starts. A date that does not parse is hidden.

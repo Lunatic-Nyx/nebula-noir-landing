@@ -312,7 +312,7 @@ Speichert Resend-, Instagram- und Kontakt-Werte **verschlüsselt** (AES-256-GCM)
 
 ### 4.13 API-Status — `/admin/health`
 
-Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (Verschlüsselung/Secrets) mit Laufzeit und Status (OK / Eingeschränkt / Fehler / Nicht konfiguriert / Demo). **Aktualisieren** prüft erneut.
+Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (Verschlüsselung/Secrets) mit Laufzeit und Status (OK / Eingeschränkt / Fehler / Nicht konfiguriert / Demo). **Aktualisieren** prüft erneut. Ein Resend-Key nur mit Sende-Recht zeigt **Eingeschränkt** (Domain-Liste verweigert), nicht Fehler. R2-Keys liegen in Vercel, nicht unter API-Keys.
 
 ### 4.14 Logout
 
@@ -365,6 +365,8 @@ Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (V
 | Site läuft, Speichern geht nicht | Demo Mode? Public Supabase-Keys? Banner oben im Admin? |
 | Upload Galerie fehlgeschlagen | Dateityp, 10 MB, alle sechs R2-Variablen, Admin-Session, R2-CORS erlaubt PUT |
 | Hero-Upload fehlgeschlagen | 80 MB, MIME, R2-CORS erlaubt PUT von der Site-Origin, Presign nicht abgelaufen (120 s) |
+| Health: Resend Fehler / API-Key ungültig | Neuen Key (`re_…`) unter Admin → API-Keys speichern. Domain in Resend verifizieren. Anfragen werden trotzdem gespeichert. |
+| Health: Cloudflare R2 Signaturfehler | Nicht im Admin. Vercel: `R2_SECRET_ACCESS_KEY` + `R2_ENDPOINT` = `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` |
 | Instagram-Sektion leer | Token, Professional-Account, Sync gelaufen, Tabelle nicht leer bei Live-Supabase |
 | Cron 401 | `CRON_SECRET` gesetzt? Header `Authorization: Bearer …`? |
 | 403 nach Login | `profiles.role` ist nicht `admin` |

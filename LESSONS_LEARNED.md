@@ -74,6 +74,10 @@ Repeated visual values drift when copy-pasted. Move them to `src/lib/design.ts` 
 Dialog content must not use an uncapped `max-w-[calc(100vw-…)]`: on ultrawide screens it stretches edge-to-edge. Cap with a real max (`lg:max-w-6xl`). This is a visible layout change, so record it as a product decision.
 
 
+## AWS SDK checksums break R2 signatures
+
+`@aws-sdk/client-s3` ≥3.729 signs CRC32 by default. R2 does not support CRC32 `FULL_OBJECT` and answers `SignatureDoesNotMatch`. Set `requestChecksumCalculation` and `responseChecksumValidation` to `WHEN_REQUIRED` on the S3 client. Trim endpoint and access keys — Vercel env values sometimes carry a trailing newline. The same error is also a wrong `R2_SECRET_ACCESS_KEY` or an endpoint that is not `https://<ACCOUNT_ID>.r2.cloudflarestorage.com`.
+
 ## Hero video size vs Vercel body limit
 
 Do not POST large MP4s through Next.js on Vercel (≈4.5MB). Presign a 120s R2 PUT and store the public URL in `brand_info.hero_video` (`title` = R2 key for later delete).

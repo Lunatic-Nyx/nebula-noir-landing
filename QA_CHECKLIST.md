@@ -155,5 +155,5 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] `/admin/info`: create and delete a `brand_info` key.
 - [ ] `/admin/secrets`: without `SECRETS_ENCRYPTION_KEY` saving is disabled; with it, a stored value shows status `gespeichert` and the raw value is never returned; clearing falls back to `ENV`; `api_secrets.value_encrypted` starts with `enc:v1:`.
 - [ ] Contact form still sends the notification using the stored key when the env key is removed.
-- [ ] `/admin/health` shows five checks with latency; a wrong key shows an error without echoing the key; the page returns within ~6 s.
+- [ ] `/admin/health` shows five checks with latency; a wrong key shows an error without echoing the key; the page returns within ~6 s. A sending-only Resend key (HTTP 403 on `/domains`) is Eingeschränkt, not Fehler.
 - [ ] `.next/static` contains no `value_encrypted`, `SECRETS_ENCRYPTION_KEY`, `enc:v1`, or `api_secrets` strings.

@@ -79,6 +79,7 @@ Do not reintroduce GitHub Spark (`@github/spark`, `useKV`, Vite Spark plugins). 
 | Production build | `npm run build` |
 | Apply DB schema (manual) | `npm run db:migrate` |
 | Verify DB schema (in-memory) | `npm run test:db` |
+| Verify sanitizer and event window | `npm run test:sanitize` |
 | Serve build | `npm run start` |
 | Lint | `npm run lint` |
 | Types | `npm run typecheck` |

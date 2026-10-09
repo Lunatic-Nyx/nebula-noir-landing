@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
 import { isDemoMode, isR2Configured } from '@/lib/env'
-import {
-  extensionForMime,
-  isAllowedVideoType,
-  presignPut,
-  publicObjectUrl,
-  R2_VIDEO_MAX_BYTES,
-} from '@/lib/r2'
+import { extensionForMime, isAllowedImageType, presignPut, R2_MAX_BYTES } from '@/lib/r2'
 
 export async function POST(request: Request) {
   if (isDemoMode()) {
@@ -24,18 +18,14 @@ export async function POST(request: Request) {
   const body = (await request.json()) as { contentType?: string; size?: number }
   const contentType = String(body.contentType || '')
   const size = Number(body.size || 0)
-  if (!isAllowedVideoType(contentType)) {
-    return NextResponse.json({ error: 'Nur MP4, WebM oder MOV' }, { status: 400 })
+  if (!isAllowedImageType(contentType)) {
+    return NextResponse.json({ error: 'Dateityp nicht erlaubt' }, { status: 400 })
   }
-  if (!size || size > R2_VIDEO_MAX_BYTES) {
-    return NextResponse.json({ error: 'Video größer als 80MB' }, { status: 400 })
+  if (!size || size > R2_MAX_BYTES) {
+    return NextResponse.json({ error: 'Datei größer als 10MB' }, { status: 400 })
   }
 
-  const key = `hero/${crypto.randomUUID()}.${extensionForMime(contentType)}`
+  const key = `gallery/${crypto.randomUUID()}.${extensionForMime(contentType)}`
   const uploadUrl = await presignPut(key, contentType, size)
-  return NextResponse.json({
-    uploadUrl,
-    key,
-    publicUrl: publicObjectUrl(key),
-  })
+  return NextResponse.json({ uploadUrl, key })
 }

@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
+## [0.7.1] — 2026-10-09
+
+### Security
+
+- Contact inquiries are inserted with the service role after a per-IP rate limit (5 / 10 minutes). The anon insert policy is gone. The admin list shows 100 rows per page, with a link to older rows. A missing limiter fails closed.
+- Instagram sync does not delete stored posts when this run stored nothing, and still refreshes the token if a row fails.
+- An event or site link without a safe scheme is rejected instead of saved as empty.
+- Legal HTML is rebuilt from an allowlist. Event URLs and the public Etsy/Instagram links use the same href check as the footer.
+- Gallery images upload with a presigned PUT (same path as the hero video). The signature includes the file size. Confirm accepts only a server-shaped `gallery/{uuid}.{ext}` key.
+- Gallery delete removes the database row before the R2 object.
+
+### Changed
+
+- An event with no end time stays on the homepage for 24 hours after it starts. A date that does not parse is hidden.
+- Instagram sync deletes posts that left the latest feed, and reports failure if an upsert fails. An empty feed does not wipe the table.
+- A failed secret-store read is not cached.
+- Dropped `lucide-react` (one icon) and the unused `price` field.
+
 ## [0.7.0] — 2026-10-07
 
 ### Changed

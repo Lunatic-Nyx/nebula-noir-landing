@@ -5,38 +5,47 @@ import { after } from 'next/server'
 import { headers } from 'next/headers'
 import { isDemoMode } from '@/lib/env'
 import { getServerT } from '@/i18n/server'
-import { createServerSupabase } from '@/lib/supabase/server'
+import { contactWriteAllowed, type LimitResult } from '@/lib/contact-limit'
 import { createServiceSupabase } from '@/lib/supabase/service'
 import { sendContactNotification } from '@/lib/email'
 
 const CONTACT_LIMIT = 5
 const CONTACT_WINDOW_SECONDS = 600
 
-/**
- * Atomic per-IP+email rate limit. Fail-open when Supabase/service role is not
- * configured so a missing limiter never blocks legitimate visitors.
- */
-async function isRateLimited(email: string): Promise<boolean> {
+function limitKey(raw: string): string {
+  return createHash('sha256').update(raw).digest('hex').slice(0, 32)
+}
+
+async function consumeLimit(
+  service: NonNullable<ReturnType<typeof createServiceSupabase>>,
+  key: string,
+): Promise<LimitResult> {
+  const { data, error } = await service.rpc('consume_rate_limit', {
+    p_key: key,
+    p_limit: CONTACT_LIMIT,
+    p_window_seconds: CONTACT_WINDOW_SECONDS,
+  })
+  if (error) {
+    console.warn('[contact] rate limit check failed:', error.message)
+    return 'down'
+  }
+  return data === false ? 'limited' : 'ok'
+}
+
+// Fail closed: the insert uses the service role, so a missing limiter must not
+// open the form. One IP cap stops email rotation; a second per-email cap at the
+// same number would never allow more.
+async function checkRateLimit(): Promise<LimitResult> {
   const service = createServiceSupabase()
-  if (!service) return false
+  if (!service) return 'down'
   try {
     const headerList = await headers()
     const forwarded = headerList.get('x-forwarded-for')?.split(',')[0]?.trim()
     const ip = forwarded || headerList.get('x-real-ip')?.trim() || 'unknown'
-    const key = `contact:${createHash('sha256').update(`${ip}|${email}`).digest('hex').slice(0, 32)}`
-    const { data, error } = await service.rpc('consume_rate_limit', {
-      p_key: key,
-      p_limit: CONTACT_LIMIT,
-      p_window_seconds: CONTACT_WINDOW_SECONDS,
-    })
-    if (error) {
-      console.warn('[contact] rate limit check failed:', error.message)
-      return false
-    }
-    return data === false
+    return await consumeLimit(service, `contact-ip:${limitKey(ip)}`)
   } catch (error) {
     console.warn('[contact] rate limit check threw:', error instanceof Error ? error.message : error)
-    return false
+    return 'down'
   }
 }
 
@@ -66,16 +75,17 @@ export async function submitContact(formData: {
     return { ok: true, demo: true }
   }
 
-  if (await isRateLimited(email)) {
-    return { ok: false, error: t('contact.rateLimited') }
+  const limited = await checkRateLimit()
+  if (!contactWriteAllowed(limited)) {
+    return { ok: false, error: limited === 'limited' ? t('contact.rateLimited') : t('contact.unavailable') }
   }
 
-  const supabase = await createServerSupabase()
-  if (!supabase) {
-    return { ok: false, error: t('contact.unavailable'), demo: true }
+  const service = createServiceSupabase()
+  if (!service) {
+    return { ok: false, error: t('contact.unavailable') }
   }
 
-  const { error } = await supabase.from('contact_inquiries').insert({ name, email, message })
+  const { error } = await service.from('contact_inquiries').insert({ name, email, message })
   if (error) {
     return { ok: false, error: t('contact.saveFailed') }
   }

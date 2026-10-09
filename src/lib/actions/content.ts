@@ -5,7 +5,7 @@ import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { parseTranslationOverrides } from '@/i18n/paths'
 import { parseLegalConfig, parsePublicSiteConfig } from '@/lib/site-config'
-import { parseFooterConfig } from '@/lib/footer-config'
+import { parseFooterConfig, unsafePublicUrl } from '@/lib/footer-config'
 
 type ContentSaveResult = { ok: true } | { ok: false; error: string }
 
@@ -25,6 +25,12 @@ async function upsertConfig(key: string, value: unknown): Promise<ContentSaveRes
 }
 
 export async function saveSiteConfig(input: unknown): Promise<ContentSaveResult> {
+  if (input && typeof input === 'object') {
+    const record = input as Record<string, unknown>
+    if (unsafePublicUrl(record.etsyUrl) || unsafePublicUrl(record.instagramUrl)) {
+      return { ok: false, error: 'URL nicht erlaubt' }
+    }
+  }
   return upsertConfig('site', parsePublicSiteConfig(input))
 }
 

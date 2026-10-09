@@ -48,16 +48,17 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 
 ## Supabase / R2
 
-- [ ] `npm run test:db` passes (fresh apply, second apply idempotent, operator row + admin survive, deleted/renamed baseline rows not re-seeded, legacy schema converges).
+- [ ] `npm run test:db` passes (fresh apply, second apply idempotent, operator row + admin survive, deleted/renamed baseline rows not re-seeded, legacy schema converges, no `contact_anon_insert` policy).
+- [ ] `npm run test:sanitize` passes (legal HTML allowlist, unsafe href rejected, event window).
 - [ ] `supabase/reset.sql` is additive/idempotent: running it twice creates tables, RLS, and seed categories/brand_info without errors and without dropping data.
 - [ ] A row inserted into `contact_inquiries` survives a second `reset.sql` / deploy-time run.
 - [ ] After the first apply, `site_config._schema_seed_v1` exists; deleting a seeded gallery/event row in Admin is not undone by the next apply.
 - [ ] Anon can SELECT published gallery/events/instagram/brand_info.
-- [ ] Anon can INSERT `contact_inquiries` only (not SELECT others’ rows).
+- [ ] Anon cannot INSERT or SELECT `contact_inquiries`. The form stores a row only through the service role, after the per-IP limit. A limiter error does not store the row.
 - [ ] Anon cannot INSERT/UPDATE gallery or events.
 - [ ] Admin user with `profiles.role = 'admin'` can CRUD gallery metadata.
-- [ ] Admin upload writes an object to R2 and a row with `public_url`.
-- [ ] Rejected: non-image MIME, files over 10MB, unauthenticated upload.
+- [ ] Admin gallery upload: presign, browser PUT to R2, then confirm writes a row whose `public_url` is the server-built URL.
+- [ ] Rejected: non-image MIME, files over 10MB, unauthenticated upload, confirm key that is not `gallery/{uuid}.{ext}`.
 
 ## Instagram
 
@@ -103,7 +104,7 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] `/fonts/*.woff2` are requested as high-priority preloads; "NEBULA NOIR" and headings render in Poiret One, body in Montserrat; with local fonts disabled the fallback is a neutral sans-serif, never Comic Sans.
 - [ ] Footer has no "Cookie-Einstellungen" link (the consent banner was retired).
 - [ ] `/impressum` and `/datenschutz` contain no `[[…]]` placeholders before go-live; the admin legal editor warns while any remain.
-- [ ] Contact form: the 6th request within 10 minutes (same IP+email) returns the rate-limit message; other visitors are unaffected.
+- [ ] Contact form: the 6th request within 10 minutes from the same IP returns the rate-limit message.
 - [ ] `Content-Security-Policy` header present; the site, admin, Supabase calls and R2 media still work.
 
 ## UI consistency & footer

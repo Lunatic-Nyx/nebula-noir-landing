@@ -14,7 +14,6 @@ export interface Product {
   description: string
   /** Optional per-product notice (materials, care, made-to-order, ...). */
   notice?: string
-  price: number
   category: JewelryCategory
   image: string
   madeToOrder: boolean

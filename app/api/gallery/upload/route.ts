@@ -3,8 +3,10 @@ import { NextResponse } from 'next/server'
 import { getAdminUser } from '@/lib/auth'
 import { isDemoMode, isR2Configured } from '@/lib/env'
 import { createServerSupabase } from '@/lib/supabase/server'
-import { extensionForMime, isAllowedImageType, R2_MAX_BYTES, deleteFromR2, uploadToR2 } from '@/lib/r2'
+import { deleteFromR2, publicObjectUrl } from '@/lib/r2'
 import { clampNotice } from '@/lib/notice'
+
+const GALLERY_KEY = /^gallery\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(jpg|png|webp|gif)$/
 
 export async function POST(request: Request) {
   if (isDemoMode()) {
@@ -18,26 +20,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'R2 ist nicht konfiguriert' }, { status: 400 })
   }
 
-  const form = await request.formData()
-  const file = form.get('file')
-  const title = String(form.get('title') || '').trim()
-  const description = String(form.get('description') || '').trim()
-  const notice = clampNotice(form.get('notice'))
-  const categorySlug = String(form.get('category') || '').trim()
-  const alt = String(form.get('alt') || title).trim()
+  const body = (await request.json()) as {
+    key?: string
+    title?: string
+    description?: string
+    notice?: unknown
+    category?: string
+    alt?: string
+  }
+  const key = String(body.key || '')
+  const title = String(body.title || '').trim()
+  const description = String(body.description || '').trim()
+  const notice = clampNotice(body.notice)
+  const categorySlug = String(body.category || '').trim()
+  const alt = String(body.alt || title).trim()
 
-  if (!(file instanceof File) || !title || !categorySlug) {
+  if (!GALLERY_KEY.test(key) || !title || !categorySlug) {
     return NextResponse.json({ error: 'Datei, Titel und Kategorie sind Pflicht' }, { status: 400 })
-  }
-  if (!isAllowedImageType(file.type)) {
-    return NextResponse.json({ error: 'Dateityp nicht erlaubt' }, { status: 400 })
-  }
-  if (file.size > R2_MAX_BYTES) {
-    return NextResponse.json({ error: 'Datei größer als 10MB' }, { status: 400 })
   }
 
   const supabase = await createServerSupabase()
   if (!supabase) {
+    await deleteFromR2(key).catch(() => {})
     return NextResponse.json({ error: 'Supabase fehlt' }, { status: 500 })
   }
 
@@ -47,17 +51,12 @@ export async function POST(request: Request) {
     .eq('slug', categorySlug)
     .maybeSingle()
   if (catError || !category) {
+    await deleteFromR2(key).catch(() => {})
     return NextResponse.json({ error: 'Kategorie unbekannt' }, { status: 400 })
   }
 
-  const id = crypto.randomUUID()
-  const ext = extensionForMime(file.type)
-  const key = `gallery/${id}.${ext}`
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const publicUrl = await uploadToR2(key, buffer, file.type)
-
+  const publicUrl = publicObjectUrl(key)
   const { error } = await supabase.from('gallery_images').insert({
-    id,
     category_id: category.id,
     title,
     description,
@@ -68,12 +67,11 @@ export async function POST(request: Request) {
     published: true,
   })
   if (error) {
-    // Roll back the uploaded object so a failed insert does not orphan it in R2.
     await deleteFromR2(key).catch(() => {})
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   revalidatePath('/')
   revalidatePath('/admin/gallery')
-  return NextResponse.json({ ok: true, id, url: publicUrl })
+  return NextResponse.json({ ok: true, url: publicUrl })
 }

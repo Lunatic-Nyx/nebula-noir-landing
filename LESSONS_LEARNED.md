@@ -132,7 +132,7 @@ Poiret One + `tracking-[0.2em]` + five uppercase links overflows before `xl`. Sh
 
 ## RLS vs. contact form
 
-Public INSERT on `contact_inquiries` without SELECT keeps spam readable only by admins. Do not enable anon SELECT.
+Do not give anon INSERT on `contact_inquiries`. The public anon key skips every check that lives only in the server action. The form writes with the service role after the rate limit. Do not enable anon SELECT either.
 
 ## Never trust client-controlled auth headers
 
@@ -156,7 +156,7 @@ Server actions and server components cannot use the client `useT()` hook. Keep o
 
 ## Upload/confirm keys are server-issued
 
-`/api/gallery/upload` and `/api/hero/presign` generate the `{uuid}` key server-side. `confirmHeroVideo` must reject keys outside the `hero/` prefix and derive the public URL from `R2_PUBLIC_URL` instead of storing a client-supplied URL.
+`/api/gallery/presign` and `/api/hero/presign` generate the `{uuid}` key server-side and sign `ContentLength`. Confirm must reject any other key shape and derive the public URL from `R2_PUBLIC_URL`. A regex that tries to strip scripts will miss `<img/src=x/onerror=…>` and `javascript&#58;`. Rebuild legal HTML from an allowlist.
 
 ## `datetime-local` is wall-clock time — convert on the client
 
@@ -164,7 +164,7 @@ A `datetime-local` input yields `2026-05-21T10:00` without a zone. Parsing that 
 
 ## `site_config` is public — code defaults are the safety net
 
-`site_config` is anon-readable by design. Store only public content (`site`, `legal`, `translations`); secrets belong in `api_secrets` (AES-256-GCM, admin-only). Every reader must fall back to code defaults on empty/error/timeout, and an empty legal field must mean "use the default", never a blank page. Admin-authored legal HTML is sanitized on write as defense in depth.
+`site_config` is anon-readable by design. Store only public content (`site`, `legal`, `translations`); secrets belong in `api_secrets` (AES-256-GCM, admin-only). Every reader must fall back to code defaults on empty/error/timeout, and an empty legal field must mean "use the default", never a blank page. Admin-authored legal HTML is rebuilt from an allowlist on write as defense in depth.
 
 ## Admin-editable labels beat i18n keys
 

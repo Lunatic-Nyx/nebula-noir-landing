@@ -8,7 +8,7 @@ import { sanitizeHtml } from '@/lib/sanitize'
 import type { PublicSiteConfig } from '@/lib/site-config.types'
 import type { FooterConfig } from '@/lib/site-config.types'
 import type { LegalConfig, LocalizedText } from '@/lib/legal-config.types'
-import { parseFooterConfig } from '@/lib/footer-config'
+import { isSafeHref, parseFooterConfig } from '@/lib/footer-config'
 import { clampNotice } from '@/lib/notice'
 
 // Server-only config layer. Do NOT add a 'use server' directive.
@@ -69,6 +69,11 @@ function pickString(raw: Record<string, unknown>, key: string, fallback: string)
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback
 }
 
+function pickUrl(raw: Record<string, unknown>, key: string, fallback: string): string {
+  const value = pickString(raw, key, fallback)
+  return isSafeHref(value) ? value : fallback
+}
+
 function pickProductNotice(raw: unknown): PublicSiteConfig['productNotice'] {
   if (!raw || typeof raw !== 'object') return { ...DEFAULT_PUBLIC_SITE_CONFIG.productNotice }
   const record = raw as Record<string, unknown>
@@ -79,8 +84,8 @@ export function parsePublicSiteConfig(raw: unknown): PublicSiteConfig {
   if (!raw || typeof raw !== 'object') return DEFAULT_PUBLIC_SITE_CONFIG
   const record = raw as Record<string, unknown>
   return {
-    etsyUrl: pickString(record, 'etsyUrl', DEFAULT_PUBLIC_SITE_CONFIG.etsyUrl),
-    instagramUrl: pickString(record, 'instagramUrl', DEFAULT_PUBLIC_SITE_CONFIG.instagramUrl),
+    etsyUrl: pickUrl(record, 'etsyUrl', DEFAULT_PUBLIC_SITE_CONFIG.etsyUrl),
+    instagramUrl: pickUrl(record, 'instagramUrl', DEFAULT_PUBLIC_SITE_CONFIG.instagramUrl),
     contactEmail: pickString(record, 'contactEmail', DEFAULT_PUBLIC_SITE_CONFIG.contactEmail),
     productNotice: pickProductNotice(record.productNotice),
   }

@@ -151,7 +151,7 @@ Es gibt **keinen Cookie-Banner**. Die Website setzt nur technisch notwendige Coo
 
 Schriftarten werden **selbst gehostet** (aus `public/fonts/`, per `<link rel="preload">` vorgeladen); es findet **keine** Übermittlung an Google oder andere Dritte statt. Analyse-, Marketing- oder Tracking-Cookies gibt es nicht.
 
-Das Kontaktformular ist auf **5 Anfragen pro 10 Minuten** (pro gehashter IP + E-Mail) begrenzt; darüber erscheint ein Hinweis „Zu viele Anfragen".
+Das Kontaktformular ist auf **5 Anfragen pro 10 Minuten pro IP** begrenzt. Darüber erscheint „Zu viele Anfragen". Ein direkter Datenbank-Insert mit dem öffentlichen Key ist nicht erlaubt.
 
 ### 3.12 Darstellung und Bewegung
 
@@ -210,7 +210,7 @@ Der Admin ist bewusst **deutsch** und unabhängig von der Besuchersprache (der �
 
 1. Datei: JPEG, PNG, WebP, GIF, max. **10 MB** (SVG wird aus Sicherheitsgründen abgelehnt)
 2. Titel (Pflicht), Beschreibung, Produkthinweis (optional), Kategorie (aus der DB-Kategorienliste)
-3. **Hochladen** → Server schreibt nach R2 `gallery/{uuid}.{ext}` und eine Zeile `gallery_images` (`published: true`)
+3. **Hochladen** → Browser holt eine signierte URL, **PUT** direkt nach R2 `gallery/{uuid}.{ext}`, dann speichert der Server die Zeile `gallery_images` (`published: true`). Dafür muss die R2-CORS-Policy `PUT` von der Site-Origin erlauben (dieselbe Regel wie beim Hero-Video).
 4. Startseite und Admin-Galerie werden revalidiert
 
 Ohne R2: Fehler *R2 ist nicht konfiguriert*.
@@ -218,7 +218,7 @@ Ohne R2: Fehler *R2 ist nicht konfiguriert*.
 **Liste**
 
 - **Bearbeiten** (aufklappbar): Titel, Beschreibung, Produkthinweis, Kategorie, Sortierung, Veröffentlicht.
-- **Löschen**: entfernt DB-Zeile und R2-Objekt, wenn `r2_key` gesetzt ist.
+- **Löschen**: entfernt zuerst die DB-Zeile, danach das R2-Objekt, wenn `r2_key` gesetzt ist.
 
 Der **Produkthinweis** erscheint im öffentlichen Produkt-Dialog (z. B. Material, Pflege, Unikat-Hinweis, Made-to-Order). Zusätzlich gibt es einen globalen Produkthinweis unter **Texte & Übersetzungen → Website**.
 
@@ -255,7 +255,7 @@ Kontaktformular-Eingänge: Name, E-Mail, Nachricht, Zeit.
 
 - **Gelesen** / **Ungelesen** toggelt `read`
 - **Löschen** entfernt die Anfrage (DSGVO-Löschung; braucht die `contact_admin_delete`-Policy aus `reset.sql`)
-- Anon darf INSERT, nicht SELECT — nur Admins sehen die Liste
+- Die Liste zeigt 100 Einträge pro Seite, mit Links zu älteren Seiten. Nur Admins dürfen lesen. Besucher schreiben über die Server-Action, nicht direkt in die Tabelle.
 
 Antworten: per eigener Mail an die angegebene Adresse (kein In-App-Mailer).
 
@@ -350,8 +350,9 @@ Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (V
 
 | Pfad | Auth | Zweck |
 |---|---|---|
-| `POST /api/gallery/upload` | Admin | Bild → R2 + DB |
-| `POST /api/hero/presign` | Admin | Signierte R2-PUT-URL |
+| `POST /api/gallery/presign` | Admin | Signierte R2-PUT-URL für ein Bild |
+| `POST /api/gallery/upload` | Admin | Bestätigt den Key und schreibt die DB-Zeile |
+| `POST /api/hero/presign` | Admin | Signierte R2-PUT-URL für das Hero-Video |
 | `POST /api/instagram/sync` | Admin | Manueller Sync |
 | `GET /api/cron/instagram` | Bearer `CRON_SECRET` (Vercel sendet ihn automatisch) | Täglicher Sync |
 
@@ -362,7 +363,7 @@ Prüft Supabase, Cloudflare R2, Resend, Instagram Graph und die Konfiguration (V
 | Symptom | Prüfen |
 |---|---|
 | Site läuft, Speichern geht nicht | Demo Mode? Public Supabase-Keys? Banner oben im Admin? |
-| Upload Galerie fehlgeschlagen | Dateityp, 10 MB, alle sechs R2-Variablen, Admin-Session |
+| Upload Galerie fehlgeschlagen | Dateityp, 10 MB, alle sechs R2-Variablen, Admin-Session, R2-CORS erlaubt PUT |
 | Hero-Upload fehlgeschlagen | 80 MB, MIME, R2-CORS erlaubt PUT von der Site-Origin, Presign nicht abgelaufen (120 s) |
 | Instagram-Sektion leer | Token, Professional-Account, Sync gelaufen, Tabelle nicht leer bei Live-Supabase |
 | Cron 401 | `CRON_SECRET` gesetzt? Header `Authorization: Bearer …`? |

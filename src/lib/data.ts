@@ -8,6 +8,7 @@ import {
 } from '@/lib/fixtures'
 import { fixtureCategories } from '@/lib/categories'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { isUpcomingEvent } from '@/lib/upcoming'
 import type { BrandInfo, Category, EventItem, GalleryItem, InstagramPost, JewelryCategory } from '@/lib/types'
 
 export async function getGallery(): Promise<GalleryItem[]> {
@@ -67,11 +68,6 @@ export async function getBrandInfo(): Promise<BrandInfo[]> {
   return data as BrandInfo[]
 }
 
-function isUpcomingEvent(event: Pick<EventItem, 'startsAt' | 'endsAt'>, now = Date.now()) {
-  const end = Date.parse(event.endsAt || event.startsAt)
-  return Number.isNaN(end) || end >= now
-}
-
 export async function getEvents(opts?: { upcomingOnly?: boolean }): Promise<EventItem[]> {
   const upcomingOnly = opts?.upcomingOnly === true
   const filterUpcoming = (events: EventItem[]) =>
@@ -126,7 +122,6 @@ export function galleryAsProducts(items: GalleryItem[]): import('@/lib/types').P
     name: item.name,
     description: item.description,
     notice: item.notice || '',
-    price: 0,
     category: item.category as JewelryCategory,
     image: item.image,
     madeToOrder: false,

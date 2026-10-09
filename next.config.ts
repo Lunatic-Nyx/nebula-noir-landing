@@ -6,6 +6,27 @@ const scriptSrc =
     ? "script-src 'self' 'unsafe-inline'"
     : "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
 
+// Browser PUT goes to the account host or the virtual-hosted bucket host.
+// CSP * matches one label, so bucket.account.r2.cloudflarestorage.com is listed explicitly.
+function r2ConnectOrigins(): string[] {
+  const raw = process.env.R2_ENDPOINT?.trim()
+  if (!raw) return []
+  let endpoint: URL
+  try {
+    endpoint = new URL(raw)
+  } catch {
+    return []
+  }
+  const origins = [endpoint.origin]
+  const bucket = process.env.R2_BUCKET_NAME?.trim()
+  if (bucket && endpoint.hostname.endsWith('.r2.cloudflarestorage.com')) {
+    origins.push(`${endpoint.protocol}//${bucket}.${endpoint.hostname}`)
+  }
+  return origins
+}
+
+const r2Origins = r2ConnectOrigins().join(' ')
+
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
@@ -25,7 +46,7 @@ const securityHeaders = [
       "font-src 'self' data:",
       "img-src 'self' data: blob: https:",
       "media-src 'self' https:",
-      "connect-src 'self' https://*.supabase.co",
+      `connect-src 'self' https://*.supabase.co${r2Origins ? ` ${r2Origins}` : ''}`,
       "frame-src 'none'",
     ].join('; '),
   },

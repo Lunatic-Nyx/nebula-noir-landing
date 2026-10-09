@@ -33,7 +33,7 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 - `gallery_images.notice` holds an optional per-product notice shown in the product dialog; the global `site_config.site.productNotice` (DE/EN) is shown in addition.
 - `categories` is the source for gallery filters; admin CRUD + `label_en`; `on delete restrict` blocks deleting a category that still has images (admin offers reassign).
 - `profiles.role` is `'admin'` or `'user'`.
-- Contact: insert-only for anon.
+- Contact: no anon insert. The server action writes with the service role after the rate limit.
 - Instagram writes: service role only.
 - `instagram_auth`: single-row token metadata (`user_id`, `username`, `expires_at`); access token now lives encrypted in `api_secrets`.
 - `site_config`: public-read key/value JSONB (`site`, `legal`, `footer`, `translations`); never store secrets here.
@@ -58,9 +58,9 @@ Triggered when `NEXT_PUBLIC_SUPABASE_URL` or `NEXT_PUBLIC_SUPABASE_ANON_KEY` is 
 
 1. `app/page.tsx` calls `src/lib/data.ts`.
 2. Demo → fixtures. Prod → Supabase anon client.
-3. Admin upload → auth check → R2 `PutObject` → `gallery_images` insert.
+3. Admin gallery upload → presign → browser PUT to R2 → confirm inserts `gallery_images`.
 4. IG cron → Graph API → R2 copy → upsert `instagram_posts`.
-5. Contact → server action → insert `contact_inquiries` → best-effort Resend notification (if `RESEND` set).
+5. Contact → server action → rate limit → service-role insert `contact_inquiries` → best-effort Resend notification (if `RESEND` set).
 
 ## Docs map
 

@@ -121,6 +121,10 @@ async function hasIndex(db, name) {
       (await count(db, 'events')) === 3,
   )
   check('operator inquiry survives', (await count(db, 'contact_inquiries')) === 1)
+  check(
+    'contact_anon_insert policy is gone',
+    (await db.query(`select 1 from pg_policy where polname = 'contact_anon_insert'`)).rows.length === 0,
+  )
   const admin = await db.query(`select role from public.profiles where id = '${userId}'`)
   check('admin role survives', admin.rows[0]?.role === 'admin')
   check(

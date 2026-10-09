@@ -352,12 +352,9 @@ create policy "gallery_admin_all"
   using (public.is_admin())
   with check (public.is_admin());
 
--- contact
+-- contact: no anon insert. The server action writes with the service role
+-- after the rate limit. A public insert policy let the anon key skip both.
 drop policy if exists "contact_anon_insert" on public.contact_inquiries;
-create policy "contact_anon_insert"
-  on public.contact_inquiries for insert
-  to anon, authenticated
-  with check (true);
 
 drop policy if exists "contact_admin_read" on public.contact_inquiries;
 create policy "contact_admin_read"

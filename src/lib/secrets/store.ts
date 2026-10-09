@@ -32,10 +32,14 @@ export async function loadSecrets(): Promise<SecretsSnapshot> {
   const sources = emptySources()
 
   const supabase = createServiceSupabase()
+  let dbReadOk = true
   if (supabase) {
     try {
       const { data, error } = await supabase.from('api_secrets').select('key, value_encrypted')
-      if (!error) {
+      if (error) {
+        console.error('[secrets] failed to read store', error.message)
+        dbReadOk = false
+      } else {
         for (const row of data ?? []) {
           const key = row.key as string
           if (!isApiSecretKey(key)) continue
@@ -48,6 +52,7 @@ export async function loadSecrets(): Promise<SecretsSnapshot> {
       }
     } catch (error) {
       console.error('[secrets] failed to read store', error)
+      dbReadOk = false
     }
   }
 
@@ -61,7 +66,8 @@ export async function loadSecrets(): Promise<SecretsSnapshot> {
   }
 
   const snapshot = { values, sources }
-  cache = { at: Date.now(), snapshot }
+  // A failed read must not stick: the next request should try the database again.
+  if (dbReadOk) cache = { at: Date.now(), snapshot }
   return snapshot
 }
 

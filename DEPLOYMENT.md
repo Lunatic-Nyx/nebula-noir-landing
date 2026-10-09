@@ -133,10 +133,10 @@ Gallery seed: `reset.sql` seeds local `/demo/instagram/*.jpg` paths (no third-pa
 
 Why exactly this:
 
-- **PUT** is required for the hero video: the browser uploads straight to `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` with a short-lived presigned URL, so the bucket must answer the CORS preflight for `PUT` from `https://nebula-noir.com` (and `www` if used).
+- **PUT** is required for the hero video and gallery images: the browser uploads straight to `https://<ACCOUNT_ID>.r2.cloudflarestorage.com` with a short-lived presigned URL, so the bucket must answer the CORS preflight for `PUT` from `https://nebula-noir.com` (and `www` if used).
 - **`AllowedHeaders: ["*"]`** (or at least `["content-type"]`): the presign binds the content type, and the browser sends it on the PUT; a missing header in the policy makes the preflight fail. `ETag` is exposed so any future multipart/complete flow can read it.
 - **GET/HEAD** are optional for plain `<img>`/`<video>` display (they do not send an `Origin`), but keep them so images can be fetched/processed via JavaScript later.
-- **Gallery uploads need no CORS**: they go through the Next.js server (`/api/gallery/upload` → S3 API call), not the browser.
+- **Gallery images use the same browser PUT** as the hero video (`POST /api/gallery/presign`, then PUT, then `POST /api/gallery/upload` to store the row). The signed URL includes the file size. A missing CORS rule shows `blocked by CORS policy` in the browser console.
 - **Vercel previews** (optional): add `"https://*.vercel.app"` if you want to upload the hero video from preview deployments. It allows any Vercel subdomain, but the route still requires an admin session.
 - Custom public domain for `R2_PUBLIC_URL` (e.g. `media.nebula-noir.com`) serves plain media without CORS; no extra origin is needed for display.
 

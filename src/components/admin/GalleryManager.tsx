@@ -32,17 +32,58 @@ export function GalleryManager({
     }
     const form = e.currentTarget
     const data = new FormData(form)
-    setBusy(true)
-    const res = await fetch('/api/gallery/upload', { method: 'POST', body: data })
-    const json = await res.json()
-    setBusy(false)
-    if (!res.ok) {
-      toast.error(json.error || 'Upload fehlgeschlagen')
+    const file = data.get('file')
+    if (!(file instanceof File) || file.size === 0) {
+      toast.error('Datei fehlt')
       return
     }
-    toast.success('Bild gespeichert')
-    form.reset()
-    router.refresh()
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Datei größer als 10MB')
+      return
+    }
+    setBusy(true)
+    try {
+      const presign = await fetch('/api/gallery/presign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contentType: file.type, size: file.size }),
+      })
+      const signed = (await presign.json().catch(() => null)) as { error?: string; uploadUrl?: string; key?: string } | null
+      if (!presign.ok || !signed?.uploadUrl || !signed.key) {
+        toast.error(signed?.error || 'Upload fehlgeschlagen')
+        return
+      }
+      const put = await fetch(signed.uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      })
+      if (!put.ok) {
+        toast.error('Upload fehlgeschlagen')
+        return
+      }
+      const res = await fetch('/api/gallery/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: signed.key,
+          title: String(data.get('title') || ''),
+          description: String(data.get('description') || ''),
+          notice: String(data.get('notice') || ''),
+          category: String(data.get('category') || ''),
+        }),
+      })
+      const json = (await res.json().catch(() => null)) as { error?: string } | null
+      if (!res.ok) {
+        toast.error(json?.error || 'Upload fehlgeschlagen')
+        return
+      }
+      toast.success('Bild gespeichert')
+      form.reset()
+      router.refresh()
+    } finally {
+      setBusy(false)
+    }
   }
 
   const onSave = async (e: FormEvent<HTMLFormElement>, item: Row) => {

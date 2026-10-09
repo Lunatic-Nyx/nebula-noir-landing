@@ -60,7 +60,7 @@ Medium application: App Router + CMS + object storage + cron, with a large froze
 
 - Next.js App Router at `app/`; shared UI at `src/`
 - Path alias `@/*` → `src/*`
-- R2 uploads server-side or presigned PUT (hero only)
+- R2 bytes via presigned PUT (gallery and hero). Secrets stay on the server.
 - Instagram: `graph.instagram.com` only
 - Proprietary license (`LICENSE`)
 - Operator how-to: `USER_MANUAL.md`

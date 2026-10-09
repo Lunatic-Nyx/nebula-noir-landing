@@ -43,7 +43,7 @@ Never prefix with `NEXT_PUBLIC_`. Never import into client components.
 | `brand_info` | SELECT | ALL |
 | `instagram_posts` | SELECT | SELECT (writes via service role) |
 | `instagram_auth` | none | none (service role only) |
-| `contact_inquiries` | INSERT | SELECT, UPDATE, DELETE |
+| `contact_inquiries` | none (service role inserts after the rate limit) | SELECT, UPDATE, DELETE |
 | `site_config` | SELECT | ALL — public read; never store secrets here |
 | `api_secrets` | none | ALL (runtime reads use the service role) |
 | `rate_limits` | none | Deny-all; only `consume_rate_limit()` (SECURITY DEFINER) and the service role |
@@ -72,8 +72,8 @@ Service role is used only in:
 
 ## R2 upload limits
 
-- Images: max 10 MB; JPEG/PNG/WebP/GIF (SVG intentionally rejected); `gallery/{uuid}.{ext}`
-- Hero video: max 80 MB; MP4/WebM/MOV; `hero/{uuid}.{ext}` via 120s presigned PUT (admin only)
+- Images: max 10 MB; JPEG/PNG/WebP/GIF (SVG intentionally rejected); `gallery/{uuid}.{ext}` via 120s presigned PUT. The signature includes `ContentLength`. Confirm accepts only that key shape and builds the public URL itself.
+- Hero video: max 80 MB; MP4/WebM/MOV; `hero/{uuid}.{ext}` via 120s presigned PUT (admin only). The signature includes `ContentLength`.
 - Auth: admin session required for all uploads
 - No public write on the bucket; Next.js server uses S3-compatible credentials
 
@@ -85,7 +85,7 @@ Service role is used only in:
 - Writes go through admin-gated server actions + service role; the client only ever sees `db`/`env`/`missing` status, never a value or ciphertext.
 - Runtime resolution is DB (decrypted) → environment fallback. `site_config` is public-read and must never contain secrets.
 - Losing or rotating `SECRETS_ENCRYPTION_KEY` makes stored values unreadable (env fallbacks keep working); encrypted entries must be re-entered.
-- Legal HTML written through the admin editor is sanitized on write (scripts/iframes/event handlers/`javascript:` URLs stripped) as defense in depth; admin-only RLS remains the primary trust boundary.
+- Legal HTML written through the admin editor is rebuilt from an allowlist (`p`, `br`, `strong`, `em`, lists, `h1`–`h4`, `a`, `code`). `href` must pass the same check as footer links. Unknown tags are unwrapped. Admin-only RLS remains the primary trust boundary.
 
 ## Cron
 
@@ -97,7 +97,7 @@ Service role is used only in:
 
 ## Rate limiting
 
-The contact action enforces 5 requests / 10 minutes per hashed IP+email via `public.consume_rate_limit()` (table `rate_limits`, deny-all RLS, `SECURITY DEFINER`, execute revoked from `public`/`anon`/`authenticated`, granted to `service_role` only). The function rejects out-of-range parameters and opportunistically deletes expired rows, so an abusive caller cannot poison buckets or grow the table unbounded. The hashed key is stored, never the raw IP. The limiter fails open when Supabase/service role is missing so a misconfiguration cannot block the form. This complements — but does not replace — an edge/WAF limit before enabling `RESEND`.
+The contact action enforces 5 requests / 10 minutes per hashed IP via `public.consume_rate_limit()` (table `rate_limits`, deny-all RLS, `SECURITY DEFINER`, execute revoked from `public`/`anon`/`authenticated`, granted to `service_role` only). The function rejects out-of-range parameters and opportunistically deletes expired rows, so an abusive caller cannot poison buckets or grow the table unbounded. The hashed key is stored, never the raw IP. The insert uses the service role. There is no anon insert policy. If the service role or the limiter is down, the form returns an error instead of storing the row. This complements — but does not replace — an edge/WAF limit before enabling `RESEND`.
 
 ## Server-only modules
 
@@ -105,7 +105,7 @@ The contact action enforces 5 requests / 10 minutes per hashed IP+email via `pub
 
 ## Contact form
 
-Validate name/email/message server-side. Truncate oversized payloads. RLS INSERT is not a substitute for rate limiting (add WAF/Vercel firewall in production).
+Validate name/email/message server-side. The anon key cannot insert. A WAF in front of the form is still worth having before `RESEND` is on.
 
 When `RESEND` is set, a best-effort notification email is sent server-side via `https://api.resend.com` after the inquiry is stored. The API key is server-only, never returned to the client, and is not logged. A mail failure never fails the form and never loses the stored inquiry. Before enabling `RESEND` in production, put an edge/WAF rate limit in front of the public contact action — otherwise anyone can drive outbound email to the operator (inbox spam, Resend quota).
 

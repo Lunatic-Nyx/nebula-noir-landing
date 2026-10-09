@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/admin-gate'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { deleteFromR2, publicObjectUrl } from '@/lib/r2'
 import { clampNotice } from '@/lib/notice'
+import { unsafePublicUrl } from '@/lib/footer-config'
 import { syncInstagramPosts } from '@/lib/instagram'
 
 export async function saveBrandInfo(key: string, title: string, body: string) {
@@ -53,6 +54,8 @@ export async function saveEvent(input: {
     const date = new Date(value)
     return Number.isNaN(date.getTime()) ? value : date.toISOString()
   }
+  const url = (input.url || '').trim()
+  if (unsafePublicUrl(url)) return { ok: false as const, error: 'URL nicht erlaubt' }
   const payload = {
     title: input.title,
     venue: input.venue,
@@ -60,7 +63,7 @@ export async function saveEvent(input: {
     starts_at: toIso(input.startsAt) || input.startsAt,
     ends_at: toIso(input.endsAt || ''),
     description: input.description,
-    url: input.url || null,
+    url: url || null,
     published: input.published,
   }
   const query = input.id
@@ -116,15 +119,16 @@ export async function deleteGalleryImage(id: string) {
   const supabase = await createServerSupabase()
   if (!supabase) return { ok: false as const, error: gate.t('admin.supabaseMissing') }
   const { data } = await supabase.from('gallery_images').select('r2_key').eq('id', id).maybeSingle()
+  const { error } = await supabase.from('gallery_images').delete().eq('id', id)
+  if (error) return { ok: false as const, error: error.message }
+  // Row is gone. A failed object delete leaves an orphan, not a broken public card.
   if (data?.r2_key && isR2Configured()) {
     try {
       await deleteFromR2(data.r2_key as string)
     } catch {
-      // continue deleting row
+      // keep going
     }
   }
-  const { error } = await supabase.from('gallery_images').delete().eq('id', id)
-  if (error) return { ok: false as const, error: error.message }
   revalidatePath('/')
   revalidatePath('/admin/gallery')
   return { ok: true as const }

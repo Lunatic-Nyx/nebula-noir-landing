@@ -8,7 +8,7 @@ Ergänzt `SECURITY.md` (technische Sicherheit) und die Rechtsseiten aus `src/lib
 
 - **Hosting:** Vercel (USA) — Server-Logs (IP, Zeit, Ressource, Browsertyp).
 - **Datenbank/Auth/Anfragen:** Supabase (`contact_inquiries`, `site_config`, Auth im Admin).
-- **Kontaktformular:** Name, E-Mail, Nachricht → Supabase; gehashtes Rate-Limit; Benachrichtigung per **Resend** (nur mit Key).
+- **Kontaktformular:** Name, E-Mail, Nachricht → Supabase über die Service-Role; Rate-Limit pro IP; Benachrichtigung per **Resend** (nur mit Key). Kein anonymer Direkt-Insert.
 - **Medien:** Cloudflare R2 (Galerie, Hero, gecachte Instagram-Stills).
 - **Schriftarten:** selbst gehostet (Poiret One, Montserrat aus `public/fonts/`) — keine Übermittlung an Google oder Dritte, kein Consent nötig.
 - **Instagram/Meta:** nur Link + ggf. CDN-Thumbnails (sonst R2).

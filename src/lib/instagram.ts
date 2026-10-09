@@ -2,6 +2,7 @@ import 'server-only'
 import { isR2Configured } from '@/lib/env'
 import { createServiceSupabase } from '@/lib/supabase/service'
 import { extensionForMime, isAllowedImageType, uploadToR2 } from '@/lib/r2'
+import { feedKeepIds, shouldPruneInstagram } from '@/lib/instagram-keep'
 import { loadSecrets, setApiSecret } from '@/lib/secrets/store'
 
 const GRAPH_HOST = 'https://graph.instagram.com'
@@ -182,7 +183,9 @@ export async function syncInstagramPosts(): Promise<{ ok: boolean; count: number
       limit: '12',
     })
     const items = feed.data ?? []
+    const keepIds = feedKeepIds(items)
     let count = 0
+    let failed = false
 
     for (const item of items) {
       if (!item.id || !item.permalink) continue
@@ -199,9 +202,15 @@ export async function syncInstagramPosts(): Promise<{ ok: boolean; count: number
         timestamp: item.timestamp ?? null,
         synced_at: new Date().toISOString(),
       })
-      if (!error) count += 1
+      if (error) {
+        console.error('[instagram] upsert failed', item.id, error.message)
+        failed = true
+        continue
+      }
+      count += 1
     }
 
+    // Refresh even when a row failed, or a stuck post skips renewal until the token dies.
     const refreshed = await refreshLongLivedToken(token)
     await saveAuth(supabase, {
       token: refreshed?.token || token,
@@ -209,6 +218,19 @@ export async function syncInstagramPosts(): Promise<{ ok: boolean; count: number
       username,
       expiresIn: refreshed?.expiresIn,
     })
+
+    if (failed) {
+      return { ok: false, count, error: 'Instagram sync incomplete' }
+    }
+
+    // Empty feed, or a feed we could not store, must not wipe the table.
+    if (shouldPruneInstagram(count, keepIds)) {
+      const { error: deleteError } = await supabase.from('instagram_posts').delete().notIn('id', keepIds)
+      if (deleteError) {
+        console.error('[instagram] prune failed', deleteError.message)
+        return { ok: false, count, error: 'Instagram sync incomplete' }
+      }
+    }
 
     return { ok: true, count }
   } catch (error) {

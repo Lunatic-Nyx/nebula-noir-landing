@@ -52,12 +52,17 @@ const DEFAULT_FOOTER_CONFIG: FooterConfig = {
   madeIn: { de: 'Made in Germany', en: 'Made in Germany' },
 }
 
-function isSafeHref(href: string): boolean {
+export function isSafeHref(href: string): boolean {
   const value = href.trim()
   if (!value) return false
   if (value.startsWith('//')) return false
   if (value.startsWith('/') || value.startsWith('#')) return true
   return /^(https?:|mailto:|tel:)/i.test(value)
+}
+
+/** Non-empty and not a safe link. Empty is allowed (means “no link”). */
+export function unsafePublicUrl(value: unknown): boolean {
+  return typeof value === 'string' && value.trim().length > 0 && !isSafeHref(value)
 }
 
 function localized(value: unknown, fallback: LocalizedText): LocalizedText {

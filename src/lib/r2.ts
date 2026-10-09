@@ -86,13 +86,14 @@ export function extensionForMime(mime: string): string {
   }
 }
 
-export async function presignPut(key: string, contentType: string): Promise<string> {
+export async function presignPut(key: string, contentType: string, contentLength: number): Promise<string> {
   const client = getR2Client()
   if (!client) throw new Error('R2 is not configured')
   const command = new PutObjectCommand({
     Bucket: process.env.R2_BUCKET_NAME,
     Key: key,
     ContentType: contentType,
+    ContentLength: contentLength,
   })
   return getSignedUrl(client, command, { expiresIn: 120 })
 }

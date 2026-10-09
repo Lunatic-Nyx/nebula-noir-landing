@@ -83,6 +83,9 @@ Use this as a testable pass/fail list. Demo Mode means Supabase public keys are 
 - [ ] Admin `/admin/hero` uploads MP4 via R2 presign; after save the landing hero scrubs on scroll.
 - [ ] Demo Mode hero upload shows a disabled toast.
 - [ ] Mobile menu closes after choosing a section.
+- [ ] Mobile menu at 360–430px opens as a full-width panel; no underlying page slice remains visible and no horizontal scroll appears.
+- [ ] Animated frame corners do not draw over the opened mobile menu or product detail dialog.
+- [ ] Product detail dialog at 360–430px stays inside the visible browser viewport and scrolls internally.
 - [ ] Contact submit while in-flight does not send twice.
 - [ ] Gallery card hover still goes grayscale → color.
 

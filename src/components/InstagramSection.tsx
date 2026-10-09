@@ -24,7 +24,7 @@ export function InstagramSection({ posts }: { posts: InstagramPost[] }) {
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
           transition={{ duration: 0.8, ease: EASE_DECO }}
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4">
+          <h2 className="mb-6 break-words px-4 text-2xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.16em] md:mb-8 md:text-4xl md:tracking-[0.25em] lg:text-5xl xl:text-6xl bioshock-glow-animated">
             {t('instagram.title')}
           </h2>
           <div className="art-deco-divider max-w-md mx-auto!" />

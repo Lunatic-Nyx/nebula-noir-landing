@@ -71,7 +71,7 @@ export function CatalogSection({ products = [], categories = [] }: CatalogSectio
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
           transition={{ duration: 0.8, ease: EASE_DECO }}
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line break-words">
+          <h2 className="mb-6 break-words px-4 text-2xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] md:mb-8 md:text-4xl md:tracking-[0.25em] lg:text-5xl xl:text-6xl bioshock-glow-animated whitespace-pre-line">
             {t('catalog.title')}
           </h2>
           <div className="art-deco-divider max-w-md mx-auto!" />
@@ -92,7 +92,7 @@ export function CatalogSection({ products = [], categories = [] }: CatalogSectio
                 type="button"
                 onClick={() => setSelectedCategory(category.slug)}
               variant={selectedCategory === category.slug ? 'default' : 'outline'}
-              className={`uppercase tracking-[0.15em] md:tracking-[0.2em] transition-all duration-500 px-4 md:px-8 py-2 md:py-3 text-xs md:text-sm font-semibold ${
+              className={`max-w-full whitespace-normal uppercase tracking-[0.12em] transition-all duration-500 px-4 py-2 text-xs font-semibold md:px-8 md:py-3 md:text-sm md:tracking-[0.2em] ${
                 selectedCategory === category.slug 
                   ? 'bg-foreground text-background border-2 border-foreground bioshock-glow-animated' 
                   : 'border-2 border-foreground/50 bg-transparent text-foreground hover:border-foreground hover:bg-foreground/10'

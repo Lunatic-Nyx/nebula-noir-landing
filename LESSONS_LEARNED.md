@@ -1,5 +1,13 @@
 # Lessons Learned
 
+## Decorative fixed chrome must stay below interactive layers
+
+The animated frame looked harmless with `pointer-events: none`, but `z-index: 10000` still painted it above Radix sheets/dialogs (`z-50`). On mobile that made the menu look broken because frame corners and lines crossed the open panel. Keep decorative fixed chrome above page content only, not above modals, sheets, nav controls, or other interactive layers.
+
+## Mobile sheets need viewport units and real width, not a fractional desktop drawer
+
+`w-3/4` leaves a visible slice of the page behind the menu on phones and makes large uppercase nav labels feel clipped. For public mobile navigation, use `w-full`, `h-dvh`, contained overscroll, and add spacing at the sheet call site. Restore a capped drawer width only at `sm` and above.
+
 ## Unused scaffold dependencies hide after a migration
 
 After moving off GitHub Spark/Vite the lockfile kept a full shadcn/Radix + dashboard dependency set (recharts, react-hook-form, @tanstack/react-query, date-fns, embla-carousel-react, vaul, cmdk, uuid, zod, ...). None of it was imported by the live tree. Run `npx knip` after a big migration: it flags unused files, exports and dependencies. Removal is safe once `next build` passes — but keep dev tooling (`eslint*`, `typescript-eslint`, `globals`) even when knip flags it, and never touch the frozen CSS (`index.css`, `theme.css`, `art-deco-*`/`spark-theme-*`).

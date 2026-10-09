@@ -95,7 +95,7 @@ export function Navigation({ homeHref = '/', showEvents = true, showInstagram = 
                   <List size={24} weight="bold" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="bg-card border-l-2 border-foreground/30">
+              <SheetContent className="bg-card border-l-2 border-foreground/30 px-6 pb-8 pt-8">
                 <SheetTitle className="sr-only">{t('nav.menu')}</SheetTitle>
                 <SheetDescription className="sr-only">{t('nav.menu')}</SheetDescription>
                 <div className="flex justify-center mb-8 mt-4">
@@ -106,13 +106,13 @@ export function Navigation({ homeHref = '/', showEvents = true, showInstagram = 
                     style={{ filter: 'drop-shadow(0 0 20px rgba(255, 255, 255, 0.5)) drop-shadow(0 0 30px rgba(102, 51, 153, 0.4))' }}
                   />
                 </div>
-                <nav className="flex flex-col gap-6">
+                <nav className="flex min-w-0 flex-col gap-5 sm:gap-6">
                   {navLinks.map(link => (
                     <a
                       key={link.href}
                       href={link.href}
                       onClick={() => setMenuOpen(false)}
-                      className="text-xl uppercase tracking-[0.15em] hover:text-foreground transition-all duration-300 text-foreground/90 bioshock-glow-animated"
+                      className="break-words text-lg uppercase tracking-[0.12em] text-foreground/90 transition-all duration-300 hover:text-foreground sm:text-xl sm:tracking-[0.15em] bioshock-glow-animated"
                     >
                       {link.label}
                     </a>

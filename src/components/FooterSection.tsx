@@ -56,7 +56,7 @@ export function FooterSection() {
 
         <div className="border-t border-foreground/20 pt-6 md:pt-8">
           <div className="text-center space-y-2 md:space-y-3">
-            <p className="text-foreground/60 text-xs uppercase tracking-[0.15em]">
+            <p className="break-words text-xs uppercase leading-relaxed tracking-[0.12em] text-foreground/60 sm:tracking-[0.15em]">
               {footerText(footer.copyright, locale).replaceAll('{year}', String(currentYear))}
             </p>
             <p className="text-foreground/50 text-xs tracking-wider">

@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented in reverse chronological order.
 
-## [0.7.1] — 2026-10-09
+## [0.7.2] — 2026-10-09
 
 ### Security
 
@@ -19,6 +19,15 @@ All notable changes to this project are documented in reverse chronological orde
 - Instagram sync deletes posts that left the latest feed, and reports failure if an upsert fails. An empty feed does not wipe the table.
 - A failed secret-store read is not cached.
 - Dropped `lucide-react` (one icon) and the unused `price` field.
+
+## [0.7.1] — 2026-10-07
+
+### Fixed
+
+- Mobile sheet navigation now uses full mobile viewport width/height with contained overscroll, padding, and safer link wrapping, preventing the half-covered page/menu state seen on narrow Android viewports.
+- The decorative animated frame now sits below interactive layers, so it no longer draws over the mobile menu or product dialogs.
+- Product detail dialogs use `100dvh`-based max height, contained internal scrolling, tighter mobile padding, and safer title/category/button wrapping.
+- Long mobile headings, category filters, event titles, and footer copyright text now wrap inside the viewport instead of creating clipped or horizontal-scroll layouts.
 
 ## [0.7.0] — 2026-10-07
 

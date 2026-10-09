@@ -39,7 +39,7 @@ export function AboutSection({ info }: { info?: Record<string, BrandInfo> }) {
         transition={{ duration: 1, ease: EASE_DECO }}
       >
         <div className="text-center mb-12 md:mb-20">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated px-4 whitespace-pre-line">
+          <h2 className="mb-6 break-words px-4 text-2xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.16em] md:mb-8 md:text-4xl md:tracking-[0.2em] lg:text-5xl xl:text-6xl bioshock-glow-animated whitespace-pre-line">
             {t('about.title')}
           </h2>
           <ArtDecoAnimatedDivider className="max-w-md mx-auto" />
@@ -53,7 +53,7 @@ export function AboutSection({ info }: { info?: Record<string, BrandInfo> }) {
             transition={{ duration: 0.6, delay: 0.2, ease: EASE_DECO }}
           >
             <div className="text-5xl md:text-7xl mb-4 bioshock-glow-animated" style={{ textShadow: '0 0 30px rgba(255, 255, 255, 0.5)' }}>✦</div>
-            <h3 className="text-xl md:text-2xl lg:text-3xl uppercase tracking-[0.15em] md:tracking-[0.2em]">{t('about.missionTitle')}</h3>
+            <h3 className="break-words text-xl uppercase tracking-[0.12em] md:text-2xl md:tracking-[0.2em] lg:text-3xl">{t('about.missionTitle')}</h3>
             <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
               {pick(info, 'mission', t('about.mission'))}
             </p>
@@ -66,7 +66,7 @@ export function AboutSection({ info }: { info?: Record<string, BrandInfo> }) {
             transition={{ duration: 0.6, delay: 0.4, ease: EASE_DECO }}
           >
             <div className="text-5xl md:text-7xl mb-4 text-primary bioshock-glow-animated spark-theme-moon-symbol">☾</div>
-            <h3 className="text-xl md:text-2xl lg:text-3xl uppercase tracking-[0.15em] md:tracking-[0.2em]">{t('about.identityTitle')}</h3>
+            <h3 className="break-words text-xl uppercase tracking-[0.12em] md:text-2xl md:tracking-[0.2em] lg:text-3xl">{t('about.identityTitle')}</h3>
             <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
               {pick(info, 'identity', t('about.identity'))}
             </p>
@@ -79,7 +79,7 @@ export function AboutSection({ info }: { info?: Record<string, BrandInfo> }) {
             transition={{ duration: 0.6, delay: 0.6, ease: EASE_DECO }}
           >
             <div className="text-5xl md:text-7xl mb-4 bioshock-glow-animated spark-theme-moon-symbol" style={{ textShadow: '0 0 30px rgba(255, 255, 255, 0.5)' }}>☾</div>
-            <h3 className="text-xl md:text-2xl lg:text-3xl uppercase tracking-[0.15em] md:tracking-[0.2em]">{t('about.craftTitle')}</h3>
+            <h3 className="break-words text-xl uppercase tracking-[0.12em] md:text-2xl md:tracking-[0.2em] lg:text-3xl">{t('about.craftTitle')}</h3>
             <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
               {pick(info, 'craft', t('about.craft'))}
             </p>
@@ -93,7 +93,7 @@ export function AboutSection({ info }: { info?: Record<string, BrandInfo> }) {
           transition={{ duration: 0.8, delay: 0.8, ease: EASE_DECO }}
         >
           <div className="relative p-6 md:p-10 lg:p-16 border-2 border-foreground/30 bg-background/50">
-            <h3 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl mb-8 md:mb-12 text-center uppercase tracking-[0.15em] md:tracking-[0.25em] bioshock-glow-animated">{t('about.valuesTitle')}</h3>
+            <h3 className="mb-8 break-words text-center text-2xl uppercase tracking-[0.12em] md:mb-12 md:text-3xl md:tracking-[0.2em] lg:text-4xl xl:text-5xl bioshock-glow-animated">{t('about.valuesTitle')}</h3>
             <ul className="space-y-6 md:space-y-8 text-sm md:text-base lg:text-lg">
               <li className="flex items-start gap-3 md:gap-4">
                 <span className="text-primary text-xl md:text-2xl mt-1 flex-shrink-0 spark-theme-moon-symbol">☾</span>

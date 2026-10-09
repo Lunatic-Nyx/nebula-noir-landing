@@ -37,7 +37,7 @@ export function EventsSection({ events }: { events: EventItem[] }) {
           animate={isVisible ? { opacity: 1, clipPath: 'inset(0 0% 0 0)' } : {}}
           transition={{ duration: 0.8, ease: EASE_DECO }}
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 md:mb-8 bioshock-glow-animated uppercase tracking-[0.2em] md:tracking-[0.25em] px-4 whitespace-pre-line">
+          <h2 className="mb-6 break-words px-4 text-2xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.16em] md:mb-8 md:text-4xl md:tracking-[0.25em] lg:text-5xl xl:text-6xl bioshock-glow-animated whitespace-pre-line">
             {t('events.title')}
           </h2>
           <ArtDecoAnimatedDivider className="max-w-md mx-auto" />
@@ -56,7 +56,7 @@ export function EventsSection({ events }: { events: EventItem[] }) {
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1, ease: EASE_DECO }}
             >
               <div className="text-5xl md:text-7xl mb-4 bioshock-glow-animated spark-theme-moon-symbol" style={{ textShadow: '0 0 30px rgba(255, 255, 255, 0.5)' }}>☾</div>
-              <h3 className="text-xl md:text-2xl lg:text-3xl uppercase tracking-[0.15em] md:tracking-[0.2em]">{event.title}</h3>
+              <h3 className="break-words text-xl uppercase tracking-[0.12em] md:text-2xl md:tracking-[0.2em] lg:text-3xl">{event.title}</h3>
               <p className="text-foreground/75 leading-relaxed text-sm md:text-base font-light">
                 {event.venue}{event.city ? ` · ${event.city}` : ''}
               </p>

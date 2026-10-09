@@ -33,7 +33,7 @@ export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[calc(100vw-6rem)] lg:max-w-6xl max-h-[90vh] p-0 bg-background border-2 border-foreground overflow-hidden flex flex-col">
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col overflow-hidden border-2 border-foreground bg-background p-0 sm:w-[calc(100vw-2rem)] sm:max-w-[calc(100vw-2rem)] md:w-[calc(100vw-4rem)] md:max-w-[calc(100vw-4rem)] lg:w-[calc(100vw-6rem)] lg:max-w-6xl">
         <DialogTitle className="sr-only">{product.name}</DialogTitle>
         <DialogDescription className="sr-only">{product.description}</DialogDescription>
         <AnimatePresence>
@@ -53,7 +53,7 @@ export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel
                 <X size={24} weight="bold" />
               </button>
 
-              <div className="grid md:grid-cols-2 gap-0 overflow-y-auto flex-1">
+              <div className="grid flex-1 gap-0 overflow-y-auto overscroll-contain md:grid-cols-2">
                 <motion.div 
                   className="relative aspect-square md:aspect-auto bg-muted overflow-hidden md:min-h-[400px]"
                   initial={{ opacity: 0, clipPath: 'polygon(0 0, 0 0, 0 100%, 0% 100%)' }}
@@ -75,14 +75,14 @@ export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel
                 </motion.div>
 
                 <motion.div 
-                  className="p-8 md:p-12 flex flex-col justify-between overflow-y-auto"
+                  className="flex flex-col justify-between overflow-y-auto p-5 sm:p-8 md:p-12"
                   initial={{ opacity: 0, clipPath: 'polygon(100% 0, 100% 0, 100% 100%, 100% 100%)' }}
                   animate={{ opacity: 1, clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0% 100%)' }}
                   transition={{ duration: 0.8, delay: 0.3, ease: EASE_DECO }}
                 >
                   <div>
                     <motion.h2 
-                      className="text-3xl md:text-4xl lg:text-5xl mb-6 uppercase tracking-[0.2em] bioshock-glow-animated"
+                      className="mb-6 break-words text-2xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.16em] md:text-4xl md:tracking-[0.2em] lg:text-5xl bioshock-glow-animated"
                       initial={{ opacity: 0, clipPath: 'inset(0 100% 0 0)' }}
                       animate={{ opacity: 1, clipPath: 'inset(0 0% 0 0)' }}
                       transition={{ duration: 0.5, delay: 0.4, ease: EASE_DECO }}
@@ -169,12 +169,12 @@ export function ProductDetailDialog({ product, open, onOpenChange, categoryLabel
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.9, ease: EASE_DECO }}
                   >
-                    <div className="min-w-0 break-words text-4xl md:text-5xl font-light text-foreground tracking-wider bioshock-glow">
+                    <div className="min-w-0 break-words text-2xl font-light tracking-wider text-foreground sm:text-3xl md:text-5xl bioshock-glow">
                       {categoryLabel ?? t(`categories.${product.category}`)}
                     </div>
                     <Button
                       asChild
-                      className="w-full lg:w-auto bg-transparent border-2 border-foreground text-foreground hover:bg-foreground hover:text-background uppercase tracking-[0.2em] font-semibold flex items-center justify-center gap-3 transition-all duration-500 px-6 sm:px-8 py-4 text-sm sm:text-base"
+                      className="flex w-full items-center justify-center gap-3 border-2 border-foreground bg-transparent px-6 py-4 text-sm font-semibold uppercase tracking-[0.14em] text-foreground transition-all duration-500 hover:bg-foreground hover:text-background sm:px-8 sm:text-base sm:tracking-[0.2em] lg:w-auto"
                     >
                       <a href="/#contact" onClick={() => onOpenChange(false)}>
                         <EnvelopeSimple size={24} weight="bold" />
